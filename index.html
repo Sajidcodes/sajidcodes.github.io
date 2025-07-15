@@ -1,123 +1,165 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8"/>
-    <title>Sajid Hussain</title>
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open%20Sans:700,400"/>
-    <style type="text/css">
-      A:link { text-decoration: none; color: #800080; }
-      A:visited { text-decoration: none; color: blue; }
-      A:hover { text-decoration: underline; color: orange; }
-      body { font-family: 'Open Sans', sans-serif; font-size: 12px; background-color: whitesmoke; }
-      table.table1 { border-spacing: 4px 0px; padding-left: 1px }
-      table.nestedTable { border-spacing: 6px 8px; }
-      table.table1 td { vertical-align: top; }
-      table.table2 { width: 800px; border-spacing: 6px 8px; }
-      table.table2 td { vertical-align: top; background-color: white; font-size: 90%; }
-      table.table2 th { background: #eee none; color: #100; vertical-align: top; }
-      .top { color: rgb(34, 34, 34); background-color: rgb(255, 255, 255); }
-    </style>
-  </head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sajid Hussain</title>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 14px;
+      background-color: whitesmoke;
+    }
 
-  <body>
-    <table class="table1" width="1200" height="300">
-      <tr>
-        <!-- Left Sidebar -->
-        <td style="width: 159px;" bgcolor="#ffffff" height="200">
-          <p><strong><font size="4">Sajid Hussain</font></strong></p>
-          <p>
-            <img src="l.jpg" width="192" height="206" alt=""/>
-            <br/><font size="2">Ex-ML Intern, <strong>iNeuron.ai</strong></font>
-            <a href="https://github.com/Sajidcodes/Insurance-Premium">
-              <br/>github.com/Sajidcodes
-            </a>
-          </p>
+    a {
+      text-decoration: none;
+      color: purple;
+    }
 
-          <!-- Credly Badge Embed -->
-          <iframe src="https://www.credly.com/earner/earned/share/8fd2e424-2a8f-478d-bca2-38b6d720435a?provider=linked_in"
-                  width="150" height="200" frameborder="0"></iframe>
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvaH33OHkyhIMvZAhS3K_KVcAQ8_1NU1Zr3ny0JFVZjg&s"/>
+    a:hover {
+      text-decoration: underline;
+      color: orange;
+    }
 
-          <p>
-            MS Data Science (AI/ML Specialization)<br/>
-            New Jersey Institute of Technology (<strong>NJIT</strong>)
-          </p>
+    .container {
+      display: flex;
+      flex-direction: row;
+      max-width: 1300px;
+      margin: auto;
+      background-color: white;
+      padding: 16px;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
 
-          <!-- Social Links -->
-          <h4><a href="https://www.linkedin.com/in/sajidcodes/">LinkedIn</a></h4>
-          <h4><a href="https://www.github.com/sajidcodes">GitHub</a></h4>
-          <h4><a href="https://www.twitter.com/illogicalyou">Twitter</a></h4>
-          <h4><a href="Sajid_GenAI_resume.pdf">CV</a></h4>
-          <h4><a href="">sh739@njit.edu</a></h4>
-        </td>
+    .sidebar {
+      flex: 1 1 250px;
+      background-color: white;
+      padding: 16px;
+      min-width: 250px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
 
-        <!-- Main Content -->
-        <td style="width: 991px;" valign="top">
-          <table class="table2" style="width: 1324px;" border="0">
-            <tr>
-              <!-- Bio and Certifications -->
-              <td width="320" bgcolor="#ffffff">
-                <p>
-                  Sajid has a proven track record of applying Python, Machine Learning 
-                  <a href="https://github.com/Sajidcodes/">(Github)</a> and Deep Learning. 
-                  His interests lie at the intersection of NLP, Generative AI, and data science.
-                </p>
-                <p>Before NJIT, he qualified for CBT-2 State Railways and enjoys reading about economics & global affairs.</p>
+    .main-content {
+      flex: 3 1 700px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
 
-                <h4>CERTIFICATIONS</h4>
-                <ul>
-                  <li>Generative AI: Working with LLMs</li>
-                  <li>AWS Machine Learning Speciality (P)</li>
-                  <li>GCP: Introduction to LLMs</li>
-                  <li>GCP: Gen AI Fundamentals</li>
-                  <li>AWS Certified Cloud Practitioner (P)</li>
-                  <li>Deep Learning Specialization</li>
-                  <li>NLP Specialization</li>
-                  <li>ChatGPT Prompt Engineering</li>
-                </ul>
+    .section {
+      background-color: white;
+      padding: 16px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
 
-                <h4>Courses</h4>
-                <ul>
-                  <li>Natural Language Processing</li>
-                  <li>Deep Learning</li>
-                  <li>Machine Learning</li>
-                  <li>Data Mining, Statistics, Big Data</li>
-                  <li>Data Analytics with R, Visualization</li>
-                </ul>
-              </td>
+    .section ul {
+      padding-left: 20px;
+    }
 
-              <!-- AI Projects -->
-              <td width="520" bgcolor="#ffffff">
-                <h3>AI Portfolio</h3>
-                <ul>
-                  <li><strong>Llama2 on AWS</strong>: Deployment & resource optimization</li>
-                  <li><strong>Bias in LLMs</strong>: BERT, GPT-2 evaluation <a href="https://medium.com/@response.sajidhussain/...">[Blog]</a></li>
-                  <li><strong>Speaker Classification</strong>: 96.85% accuracy on 600-speaker data</li>
-                  <li><strong>Adversarial Attack</strong>: CIFAR-10 iFGSM from scratch</li>
-                  <li><strong>Lunar Lander RL</strong>: Policy gradient with OpenAI Gym</li>
-                  <li><strong>Food Image Classification</strong>: 9,867 images using CNN</li>
-                  <li><strong>User Localization (IoT)</strong>: CSI-based self-supervised learning</li>
-                </ul>
-              </td>
+    .section h3 {
+      margin-top: 0;
+      color: #333;
+    }
 
-              <!-- ML Projects -->
-              <td width="420" bgcolor="#ffffff">
-                <h3>ML Portfolio</h3>
-                <ul>
-                  <li>Quora Question Pair Similarity</li>
-                  <li>Amazon Review Rating Prediction</li>
-                  <li>Text Summarization & Keyword Extraction</li>
-                  <li>HR Dashboard in Tableau <a href="https://github.com/Sajidcodes/Viz">[Image]</a></li>
-                  <li>Kaggle: Parkinson’s Disease Progression</li>
-                  <li>Netflix Recommendation System</li>
-                  <li>Web Scraping Chem-Bio Journal Data</li>
-                </ul>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-  </body>
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    iframe {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h2>Sajid Hussain</h2>
+      <img src="l.jpg" alt="Profile Image" width="192" height="206" />
+      <p><strong>Ex-ML Intern, iNeuron.ai</strong></p>
+      <p><a href="https://github.com/Sajidcodes/Insurance-Premium">github.com/Sajidcodes</a></p>
+      <iframe src="https://www.credly.com/earner/earned/share/8fd2e424-2a8f-478d-bca2-38b6d720435a?provider=linked_in"
+              width="150" height="200" frameborder="0"></iframe>
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvaH33OHkyhIMvZAhS3K_KVcAQ8_1NU1Zr3ny0JFVZjg&s" alt="NJIT Logo"/>
+      <p>MS Data Science (AI/ML Specialization)<br/><strong>NJIT</strong></p>
+      <p>
+        <a href="https://www.linkedin.com/in/sajidcodes/">LinkedIn</a><br/>
+        <a href="https://www.github.com/sajidcodes">GitHub</a><br/>
+        <a href="https://www.twitter.com/illogicalyou">Twitter</a><br/>
+        <a href="Sajid_GenAI_resume.pdf">CV</a><br/>
+        <a href="mailto:sh739@njit.edu">sh739@njit.edu</a>
+      </p>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="section">
+        <p>
+          Sajid has a proven track record of applying Python, Machine Learning 
+          <a href="https://github.com/Sajidcodes/">(Github)</a>, and Deep Learning. His research interests lie at the intersection of NLP, Generative AI, and data science.
+        </p>
+        <p>Before joining NJIT, he qualified for CBT-2 State Railways. He is an ardent reader and follows global affairs.</p>
+      </div>
+
+      <div class="section">
+        <h3>CERTIFICATIONS</h3>
+        <ul>
+          <li>Generative AI: Working with Large Language Models</li>
+          <li>AWS Machine Learning Speciality (P)</li>
+          <li>Introduction to Large Language Models (Google Cloud)</li>
+          <li>Generative AI Fundamentals (GCP)</li>
+          <li>AWS Certified Cloud Practitioner (P)</li>
+          <li>Deep Learning Specialization</li>
+          <li>Natural Language Processing Specialization</li>
+          <li>ChatGPT Prompt Engineering for Developers</li>
+        </ul>
+
+        <h3>Courses</h3>
+        <ul>
+          <li>Natural Language Processing</li>
+          <li>Deep Learning</li>
+          <li>Machine Learning</li>
+          <li>Applied Statistics</li>
+          <li>Data Mining</li>
+          <li>Language Models Capstone Project</li>
+          <li>Big Data</li>
+          <li>Data Analytics with R</li>
+          <li>Data Visualization</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3>AI Portfolio</h3>
+        <ul>
+          <li><strong>Llama2 on AWS Sagemaker</strong>: Deployment and optimization</li>
+          <li><strong>Bias Diagnosis in LLMs</strong>: <a href="https://medium.com/@response.sajidhussain/taming-the-tongue-unveiling-and-debiasing-bias-in-language-models-a-deep-dive-a23c4e8aa9d2">[Blog]</a></li>
+          <li><strong>Speaker Classification</strong>: 96.85% accuracy on transformer model</li>
+          <li><strong>Adversarial Attack</strong>: iFGSM on CIFAR-10 with PyTorch</li>
+          <li><strong>Lunar Lander</strong>: Reinforcement Learning using policy gradient</li>
+          <li><strong>Image Classification</strong>: 9867 food images with deep CNN</li>
+          <li><strong>Self-supervised Learning</strong>: CSI-based user localization in IoT</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3>Machine Learning Portfolio</h3>
+        <ul>
+          <li>Quora Question Pair Similarity</li>
+          <li>Amazon Review Rating Prediction</li>
+          <li>Text Summarization and Keyword Extraction</li>
+          <li>HR Dashboard using Tableau <a href="https://github.com/Sajidcodes/Viz">[Image]</a></li>
+          <li>Kaggle Parkinson’s Disease Progression (SMAPE: 57.3)</li>
+          <li>Netflix Recommendation System (on 100M ratings)</li>
+          <li>Web Scraping Chem-Bio Informatics Journal data</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</body>
 </html>
