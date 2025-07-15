@@ -1,110 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sajid Hussain | AI/ML Engineer Portfolio</title>
+  <title>Sajid Hussain | AI & ML Portfolio</title>
+  <!-- Fonts & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="..." crossorigin="anonymous" />
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Open Sans', sans-serif;
-      background-color: #f5f5f5;
-      color: #333;
-      line-height: 1.6;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
-
-    header {
-      background-color: #fff;
-      padding: 2rem;
-      text-align: center;
-      border-bottom: 2px solid #ccc;
-    }
-
-    header h1 {
-      color: #800080;
-    }
-
-    .profile {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 2rem;
-      margin-top: 2rem;
-    }
-
-    .profile-image {
-      flex: 1 1 200px;
-    }
-
-    .profile-image img {
-      width: 200px;
-      border-radius: 10px;
-    }
-
-    .profile-info {
-      flex: 2 1 600px;
-    }
-
-    .profile-info h2 {
-      color: #800080;
-    }
-
-    .links a {
-      margin-right: 1rem;
-      color: #800080;
-      text-decoration: none;
-    }
-
-    .section {
-      margin-top: 2rem;
-      background-color: #fff;
-      padding: 1.5rem;
-      border-radius: 10px;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    }
-
-    .section h3 {
-      color: #444;
-      margin-bottom: 1rem;
-    }
-
-    .certifications, .projects {
-      list-style-type: disc;
-      padding-left: 1.5rem;
-    }
-
-    .social-icons a {
-      margin-right: 0.5rem;
-      color: #444;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Open Sans', sans-serif; background: #f5f5f5; color: #333; line-height: 1.6; }
+    .container { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+    header, section { background: #fff; padding: 2rem; border-radius: 8px; margin-bottom: 1.5rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    header h1 { color: #800080; font-size: 2rem; margin-bottom: .5rem; }
+    .social-icons a { margin-right: 1rem; color: #444; font-size: 1.2rem; transition: color .3s; }
+    .social-icons a:hover { color: #800080; }
+    .profile { display: flex; flex-wrap: wrap; gap: 2rem; align-items: center; }
+    .profile img { width: 180px; height: auto; border-radius: 10px; }
+    .profile-info h2 { margin-bottom: .5rem; color: #555; }
+    .links a { margin-right: 1rem; color: #800080; text-decoration: none; border: 1px solid #800080; padding: .4rem .8rem; border-radius: 4px; transition: background .3s, color .3s; }
+    .links a:hover { background: #800080; color: #fff; }
+    h2.section-title { font-size: 1.5rem; color: #444; margin-bottom: 1rem; }
+    ul { list-style: disc inside; }
+    img.leetcard, .credly-iframe { display: block; margin: .5rem 0; }
     @media (max-width: 768px) {
-      .profile {
-        flex-direction: column;
-      }
+      .profile { flex-direction: column; align-items: center; }
+      header, section { padding: 1rem; }
     }
   </style>
 </head>
-
 <body>
-  <header>
+
+  <header class="container">
     <h1>Sajid Hussain</h1>
-    <p>MS Data Science (AI/ML Specialization), NJIT</p>
+    <p>MS Data Science (AI/ML), NJIT</p>
     <div class="social-icons">
-      <a href="https://www.linkedin.com/in/sajidcodes" target="_blank"><i class="fab fa-linkedin"></i></a>
+      <a href="https://linkedin.com/in/sajidcodes" target="_blank"><i class="fab fa-linkedin"></i></a>
       <a href="https://github.com/sajidcodes" target="_blank"><i class="fab fa-github"></i></a>
       <a href="https://twitter.com/illogicalyou" target="_blank"><i class="fab fa-twitter"></i></a>
       <a href="mailto:sh739@njit.edu"><i class="fas fa-envelope"></i></a>
@@ -112,57 +43,64 @@
   </header>
 
   <div class="container">
+    <!-- Profile & Stats -->
     <section class="profile">
-      <div class="profile-image">
-        <img src="l.jpg" alt="Sajid Hussain">
-      </div>
+      <img src="l.jpg" alt="Sajid Hussain">
       <div class="profile-info">
         <h2>About Me</h2>
-        <p>I apply Machine Learning, Deep Learning, and NLP to solve real-world problems. My interests lie in Generative AI, bias evaluation in LLMs, and building scalable AI solutions.</p>
+        <p>I’m an AI & ML enthusiast with a passion for Generative AI, LLM bias evaluation, and deployments. I hold an MS in Data Science from NJIT.</p>
         <div class="links">
           <a href="Sajid_GenAI_resume.pdf" target="_blank">Download CV</a>
-          <a href="https://credly.com/badges/8fd2e424-2a8f-478d-bca2-38b6d720435a">AWS Certification</a>
         </div>
+        <!-- Live LeetCode Stats -->
+        <h3>LeetCode Stats</h3>
+        <img class="leetcard" src="https://leetcard.jacoblin.cool/sajidcodes?theme=dark&ext=contest,activity" alt="LeetCode Stats for sajidcodes">
       </div>
     </section>
 
-    <section class="section">
-      <h3>Certifications</h3>
-      <ul class="certifications">
-        <li>Generative AI: Working with Large Language Models</li>
+    <!-- Credly Badge -->
+    <section>
+      <h2 class="section-title">Certifications</h2>
+      <!-- Credly Embed -->
+      <div data-iframe-width="300" data-iframe-height="320" data-share-badge-id="8fd2e424-2a8f-478d-bca2-38b6d720435a" data-share-badge-host="https://www.credly.com" class="credly-iframe"></div>
+      <script async src="//cdn.credly.com/assets/utilities/embed.js"></script>
+      <ul>
+        <li>Generative AI: Working with LLMs</li>
         <li>AWS Machine Learning Specialty (Pending)</li>
         <li>Deep Learning Specialization</li>
-        <li>Natural Language Processing Specialization</li>
+        <li>NLP Specialization</li>
         <li>AWS Certified Cloud Practitioner</li>
         <li>GCP: Generative AI Fundamentals</li>
       </ul>
     </section>
 
-    <section class="section">
-      <h3>Featured Projects</h3>
-      <ul class="projects">
-        <li><strong>Llama2 on AWS SageMaker</strong> – Deployed and optimized LLM using AWS resources.</li>
-        <li><strong>Bias Diagnosis in LLMs</strong> – Evaluated and mitigated cultural/gender bias in BERT & GPT-2 [<a href="https://medium.com/@response.sajidhussain/taming-the-tongue-unveiling-and-debiasing-bias-in-language-models-a-deep-dive-a23c4e8aa9d2" target="_blank">Blog</a>]</li>
-        <li><strong>Speaker Classification</strong> – Used Transformers on a speech dataset of 600 speakers. Accuracy: 96.85%</li>
-        <li><strong>Adversarial Attacks</strong> – Reduced model accuracy from 95% → 0% on CIFAR-10 via iFGSM.</li>
-        <li><strong>Lunar Lander AI</strong> – Applied Policy Gradient RL to OpenAI Gym environment.</li>
-        <li><strong>Wireless User Localization</strong> – Used self-supervised learning with CSI data.</li>
+    <!-- Featured Projects -->
+    <section>
+      <h2 class="section-title">Featured Projects</h2>
+      <ul>
+        <li><strong>Llama2 on AWS SageMaker</strong> – Deployment & optimization of large language models.</li>
+        <li><strong>Bias Diagnosis in LLMs</strong> – Evaluating and mitigating bias in BERT/GPT‑2. <a href="https://medium.com/@response.sajidhussain/taming-the-tongue-unveiling-and-debiasing-bias-in-language-models-a-deep-dive-a23c4e8aa9d2" target="_blank">Blog</a></li>
+        <li><strong>Speaker Classification</strong> – 96.85% accuracy on a 600‑speaker dataset.</li>
+        <li><strong>Adversarial Attacks</strong> – Implemented iFGSM on CIFAR‑10, reducing accuracy from 95% to 0%.</li>
+        <li><strong>Lunar Lander RL</strong> – Policy Gradient model in OpenAI Gym.</li>
+        <li><strong>Wireless Localization</strong> – Self‑supervised learning on CSI data.</li>
       </ul>
     </section>
 
-    <section class="section">
-      <h3>ML Portfolio</h3>
-      <ul class="projects">
+    <!-- Machine Learning Portfolio -->
+    <section>
+      <h2 class="section-title">ML Portfolio</h2>
+      <ul>
         <li>Quora Duplicate Question Detection</li>
-        <li>Amazon Product Review Rating Predictor</li>
-        <li>Keyword Extraction using NLTK + TF-IDF</li>
-        <li>HR Dashboard with Tableau [<a href="https://github.com/Sajidcodes/Viz" target="_blank">Image</a>]</li>
-        <li>Parkinson’s Disease Progression Prediction (Kaggle)</li>
+        <li>Amazon Review Rating Prediction</li>
+        <li>Text Summarization & Keyword Extraction (NLTK + TF‑IDF)</li>
+        <li>HR Dashboard with Tableau – <a href="https://github.com/Sajidcodes/Viz" target="_blank">See Demo</a></li>
+        <li>Kaggle: Parkinson’s Disease Progression Prediction</li>
         <li>Netflix Recommendation System (100M+ ratings)</li>
-        <li>Web-Scraping ChemBio Journal Publications</li>
+        <li>Web-scraping ChemBio Journal publications</li>
       </ul>
     </section>
   </div>
-</body>
 
+</body>
 </html>
