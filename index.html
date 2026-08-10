@@ -488,8 +488,7 @@
 
         <p class="stats-note">
           Codewars honor and completed kata update automatically on page load. The
-          SQL card is manually synced (no SQL practice site currently exposes a
-          public, browser-callable API) — see <code>SQL_STATS</code> in the script below.
+          SQL card is manually synced — see <code>SQL_STATS</code> in the script below.
         </p>
       </section>
 
@@ -729,7 +728,7 @@ function renderSqlStats() {
 
     // ---- init --------------------------------------------------------
     loadCodewarsStats();
-    loadLeetcodeStats();
+    renderloadLeetcodeStats();
     renderSqlStats();
     renderCertifications();
   </script>
