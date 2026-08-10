@@ -592,68 +592,38 @@
   <script>
     // ---- 1. Codewars (live) --------------------------------------
     // TODO: replace with your real Codewars username.
-    const CODEWARS_USERNAME = "Sajidcodes";
+    // ---- 1. Codewars (live) --------------------------------------
+const CODEWARS_USERNAME = "Sajidcodes";
 
-    async function loadCodewarsStats() {
-      const honorEl = document.getElementById("codewars-honor");
-      const subEl = document.getElementById("codewars-sub");
-      const dotEl = document.getElementById("codewars-dot");
+async function loadCodewarsStats() {
+  const honorEl = document.getElementById("codewars-honor");
+  const subEl = document.getElementById("codewars-sub");
+  const dotEl = document.getElementById("codewars-dot");
 
-      try {
-        const res = await fetch(`https://www.codewars.com/api/v1/users/${CODEWARS_USERNAME}`);
-        if (!res.ok) throw new Error(`Codewars API responded ${res.status}`);
-        const data = await res.json();
+  try {
+    const res = await fetch(`https://www.codewars.com/api/v1/users/${CODEWARS_USERNAME}`);
+    if (!res.ok) throw new Error(`Codewars API responded ${res.status}`);
+    const data = await res.json();
 
-        honorEl.textContent = (data.honor ?? 0).toLocaleString();
+    honorEl.textContent = (data.honor ?? 0).toLocaleString();
 
-        const totalCompleted = data.codeChallenges?.totalCompleted ?? 0;
-        const rankName = data.ranks?.overall?.name ?? "Unranked";
+    const rankName = data.ranks?.overall?.name ?? "Unranked";
 
-        subEl.innerHTML = "";
-        [`${totalCompleted} kata solved`, rankName].forEach((text) => {
-          const span = document.createElement("span");
-          span.textContent = text;
-          subEl.appendChild(span);
-        });
-      } catch (err) {
-        // Common causes: placeholder username still in place, the
-        // page is being viewed from a local file:// URL, or a
-        // network/ad-block rule is stripping the request.
-        honorEl.textContent = "—";
-        subEl.innerHTML = "<span>Couldn't load live data — check console</span>";
-        if (dotEl) dotEl.classList.add("is-static");
-        console.warn("Codewars stats failed to load:", err);
-      }
-    }
-// ---- LeetCode (manually synced — public API has no CORS support) ---
-const LEETCODE_STATS = {
-  totalSolved: 47,
-  lastUpdated: "2026-08-10",
-};
-
-function renderLeetcodeStats() {
-  const solvedEl = document.getElementById("leetcode-solved");
-  const subEl = document.getElementById("leetcode-sub");
-  const dotEl = document.getElementById("leetcode-dot");
-
-  solvedEl.textContent = LEETCODE_STATS.totalSolved.toLocaleString();
-
-  subEl.innerHTML = "";
-  [
-    `${LEETCODE_STATS.acceptanceRate.toFixed(1)}% acceptance`,
-    `Synced ${LEETCODE_STATS.lastUpdated}`,
-  ].forEach((text) => {
+    subEl.innerHTML = "";
     const span = document.createElement("span");
-    span.textContent = text;
+    span.textContent = rankName;
     subEl.appendChild(span);
-  });
-
-  if (dotEl) dotEl.classList.add("is-static");
+  } catch (err) {
+    honorEl.textContent = "—";
+    subEl.innerHTML = "<span>Couldn't load live data — check console</span>";
+    if (dotEl) dotEl.classList.add("is-static");
+    console.warn("Codewars stats failed to load:", err);
+  }
 }
 
-   // ---- 3. SQL practice (manually synced) -------------------------
+// ---- 2. SQL practice (manually synced) -------------------------
 const SQL_STATS = {
-  solved: 31,
+  solved: 78,
   platform: "PostgreSQL",
   lastUpdated: "2026-08-10",
 };
@@ -662,6 +632,7 @@ function renderSqlStats() {
   document.getElementById("sql-solved").textContent = SQL_STATS.solved;
   document.getElementById("sql-updated").textContent = `Synced ${SQL_STATS.lastUpdated}`;
   const sub = document.getElementById("sql-sub");
+  sub.innerHTML = "";
   const span = document.createElement("span");
   span.textContent = SQL_STATS.platform;
   sub.appendChild(span);
