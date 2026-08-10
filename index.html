@@ -628,6 +628,7 @@
 // ---- LeetCode (manually synced — public API has no CORS support) ---
 const LEETCODE_STATS = {
   totalSolved: 47,
+  acceptanceRate: 60.66,
   lastUpdated: "2026-08-10",
 };
 
@@ -640,7 +641,6 @@ function renderLeetcodeStats() {
 
   subEl.innerHTML = "";
   [
-    `${LEETCODE_STATS.easySolved}E / ${LEETCODE_STATS.mediumSolved}M / ${LEETCODE_STATS.hardSolved}H`,
     `${LEETCODE_STATS.acceptanceRate.toFixed(1)}% acceptance`,
     `Synced ${LEETCODE_STATS.lastUpdated}`,
   ].forEach((text) => {
