@@ -268,42 +268,67 @@
         </p>
       </div>
 
-      <div class="credentials">
-        <div>
-          <h3>Education</h3>
-          <p><strong>M.S. Data Science</strong><br />AI/ML Specialization<br />New Jersey Institute of Technology</p>
-          <p><strong>B.E. Computer Science</strong></p>
-        </div>
+<section class="section container">
+      <div class="section-heading">
+        <span>06</span>
+        <h2>Leadership & mentorship</h2>
+      </div>
 
-        <div>
-          <h3>Selected certifications</h3>
-          <ul>
-            <li>Generative AI: Working with Large Language Models</li>
-            <li>Introduction to Large Language Models — Google Cloud</li>
-            <li>Generative AI Fundamentals — Google Cloud</li>
-            <li>AWS Certified Cloud Practitioner</li>
-            <li>Deep Learning Specialization</li>
-            <li>Natural Language Processing Specialization</li>
-          </ul>
-        </div>
+      <div class="leadership-list">
+        <div><strong>IEEE NJ Coast Young Professionals</strong><span>Organized AI workshops and fostered industry-academic collaboration.</span></div>
+        <div><strong>Adjunct Faculty Mentorship</strong><span>Led professional development for 14 adjunct faculty at PCCC.</span></div>
+        <div><strong>Hackathon Co-Judge</strong><span>Evaluated student projects at Montclair State University and guided students at Princeton University's hackathon.</span></div>
       </div>
     </section>
 
-    <section class="section container contact-section" id="contact">
-      <p class="eyebrow">LET'S CONNECT</p>
-      <h2>Building something interesting?</h2>
-      <p>
-        I'm always interested in thoughtful conversations about AI engineering,
-        education, and things worth building.
-      </p>
-      <a class="email-link" href="mailto:sh739@njit.edu">sh739@njit.edu ↗</a>
+ <section class="section container" id="contact">
+      <div class="section-heading">
+        <span>08</span>
+        <h2>Connect with Sajid</h2>
+      </div>
+
+      <div class="contact-grid">
+        <div>
+          <p class="large-copy">
+            Have a project, teaching opportunity, AI problem, or just want to
+            start a conversation?
+          </p>
+          <div class="contact-links">
+            <a href="https://www.linkedin.com/in/sajidcodes/" target="_blank" rel="noreferrer">LinkedIn ↗</a>
+            <a href="https://github.com/Sajidcodes" target="_blank" rel="noreferrer">GitHub ↗</a>
+          </div>
+        </div>
+
+        <form id="contact-form" class="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" placeholder="Your name" required />
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="you@example.com" required />
+
+          <label for="topic">What is the conversation about?</label>
+          <select id="topic" name="topic" required>
+            <option value="">Select one</option>
+            <option>AI / Engineering</option>
+            <option>Collaboration</option>
+            <option>Teaching / Workshop</option>
+            <option>Career / Mentorship</option>
+            <option>Speaking</option>
+            <option>Something else</option>
+          </select>
+
+          <label for="message">Message</label>
+          <textarea id="message" name="message" rows="6" placeholder="Tell me a little about it..." required></textarea>
+
+          <input type="hidden" name="_subject" value="New message from sajidcodes.dev" />
+
+          <button type="submit">Send message →</button>
+          <p class="form-note">Your message will be delivered to Sajid's email. Your email address is only used to reply to you.</p>
+          <p id="form-status" class="form-status" aria-live="polite"></p>
+        </form>
+      </div>
     </section>
   </main>
-
-  <footer class="container footer">
-    <span>© <span id="year"></span> Sajid Hussain</span>
-    <span>AI Engineer · Instructor · Builder</span>
-  </footer>
 
   <script src="script.js"></script>
 </body>
