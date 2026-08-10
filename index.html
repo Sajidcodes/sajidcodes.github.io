@@ -10,6 +10,164 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
+
+  <!-- ============================================================
+       NEW: styles for the Live Coding Stats + Certifications sections.
+       Kept in a separate block so it's easy to merge into styles.css
+       later. Uses CSS variables with fallbacks so it inherits your
+       existing theme if styles.css defines --fg / --bg / --muted /
+       --border / --accent, and degrades gracefully if it doesn't.
+  ============================================================ -->
+  <style>
+    #stats .stats-grid,
+    #certifications .cert-grid {
+      display: grid;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    #stats .stats-grid {
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    }
+
+    .stat-card {
+      border: 1px solid var(--border, #e5e5e5);
+      border-radius: 10px;
+      padding: 1.25rem 1.25rem 1.1rem;
+      background: var(--card-bg, transparent);
+    }
+
+    .stat-card .stat-platform {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--mono-font, "DM Mono", monospace);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted, #777);
+      margin-bottom: 0.85rem;
+    }
+
+    .stat-card .stat-platform .live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #2fae5f;
+      display: inline-block;
+      margin-right: 0.4em;
+      box-shadow: 0 0 0 0 rgba(47, 174, 95, 0.55);
+      animation: live-pulse 2s infinite;
+    }
+
+    .stat-card .stat-platform .live-dot.is-static {
+      background: var(--muted, #999);
+      animation: none;
+      box-shadow: none;
+    }
+
+    @keyframes live-pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(47, 174, 95, 0.45); }
+      70%  { box-shadow: 0 0 0 6px rgba(47, 174, 95, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(47, 174, 95, 0); }
+    }
+
+    .stat-card .stat-number {
+      font-family: var(--mono-font, "DM Mono", monospace);
+      font-size: 2.1rem;
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    .stat-card .stat-label {
+      margin-top: 0.4rem;
+      font-size: 0.9rem;
+      color: var(--muted, #777);
+    }
+
+    .stat-card .stat-sub {
+      margin-top: 0.9rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .stat-card .stat-sub span {
+      font-family: var(--mono-font, "DM Mono", monospace);
+      font-size: 0.72rem;
+      border: 1px solid var(--border, #e5e5e5);
+      border-radius: 999px;
+      padding: 0.2rem 0.6rem;
+      color: var(--muted, #777);
+    }
+
+    .stats-note,
+    .cert-note {
+      margin-top: 1rem;
+      font-size: 0.82rem;
+      color: var(--muted, #888);
+    }
+
+    #certifications .cert-grid {
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    }
+
+    .cert-card {
+      border: 1px solid var(--border, #e5e5e5);
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+
+    .cert-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--fg, #111);
+    }
+
+    .cert-card .cert-image {
+      aspect-ratio: 4 / 3;
+      background: var(--card-bg, #f4f4f4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .cert-card .cert-image img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .cert-card .cert-body {
+      padding: 1rem 1.1rem 1.2rem;
+      border-top: 1px solid var(--border, #e5e5e5);
+    }
+
+    .cert-card .cert-issuer {
+      font-family: var(--mono-font, "DM Mono", monospace);
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--muted, #777);
+    }
+
+    .cert-card .cert-title {
+      margin-top: 0.35rem;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .cert-card .cert-date {
+      margin-top: 0.35rem;
+      font-size: 0.82rem;
+      color: var(--muted, #777);
+    }
+  </style>
 </head>
 
 <body>
@@ -20,6 +178,8 @@
         <a href="#work">Work</a>
         <a href="#writing">Writing</a>
         <a href="#teaching">Teaching</a>
+        <a href="#stats">Stats</a>
+        <a href="#certifications">Certifications</a>
         <a href="#about">About</a>
         <a href="#contact">Contact</a>
       </nav>
@@ -268,9 +428,94 @@
         </p>
       </div>
 
+      <!-- ============================================================
+           NEW SECTION: Live Coding Stats
+           Codewars exposes a public, unauthenticated, CORS-enabled
+           JSON endpoint, so that card updates live in the browser.
+           Most other practice platforms (LeetCode, HackerRank,
+           StrataScratch, etc.) do NOT expose a public CORS-enabled
+           API, so a "live" fetch from the browser will usually fail
+           or get blocked. Rather than fake a live counter for those,
+           this section falls back to a small manually-edited JS
+           object (SQL_STATS below) you update after each practice
+           session — labeled "Manually synced" so it stays honest.
+           If you want a genuinely live SQL counter, the reliable path
+           is a tiny serverless function (Cloudflare Worker / Vercel
+           edge function) that fetches on your behalf server-side and
+           returns JSON — happy to build that next if useful.
+      ============================================================ -->
+      <section class="section container" id="stats">
+        <div class="section-heading">
+          <span>06</span>
+          <h2>Live coding stats</h2>
+        </div>
+
+        <p class="section-intro">
+          Pulled live from my practice profiles — this is where day-to-day reps happen.
+        </p>
+
+        <div class="stats-grid">
+          <div class="stat-card" id="codewars-card">
+            <div class="stat-platform">
+              <span><span class="live-dot" id="codewars-dot"></span>Codewars</span>
+              <a href="https://www.codewars.com/users/YOUR_CODEWARS_USERNAME" target="_blank" rel="noreferrer">Profile ↗</a>
+            </div>
+            <div class="stat-number" id="codewars-honor">—</div>
+            <div class="stat-label">Honor points</div>
+            <div class="stat-sub" id="codewars-sub">
+              <span>Loading…</span>
+            </div>
+          </div>
+
+          <div class="stat-card" id="sql-card">
+            <div class="stat-platform">
+              <span><span class="live-dot is-static"></span>SQL practice</span>
+              <span id="sql-updated">—</span>
+            </div>
+            <div class="stat-number" id="sql-solved">—</div>
+            <div class="stat-label">Problems solved</div>
+            <div class="stat-sub" id="sql-sub"></div>
+          </div>
+        </div>
+
+        <p class="stats-note">
+          Codewars honor and completed kata update automatically on page load. The
+          SQL card is manually synced (no SQL practice site currently exposes a
+          public, browser-callable API) — see <code>SQL_STATS</code> in the script below.
+        </p>
+      </section>
+
+      <!-- ============================================================
+           NEW SECTION: Certifications
+           Edit the CERTIFICATIONS array in the script at the bottom
+           of the page — each entry needs a title, issuer, date, an
+           image path (drop badge/certificate images in an /assets
+           folder), and optionally a credential verification URL.
+      ============================================================ -->
+      <section class="section container" id="certifications">
+        <div class="section-heading">
+          <span>07</span>
+          <h2>Certifications</h2>
+        </div>
+
+        <p class="section-intro">
+          Credentials and completed programs, most recent first.
+        </p>
+
+        <div class="cert-grid" id="cert-grid">
+          <!-- populated by JS from the CERTIFICATIONS array -->
+        </div>
+
+        <p class="cert-note">
+          Replace the placeholder entries in <code>CERTIFICATIONS</code> (bottom of
+          this file) with your actual certifications — image path, title, issuer,
+          date earned, and a link to the verification/credential page if there is one.
+        </p>
+      </section>
+
 <section class="section container">
       <div class="section-heading">
-        <span>06</span>
+        <span>08</span>
         <h2>Leadership & mentorship</h2>
       </div>
 
@@ -283,7 +528,7 @@
 
  <section class="section container" id="contact">
       <div class="section-heading">
-        <span>08</span>
+        <span>09</span>
         <h2>Connect with Sajid</h2>
       </div>
 
@@ -331,5 +576,132 @@
   </main>
 
   <script src="script.js"></script>
+
+  <!-- ============================================================
+       NEW: logic for the Live Coding Stats + Certifications sections.
+       Safe to move into script.js later — kept inline here so this
+       file works standalone.
+  ============================================================ -->
+  <script>
+    // ---- 1. Codewars (live) --------------------------------------
+    // TODO: replace with your real Codewars username.
+    const CODEWARS_USERNAME = "YOUR_CODEWARS_USERNAME";
+
+    async function loadCodewarsStats() {
+      const honorEl = document.getElementById("codewars-honor");
+      const subEl = document.getElementById("codewars-sub");
+      const dotEl = document.getElementById("codewars-dot");
+
+      try {
+        const res = await fetch(`https://www.codewars.com/api/v1/users/${CODEWARS_USERNAME}`);
+        if (!res.ok) throw new Error(`Codewars API responded ${res.status}`);
+        const data = await res.json();
+
+        honorEl.textContent = (data.honor ?? 0).toLocaleString();
+
+        const totalCompleted = data.codeChallenges?.totalCompleted ?? 0;
+        const rankName = data.ranks?.overall?.name ?? "Unranked";
+
+        subEl.innerHTML = "";
+        [`${totalCompleted} kata solved`, rankName].forEach((text) => {
+          const span = document.createElement("span");
+          span.textContent = text;
+          subEl.appendChild(span);
+        });
+      } catch (err) {
+        // Common causes: placeholder username still in place, the
+        // page is being viewed from a local file:// URL, or a
+        // network/ad-block rule is stripping the request.
+        honorEl.textContent = "—";
+        subEl.innerHTML = "<span>Couldn't load live data — check console</span>";
+        if (dotEl) dotEl.classList.add("is-static");
+        console.warn("Codewars stats failed to load:", err);
+      }
+    }
+
+    // ---- 2. SQL practice (manually synced) -------------------------
+    // No mainstream SQL practice site (HackerRank, StrataScratch,
+    // LeetCode Database set, etc.) exposes a public, CORS-enabled,
+    // unauthenticated API — so this one is a small object you update
+    // by hand after a practice session instead of faking "live" data.
+    const SQL_STATS = {
+      solved: 0,           // TODO: update with your solved count
+      platform: "HackerRank SQL", // TODO: swap for your actual platform
+      lastUpdated: "2026-08-10",  // TODO: update each time you sync
+    };
+
+    function renderSqlStats() {
+      document.getElementById("sql-solved").textContent = SQL_STATS.solved;
+      document.getElementById("sql-updated").textContent = `Synced ${SQL_STATS.lastUpdated}`;
+      const sub = document.getElementById("sql-sub");
+      const span = document.createElement("span");
+      span.textContent = SQL_STATS.platform;
+      sub.appendChild(span);
+    }
+
+    // ---- 3. Certifications -----------------------------------------
+    // TODO: replace these placeholder entries with your real
+    // certifications. `image` should point at a badge/certificate
+    // image (e.g. "assets/certs/gcp-ml-engineer.png"). `url` is
+    // optional — link it to the credential verification page if
+    // one exists, otherwise the card just won't be clickable.
+    const CERTIFICATIONS = [
+      {
+        title: "Certification title",
+        issuer: "Issuing organization",
+        date: "2026",
+        image: "assets/certs/placeholder-1.png",
+        url: "",
+      },
+      {
+        title: "Certification title",
+        issuer: "Issuing organization",
+        date: "2026",
+        image: "assets/certs/placeholder-2.png",
+        url: "",
+      },
+      {
+        title: "Certification title",
+        issuer: "Issuing organization",
+        date: "2025",
+        image: "assets/certs/placeholder-3.png",
+        url: "",
+      },
+    ];
+
+    function renderCertifications() {
+      const grid = document.getElementById("cert-grid");
+      grid.innerHTML = "";
+
+      CERTIFICATIONS.forEach((cert) => {
+        const Tag = cert.url ? "a" : "div";
+        const card = document.createElement(Tag);
+        card.className = "cert-card";
+        if (cert.url) {
+          card.href = cert.url;
+          card.target = "_blank";
+          card.rel = "noreferrer";
+        }
+
+        card.innerHTML = `
+          <div class="cert-image">
+            <img src="${cert.image}" alt="${cert.title} badge" loading="lazy"
+                 onerror="this.style.display='none'; this.parentElement.textContent='No image yet';" />
+          </div>
+          <div class="cert-body">
+            <div class="cert-issuer">${cert.issuer}</div>
+            <div class="cert-title">${cert.title}</div>
+            <div class="cert-date">${cert.date}</div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // ---- init --------------------------------------------------------
+    loadCodewarsStats();
+    renderSqlStats();
+    renderCertifications();
+  </script>
 </body>
 </html>
