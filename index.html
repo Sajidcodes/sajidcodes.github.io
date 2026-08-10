@@ -1,506 +1,305 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8"/>
-        <!-- Global site tag (gtag.js) - Google Analytics -->
-        <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-111128472-1"></script>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            function gtag() {
-                dataLayer.push(arguments);
-            }
-            gtag('js', new Date());
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Sajid Hussain — AI Engineer, Instructor, and Builder. AI systems, LLMs, RAG, agents, evaluation, and practical AI engineering." />
+  <meta name="author" content="Sajid Hussain" />
+  <title>Sajid Hussain — AI Engineer · Instructor · Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
 
-            gtag('config', 'UA-111128472-1');
-        </script>
-        <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open%20Sans:700,400"/>
-        <title>Sajid Hussain</title>
-        <style type="text/css">
-            A:link {
-                text-decoration: none;
-                color: #800080;
-            }
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="#top">Sajid Hussain</a>
+      <nav aria-label="Primary navigation">
+        <a href="#work">Work</a>
+        <a href="#writing">Writing</a>
+        <a href="#teaching">Teaching</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
 
-            A:visited {
-                text-decoration: none;
-                color: blue;
-            }
+  <main id="top">
+    <section class="hero container">
+      <p class="eyebrow">AI ENGINEER · INSTRUCTOR · BUILDER</p>
+      <h1>I build AI systems<br />and teach what I learn.</h1>
+      <p class="lede">
+        I work with Python, LLMs, RAG, agents, evaluation, and the engineering
+        systems around modern AI applications.
+      </p>
+      <p class="hero-note">
+        My goal is simple: turn ideas into useful, working systems — and make
+        the process understandable to others.
+      </p>
 
-            A:hover {
-                text-decoration: underline;
-                color: orange;
-            }
+      <div class="links">
+        <a href="https://github.com/Sajidcodes" target="_blank" rel="noreferrer">GitHub ↗</a>
+        <a href="https://www.linkedin.com/in/sajidcodes/" target="_blank" rel="noreferrer">LinkedIn ↗</a>
+        <a href="https://www.youtube.com/@sapeinsAI" target="_blank" rel="noreferrer">YouTube ↗</a>
+        <a href="assets/Sajid-Hussain-CV.pdf" target="_blank">CV ↗</a>
+        <a href="mailto:sh739@njit.edu">Email ↗</a>
+      </div>
+    </section>
 
-            body {
-                font-family: 'Open Sans', sans-serif;
-                font-size: 12px;
-                background-color: whitesmoke;
-            }
+    <section class="section container" id="work">
+      <div class="section-heading">
+        <span>01</span>
+        <h2>Selected work</h2>
+      </div>
 
-            table.table1 {
-                border-spacing: 4px 0px;
-                padding-left: 1px
-            }
+      <div class="project-list">
+        <article class="project">
+          <div class="project-meta">AI ENGINEERING · 2026</div>
+          <h3>AI Terminal Agent</h3>
+          <p>
+            Building an AI-powered terminal agent that can reason over
+            development tasks, use tools, work with code, and execute
+            multi-step workflows.
+          </p>
+          <div class="tags">
+            <span>Python</span><span>LLMs</span><span>Agents</span><span>Tools</span>
+          </div>
+          <div class="project-links">
+            <a href="https://github.com/Sajidcodes" target="_blank" rel="noreferrer">GitHub ↗</a>
+          </div>
+        </article>
 
-            table.nestedTable {
-                border-spacing: 6px 8px;
-            }
+        <article class="project">
+          <div class="project-meta">GENERATIVE AI · RAG</div>
+          <h3>Oncology RAG Application</h3>
+          <p>
+            A retrieval-augmented generation application combining domain
+            documents, embeddings, Qdrant vector search, LangGraph, and an
+            LLM generation layer.
+          </p>
+          <div class="tags">
+            <span>RAG</span><span>LangGraph</span><span>Qdrant</span><span>HuggingFace</span>
+          </div>
+          <div class="project-links">
+            <a href="https://github.com/Sajidcodes" target="_blank" rel="noreferrer">GitHub ↗</a>
+          </div>
+        </article>
 
-            table.table1 td {
-                vertical-align: top;
-            }
+        <article class="project">
+          <div class="project-meta">MCP · AI SYSTEMS</div>
+          <h3>Provider Search with MCP</h3>
+          <p>
+            An MCP-based provider search workflow using a tool-enabled AI
+            client and server architecture to retrieve structured provider
+            information.
+          </p>
+          <div class="tags">
+            <span>MCP</span><span>FastMCP</span><span>Python</span><span>Tool Calling</span>
+          </div>
+          <div class="project-links">
+            <a href="https://github.com/Sajidcodes" target="_blank" rel="noreferrer">GitHub ↗</a>
+          </div>
+        </article>
 
-            table.table2 {
-                width: 800px;
-                border-spacing: 6px 8px;
-            }
+        <article class="project">
+          <div class="project-meta">ML · KAGGLE</div>
+          <h3>AMP Parkinson's Progression</h3>
+          <p>
+            A Kaggle data science project using protein and peptide measurements
+            to investigate molecular changes associated with Parkinson's disease
+            progression.
+          </p>
+          <div class="tags">
+            <span>Python</span><span>Machine Learning</span><span>Data Science</span>
+          </div>
+          <div class="project-links">
+            <a href="https://github.com/Sajidcodes" target="_blank" rel="noreferrer">GitHub ↗</a>
+          </div>
+        </article>
+      </div>
 
-            table.table2 td {
-                vertical-align: top;
-                background-color: white;
-                font-size: 90%;
-            }
+      <a class="text-link" href="https://github.com/Sajidcodes" target="_blank" rel="noreferrer">
+        Explore more projects on GitHub →
+      </a>
+    </section>
 
-            table.table2 th {
-                background : #eee none;
-                color : #100;
-                vertical-align: top;
-            }
+    <section class="section container" id="writing">
+      <div class="section-heading">
+        <span>02</span>
+        <h2>Writing</h2>
+      </div>
 
-            .top {
-                color: rgb(34, 34, 34)
-            }
+      <p class="section-intro">
+        I write about the things I am building, learning, and trying to understand.
+      </p>
 
-            .top {
-                color: rgb(34, 34, 34);
-                background-color: rgb(255, 255, 255);
-            }
-        </style>
-    </head>
-    <body>
-        
-        <table class="table1" width="1200", height="300">
-            <tbody>
-                <tr>
-                    <td style="width: 159px;" bgcolor="#ffffff" height="200">
-                        <p style="text-align:left">
-                            <font size="4">
-                                <strong>Sajid Hussain</strong>
-                            </font>
-                            <strong>
-                                <font size="2">
-                                    <img src="l.jpg" width="192" height="206" alt=""/>
-                                </font>
-                            </strong>
-                        </p>
-                        
-                        <p style="text-align:left">
-                            <font size="2">
-                                Ex-ML Intern, <strong>iNeuron.ai</strong>
-                                <a href="https://github.com/Sajidcodes/Insurance-Premium">
-                                    <br/>github.com/Sajidcodes
-                                </a>
-                                <br/>
-                            </font>
-                        </p>
-                        
-                        <p>
-                            <div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="8fd2e424-2a8f-478d-bca2-38b6d720435a" data-share-badge-host="https://www.credly.com"></div><script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>
-                            <iframe src="https://www.credly.com/earner/earned/share/8fd2e424-2a8f-478d-bca2-38b6d720435a?provider=linked_in" width="150" height="200" frameborder="0"></iframe>
-                            
-                                            
-                            <div class="mx-auto mt-2">
-                                <img class="img-fluid instilogo p-3" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvaH33OHkyhIMvZAhS3K_KVcAQ8_1NU1Zr3ny0JFVZjg&s">
-                                </div>
-            
-                            MS Data Science(AI/ML Specialization)<br/>
-                            New Jersey Institute of Technology(<strong>NJIT)</strong><br/>
-                        </p>
-                        <h4 style="text-align: left;"></h4>
-                        <h4 style="text-align: left;"></h4>
-                        <h4 style="text-align: left;">
-                            <a href="https://www.linkedin.com/in/sajidcodes/">LinkedIn</a>
-                        </h4>
-                        <h4 style="text-align: left;"></h4>
-                        <h4 style="text-align: left;">
-                            <a href="https://www.github.com/sajidcodes">github </a>
-                        </h4>
-                        <h4 style="text-align: left;">
-                            
-                            <a href="https://www.twitter.com/illogicalyou">Twitter </a>
-                        </h4>
-                        <h4 style="text-align: left;"></h4>
-                        <h4 style="text-align: left;">
-                            <a href="Sajid_GenAI_resume.pdf">CV </a>
-                        </h4>
-                        <span style="color: purple;">
-                            <h4 style="text-align: left;"></h4>
-                            <h4 style="text-align: left;"></h4>
-                            <h4 style="text-align: left;">
-                                <a href="">sh739@njit.edu</a>
-                            </h4> 
-                            <h4 style="text-align: left;"></h4>
-                            <h4 style="text-align: left;"></h4>
-<!--                             <h4 style="text-align: left;">
-                                <a href="">+1 (551) 334-8760</a>
-                            </h4>   -->
-                            <em>&nbsp;</em>
-                        </span>
-                        
-                          
-                        &nbsp;&nbsp;<a href="https://www.youtube.com/user/adasguptz/videos">&nbsp;</a>
-                        &nbsp;&nbsp;<a href="https://www.instagram.com/be_a_sajid">&nbsp;</a>
-                        <br/>
-                        &nbsp;&nbsp;<br/>
-                        <br/>
-                        <p></p>
-                        <p>
-                            <br/>
-                            <br/>
-                        </p>
-                    </td>
-                    <td style="width: 991px;" valign="top">
-                        <span class="top" style="font-family: Arial, sans-serif">
-                            <font size="4"></font>
-                        </span>
-                        <font>
-                            <strong>&nbsp;</strong>
-                            <strong>&nbsp;&nbsp;&nbsp;</strong>
-                        </font>
-                        <br/>
-                        <table class="table2" style="width: 1324px; height: 523px;" border="0">
-                            <tbody>
-                                <tr>
-                                    <td width="320" bgcolor="#ffffff" height="300">
-                                        <font size="3">
-                                            <strong>&nbsp;</strong>
-                                        
-<!--                                         <div> -->
-                                            Sajid has proven track record of applying Python, Machine Learning<a href="https://github.com/Sajidcodes/">(Github)</a> and Deep Learning. His research interests lie at the intersection of Natural Language Processing, Generative AI and data science.                                         </div>
-                                        <div>
-                                            <br/>Before joining NJIT, he qualified for State Railways as part of his civil services preparation. He is an ardent reader and also likes to read about economy and the global state of affairs.
-                                        </div>
-                                        <p>
-<!--                                             <font size="3"> -->
-                                                <strong></strong>
-                                            </font>
-
-     
-<!--                                     <td> -->
-                                        <p>
-                                            <font size="3">
-                                                <strong>
-                                                    <font size="4">
-                                                        <strong>
-                                                            CERTIFICATIONS<br/>
-                                                        </strong>
-                                                    </font>
-                                                </strong>
-                                                                                  
-                                           <br><strong>Generative AI: Working with Large Language Models</strong> <br/>
-                                            <br><strong>AWS Machine Learning Speciality(P)</strong><br/>
-                                            <br><strong>Introduction to Large Language Models (Google Cloud)</strong><br/>
-                                            <br><strong>Generative AI Fundamentals (GCP)</strong><br/>
-                                            <br><strong>AWS Certified Cloud Practioner(P)</strong><br/>
-                                            <br><strong>Deep Learning Specialization</strong><br/>
-                                            <br><strong>Natural Language Processing Specialization</strong><br/>
-                                            <br><strong>ChatGPT Prompt Engineering for Developers</strong><br/>
-                                            <font size="3">
-                                                <br/>
-                                            </font>
-                                           
-                                                <font size="3">
-                                                <strong>
-                                                    <font size="3">
-                                                        <strong>
-                                                            Courses<br/>
-                                                        </strong>
-                                                    </font>
-                                                </strong>
-                                            </font>
-                                            Natural Language Processing<br/>
-                                            Deep Learning<br/>
-                                            Machine Learning<br/>
-                                            Applied Statistics<br/>
-                                            Data Mining<br/>
-                                            Language models Capstone Project                           
-                                            Big Data&nbsp;<br/>
-                                            Data Analytics with R Programming<br/>
-                                            Data Visualization<br/>
-                                            <br/>
-                                            
-                                        </p>
-                                                                                    
-                                   <td width="520" bgcolor="#ffffff" height="200">
-    <strong></strong>
-    <font size="4">
-        <strong>AI PORTFOLIO</strong>
-    </font>
-    <p>
-        <font size="3">
-            <strong>Deployed, configured Llama2(Large Language Models) on AWS Sagemaker,</strong> and optimized it to ensure efficient utilization of resources and optimal performance of the model.
-        </font>
-        <font size="1">
-            <!-- <a href="https://github.com/Sajidcodes/Credit-Card-Churn-Analysis/blob/master/Credit_Card_Churn_Analysis.ipynb">
-                [<strong>Demo</strong>]
-            </a> -->
-            <!-- <a href="cgf17.pdf">
-                [<strong>CGF17</strong>]
-            </a>
-            <a href="cgf18.pdf">
-                [<strong>CGF18</strong>]
-            </a>
-            <a href="viscom18.pdf">
-                [<strong>VisComm18</strong>] 
-            </a> -->
-            <!-- </font>
-        <font size="1">
-            <a href="viscom18.pdf">
-                [<strong>Data</strong>] 
-            </a> -->
-        </font>
-    </p>
-    <p>
-        <font size="3">
-            <strong>Diagnosing and Mitigating Bias in Large Language Models</strong>
-        
-        <br>
-        • Evaluated biases in large language models (LLMs) such as BERT, GPT-2, etc., addressing gender, race, and cultural biases.
-        
-            <a href="https://medium.com/@response.sajidhussain/taming-the-tongue-unveiling-and-debiasing-bias-in-language-models-a-deep-dive-a23c4e8aa9d2">
-                [<strong>BLOG</strong>]
-            </a>
-        </font>
-    </p>
-    <p>
-        <font size="3">
-            <strong>Speaker Classification using Transformers</strong>
-        
-        <br>
-        • Applied Self-Attention mechanisms and optimized transformer parameters, on a speech dataset featuring 600 speakers, resulting in a 20% reduction in training time with a commendable categorization accuracy score of 96.85%, demonstrating expertise in advanced machine learning techniques.<br/>
-    </font>
-    </p>
-    <font size="1">
-        <!-- <a href="github.com/Sajidcodes">
-            [<strong>EuroVis14</strong>]
+      <div class="writing-list">
+        <a class="writing-item" href="#">
+          <span class="date">2026</span>
+          <span class="title">Building an AI Terminal Agent</span>
+          <span class="arrow">↗</span>
         </a>
-        <a href="tvcg14.pdf">
-            <strong>[Data]</strong>
-        </a> -->
-        </font>
-    <p>
-        <font size="3">
-            <strong>Adversarial Attack</strong>
-                <br>
-        • Implemented non-targeted iFGSM from scratch in PyTorch on CIFAR-10 dataset to generate adversarial samples which successfully reduced the model's accuracy from 95% to 0%.
-        
-            <!-- <a href="github.com/Sajidcodes">
-                [<strong>EuroVis14</strong>]
-            </a>
-            <a href="tvcg14.pdf">
-                <strong>[Data]</strong>
-            </a> -->
-        </font>
-    </p>
-    <p>
-        <font size="3">
-            <strong>Mastering Lunar Landing: Cutting-edge AI with OpenAI's Gym</strong>
-        
-        <br>
-        • Applied Policy Gradient algorithm using Deep Reinforcement learning to accurately guide the Lunar's landing.
-        
-            <!-- <a href="hilda17.pdf">
-                <strong>[HILDA17</strong>
-            </a>
-            <a href="tvcg17.pdf"></a>
-            <a href="vast17.pdf">
-                <strong>[Data]</strong>
-            </a> -->
-        </font>
-    </p>
-    <p>
-        <font size="3">
-            <strong>Unveiling Culinary Delights with Image Classification Technology</strong>
-        
-        <br>• Trained a neural network model using a dataset comprising 9867 jpg images followed by hyperparameter tuning, optimizer selection, exploration of complex model architectures suitable for image classification, and consideration of cross-validation techniques to optimize model generalization<br/>
-        
-            <!-- <a href="https://github.com/Sajidcodes/Viz">
-                <strong>[Image]</strong>
-            </a> -->
-        </font>
-    </p>
-    <p>
-        <font size="3">
-            <strong>Revolutionizing Wireless Communication: User Localization Through Self-Supervised Learning in IoT Environments</strong>
-        
-        <br>
-        • Explored the efficacy of self-supervised learning for user localization based on Channel State Information (CSI), aiming to reduce reliance on labeled data and accommodate changing radio environments.<br>
-        <br>• Utilized a dataset obtained through a massive MIMO channel sounder, comprising labeled samples with real and imaginary parts of estimated channel matrices, signal-to-noise ratios (SNR), and ground truth positions of transmitters, as well as unlabeled and test data.<br>
-        
-<!--             <a href="infovis2011.pdf">
-                [<strong>InfoVis11</strong>]
-            </a>
-            <a href="cgf12.pdf">
-                <strong>[CGF12]</strong>
-            </a>
-            <a href="cgf13.pdf">
-                <strong>[CGF13]</strong>
-            </a>
-            <a href="ehrvis14.pdf">
-                <strong>[EHRVis14]</strong>
-            </a>
-            <a href="vizsec19.pdf">
-                <strong>
-                    [VizSec19]
-                    [CGF20]<br>
-                </strong>
-            </a> -->
-        </font> 
-    </p>
-</td>
+        <a class="writing-item" href="#">
+          <span class="date">2026</span>
+          <span class="title">RAG Beyond Vector Search</span>
+          <span class="arrow">↗</span>
+        </a>
+        <a class="writing-item" href="#">
+          <span class="date">2026</span>
+          <span class="title">Understanding AI Observability</span>
+          <span class="arrow">↗</span>
+        </a>
+        <a class="writing-item" href="#">
+          <span class="date">2026</span>
+          <span class="title">Measuring Latency and Cost in AI Applications</span>
+          <span class="arrow">↗</span>
+        </a>
+        <a class="writing-item" href="#">
+          <span class="date">2026</span>
+          <span class="title">From RAG Prototype to Production System</span>
+          <span class="arrow">↗</span>
+        </a>
+      </div>
 
-                                        
+      <p class="small-note">Writing links are placeholders until individual articles are published.</p>
+    </section>
 
-                                    
-                                    <td width="420" bgcolor="#ffffff" height="200">
-                                        <strong></strong>
-                                        <font size="4">
-                                            <strong>MACHINE LEARNING PORTFOLIO
-                        </strong>
-                                            <p>
-                                        </font>
-                                        <br/>
-                                        <font size="3">
-                                            <strong>Case Study: Quora Question pair similarity problem</strong>
-                                        
-                                        <br/>
-                                        Identified which questions asked on Quora are duplicates of questions that have already being asked.<br/>
-                                        
-                                            <!-- <a href="github.com/Sajidcodes">
-                                                [<strong>EuroVis14</strong>
-                                                ]
-                      
-                                            </a>
-                                            <a href="tvcg14.pdf">
-                                                <strong>[Data]</strong>
-                                            </a> -->
-                                            <br/>
-                                        </p>
-                                        <font size="3">
-                                            <strong>Real world problem: Predict rating given product reviews on Amazon </strong>
-                                        
-                                        <br/>
-                                        Used Natural Language Processing (NLP) and machine learning to extract valuable insights from Amazon product reviews. Predictied rating values based on customer reviews, providing a valuable tool for businesses to understand customer sentiment and make data-driven decisions.<br/>
-                                        
-                                            <!-- <a href="github.com/Sajidcodes">
-                                                [<strong>EuroVis14</strong>
-                                                ]
-                      
-                                            </a>
-                                            <a href="tvcg14.pdf">
-                                                <strong>[Data]</strong>
-                                            </a> -->
-                                            
-                                        </font>
-                                        <p>
-                                            <font size="3">
-                                                <strong>Text Summarization & Keyword Extraction</strong>
-                                            
-                                            <br/>
-                                            Extracted key information from lengthy texts using the nltk library. Can be extended for efficient studying and lesson preparation for textbooks. and experimented with tfidf vector.<br/>
-                                            
-                                                <!-- <a href="hilda17.pdf">
-                                                    <strong>[HILDA17</strong>
-                                                </a>
-                                                <a href="tvcg17.pdf"></a>
-                                                <a href="vast17.pdf">
-                                                    <strong>[Data]</strong>
-                                                </a>
-                                                 -->
-                                            </font>
-                                        </p>
-                                        <p></p>
-                                        <p>
-                                            <font size="3">
-                                                <strong>HR Dashboard</strong>
-                                            
-                                            <br/>
-                                            Designed and developed an HR Dashboard using Tableau.<br/>
-                                            
-                                                <a href="https://github.com/Sajidcodes/Viz">
-                                                    <strong>[Image]</strong>
-                                                </a>
-                                                
-                                               
-                                            </font>
-                                        </p>
-                                        
-                                        <p>
-                                            <font size="3">
-                                                <strong>Data Science Kaggle Challenge</strong>
-                                            
-                                            <br/>
-                                            Achieved a SMAPE score of 57.3 in the ”AMP®-Parkinson’s Disease Progression Prediction” hosted by Kaggle, using protein and
-peptide data measurements of patients.
-• Experimenting to discover important breakthrough information about which molecules change as Parkinson’s disease
-progresses. <br/>
-                                            <!-- <font size="1">
-                                                <a href="infovis2011.pdf">
-                                                    [<strong>InfoVis11</strong>
-                                                    ] -->
-                                                </a>
-                                                <!-- <a href="cgf12.pdf">
-                                                    <strong>[CGF12]</strong>
-                                                </a>
-                                                <a href="cgf13.pdf">
-                                                    <strong>[CGF13]</strong>
-                                                </a>
-                                                <a href="ehrvis14.pdf">
-                                                    <strong>[EHRVis14]</strong>
-                                                </a>
-                                                <a href="vizsec19.pdf">
-                                                    <strong>
-                                                        [VizSec19]
-                            [CGF20]<br/> -->
-                                                    </strong>
-                                                </a>
-                                            </font>
-                                        </font>
-                                    </p>
-                                    
-                                    <p>
-                                        <font size="3">
-                                            <strong>Netflix recommendation system</strong>
-                                        
-                                        <br/>
-                                        Experimented with simple movie recommendation system using collaborative filtering using 100 million movie ratings data.<br/>
-                                        
-                                            <!-- <a href="https://www.youtube.com/watch?v=Q2y9vOopPSI">
-                                                [<strong>Youtube</strong>]
-                                            </a>
-                                            <a href="https://github.com/Sajidcodes/Churn_Analysis/blob/main/Churn_Analysis1.ipynb">
-                                                [<strong>Github</strong>]
-                                            </a> -->
-                                        </font>
-                                    </p>
-                                    
-                                    <p>
-                                        <font size="3">
-                                            <strong>Web Scraping Chem-Bio Informatics Journal data</strong>
-                                        
-                                        <br/>
-                                        Developed a web scraper using Python to collect relevant research article data from Pubmed.<br/>
-                                        </font>
-                                    </p>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <p></p>
+    <section class="section container" id="teaching">
+      <div class="section-heading">
+        <span>03</span>
+        <h2>Teaching</h2>
+      </div>
+
+      <div class="two-column">
+        <div>
+          <p class="large-copy">
+            I teach Python, data science, machine learning, and AI with an
+            emphasis on learning by building.
+          </p>
+          <p>
+            Teaching is also part of how I learn: explain an idea clearly,
+            build something with it, test the assumptions, and share the result.
+          </p>
+        </div>
+
+        <div class="course-list">
+          <div>Python Programming</div>
+          <div>Data Science</div>
+          <div>Machine Learning</div>
+          <div>Natural Language Processing</div>
+          <div>Deep Learning</div>
+          <div>Applied Statistics</div>
+          <div>Data Mining</div>
+          <div>Data Visualization</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section container" id="background">
+      <div class="section-heading">
+        <span>04</span>
+        <h2>Background</h2>
+      </div>
+
+      <div class="timeline">
+        <div class="timeline-item">
+          <span class="timeline-date">2025 — now</span>
+          <div>
+            <h3>AI Engineer</h3>
+            <p>Building and experimenting with modern AI systems, including agentic workflows, RAG, LLM applications, and AI engineering infrastructure.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <span class="timeline-date">2025 — now</span>
+          <div>
+            <h3>Instructor</h3>
+            <p>Teaching Python and data-focused courses while developing practical learning resources.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <span class="timeline-date">2022 — 2024</span>
+          <div>
+            <h3>M.S. Data Science — AI/ML Specialization</h3>
+            <p>New Jersey Institute of Technology (NJIT).</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <span class="timeline-date">Earlier</span>
+          <div>
+            <h3>Computer Science</h3>
+            <p>B.E. in Computer Science, followed by work across machine learning, NLP, data science, and software development.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section container" id="about">
+      <div class="section-heading">
+        <span>05</span>
+        <h2>About</h2>
+      </div>
+
+      <div class="about-copy">
+        <p class="large-copy">
+          I'm Sajid Hussain, an AI engineer, instructor, and builder based in New Jersey.
+        </p>
+        <p>
+          My background is in computer science and data science, with a focus on
+          machine learning and artificial intelligence.
+        </p>
+        <p>
+          Over time, my interests have moved from simply training models toward
+          the engineering side of AI: retrieval, agents, tools, APIs, evaluation,
+          observability, and deployment.
+        </p>
+        <p>
+          I like working at the boundary between research ideas and practical
+          software — building systems that are useful, measurable, and understandable.
+        </p>
+      </div>
+
+      <div class="credentials">
+        <div>
+          <h3>Education</h3>
+          <p><strong>M.S. Data Science</strong><br />AI/ML Specialization<br />New Jersey Institute of Technology</p>
+          <p><strong>B.E. Computer Science</strong></p>
+        </div>
+
+        <div>
+          <h3>Selected certifications</h3>
+          <ul>
+            <li>Generative AI: Working with Large Language Models</li>
+            <li>Introduction to Large Language Models — Google Cloud</li>
+            <li>Generative AI Fundamentals — Google Cloud</li>
+            <li>AWS Certified Cloud Practitioner</li>
+            <li>Deep Learning Specialization</li>
+            <li>Natural Language Processing Specialization</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section container contact-section" id="contact">
+      <p class="eyebrow">LET'S CONNECT</p>
+      <h2>Building something interesting?</h2>
+      <p>
+        I'm always interested in thoughtful conversations about AI engineering,
+        education, and things worth building.
+      </p>
+      <a class="email-link" href="mailto:sh739@njit.edu">sh739@njit.edu ↗</a>
+    </section>
+  </main>
+
+  <footer class="container footer">
+    <span>© <span id="year"></span> Sajid Hussain</span>
+    <span>AI Engineer · Instructor · Builder</span>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
-
