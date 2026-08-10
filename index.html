@@ -653,26 +653,21 @@ function renderLeetcodeStats() {
   if (dotEl) dotEl.classList.add("is-static");
 }
 
-    // ---- 2. SQL practice (manually synced) -------------------------
-    // No mainstream SQL practice site (HackerRank, StrataScratch,
-    // LeetCode Database set, etc.) exposes a public, CORS-enabled,
-    // unauthenticated API — so this one is a small object you update
-    // by hand after a practice session instead of faking "live" data.
-    const SQL_STATS = {
-      solved: 31,                    // 31 completed (5 attempted, 0 skipped, 51 tracked total)
-      platform: "SQL Practice Online",
-      lastUpdated: "2026-08-10",
-    };
+   // ---- 3. SQL practice (manually synced) -------------------------
+const SQL_STATS = {
+  solved: 31,
+  platform: "SQL",
+  lastUpdated: "2026-08-10",
+};
 
-    function renderSqlStats() {
-      document.getElementById("sql-solved").textContent = SQL_STATS.solved;
-      document.getElementById("sql-updated").textContent = `Synced ${SQL_STATS.lastUpdated}`;
-      const sub = document.getElementById("sql-sub");
-      const span = document.createElement("span");
-      span.textContent = SQL_STATS.platform;
-      sub.appendChild(span);
-    }
-
+function renderSqlStats() {
+  document.getElementById("sql-solved").textContent = SQL_STATS.solved;
+  document.getElementById("sql-updated").textContent = `Synced ${SQL_STATS.lastUpdated}`;
+  const sub = document.getElementById("sql-sub");
+  const span = document.createElement("span");
+  span.textContent = SQL_STATS.platform;
+  sub.appendChild(span);
+}
     // ---- 3. Certifications -----------------------------------------
     // TODO: replace these placeholder entries with your real
     // certifications. `image` should point at a badge/certificate
