@@ -626,7 +626,76 @@
         console.warn("Codewars stats failed to load:", err);
       }
     }
+// ---- LeetCode (live, via community proxy) -----------------------
+    // LeetCode has no public CORS-enabled API of its own, so this uses
+    // a third-party proxy that wraps LeetCode's internal GraphQL and
+    // does enable CORS. It's unofficial and can go down without
+    // notice — the catch block below falls back gracefully if it does.
+    const LEETCODE_USERNAME = "L08ush8lEb";
 
+    async function loadLeetcodeStats() {
+      const solvedEl = document.getElementById("leetcode-solved");
+      const subEl = document.getElementById("leetcode-sub");
+      const dotEl = document.getElementById("leetcode-dot");
+
+      try {
+        const res = await fetch(`https://leetcode-stats-api.herokuapp.com/${LEETCODE_USERNAME}`);
+        if (!res.ok) throw new Error(`LeetCode stats API responded ${res.status}`);
+        const data = await res.json();
+
+        solvedEl.textContent = (data.totalSolved ?? 0).toLocaleString();
+
+        subEl.innerHTML = "";
+        [
+          `${data.easySolved ?? 0}E / ${data.mediumSolved ?? 0}M / ${data.hardSolved ?? 0}H`,
+          `${(data.acceptanceRate ?? 0).toFixed(1)}% acceptance`,
+        ].forEach((text) => {
+          const span = document.createElement("span");
+          span.textContent = text;
+          subEl.appendChild(span);
+        });
+      } catch (err) {
+        solvedEl.textContent = "—";
+        subEl.innerHTML = "<span>Couldn't load live data — check console</span>";
+        if (dotEl) dotEl.classList.add("is-static");
+        console.warn("LeetCode stats failed to load:", err);
+      }
+    }
+    // ---- LeetCode (live, via community proxy) -----------------------
+    // LeetCode has no public CORS-enabled API of its own, so this uses
+    // a third-party proxy that wraps LeetCode's internal GraphQL and
+    // does enable CORS. It's unofficial and can go down without
+    // notice — the catch block below falls back gracefully if it does.
+    const LEETCODE_USERNAME = "L08ush8lEb";
+
+    async function loadLeetcodeStats() {
+      const solvedEl = document.getElementById("leetcode-solved");
+      const subEl = document.getElementById("leetcode-sub");
+      const dotEl = document.getElementById("leetcode-dot");
+
+      try {
+        const res = await fetch(`https://leetcode-stats-api.herokuapp.com/${LEETCODE_USERNAME}`);
+        if (!res.ok) throw new Error(`LeetCode stats API responded ${res.status}`);
+        const data = await res.json();
+
+        solvedEl.textContent = (data.totalSolved ?? 0).toLocaleString();
+
+        subEl.innerHTML = "";
+        [
+          `${data.easySolved ?? 0}E / ${data.mediumSolved ?? 0}M / ${data.hardSolved ?? 0}H`,
+          `${(data.acceptanceRate ?? 0).toFixed(1)}% acceptance`,
+        ].forEach((text) => {
+          const span = document.createElement("span");
+          span.textContent = text;
+          subEl.appendChild(span);
+        });
+      } catch (err) {
+        solvedEl.textContent = "—";
+        subEl.innerHTML = "<span>Couldn't load live data — check console</span>";
+        if (dotEl) dotEl.classList.add("is-static");
+        console.warn("LeetCode stats failed to load:", err);
+      }
+    }
     // ---- 2. SQL practice (manually synced) -------------------------
     // No mainstream SQL practice site (HackerRank, StrataScratch,
     // LeetCode Database set, etc.) exposes a public, CORS-enabled,
@@ -708,6 +777,7 @@
 
     // ---- init --------------------------------------------------------
     loadCodewarsStats();
+    loadLeetcodeStats();
     renderSqlStats();
     renderCertifications();
   </script>
