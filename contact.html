@@ -1,0 +1,80 @@
+<!-- contact.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact — Sajid Hussain</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="index.html">Sajid Hussain</a>
+      <nav aria-label="Primary navigation">
+        <a href="work.html">Work</a>
+        <a href="writing.html">Writing</a>
+        <a href="teaching.html">Teaching</a>
+        <a href="stats.html">Stats</a>
+        <a href="background.html">Background</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="section container" id="contact">
+      <div class="section-heading">
+        <span>07</span>
+        <h2>Connect with Sajid</h2>
+      </div>
+
+      <div class="contact-grid">
+        <div>
+          <p class="large-copy">
+            Have a project, teaching opportunity, AI problem, or just want to
+            start a conversation?
+          </p>
+          <div class="contact-links">
+            <a href="https://www.linkedin.com/in/sajidcodes/" target="_blank" rel="noreferrer">LinkedIn ↗</a>
+            <a href="https://github.com/Sajidcodes" target="_blank" rel="noreferrer">GitHub ↗</a>
+          </div>
+        </div>
+
+        <form id="contact-form" class="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" placeholder="Your name" required />
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="you@example.com" required />
+
+          <label for="topic">What is the conversation about?</label>
+          <select id="topic" name="topic" required>
+            <option value="">Select one</option>
+            <option>AI / Engineering</option>
+            <option>Collaboration</option>
+            <option>Teaching / Workshop</option>
+            <option>Career / Mentorship</option>
+            <option>Speaking</option>
+            <option>Something else</option>
+          </select>
+
+          <label for="message">Message</label>
+          <textarea id="message" name="message" rows="6" placeholder="Tell me a little about it..." required></textarea>
+
+          <input type="hidden" name="_subject" value="New message from sajidcodes.dev" />
+
+          <button type="submit">Send message →</button>
+          <p class="form-note">Your message will be delivered to Sajid's email. Your email address is only used to reply to you.</p>
+          <p id="form-status" class="form-status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!-- work.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Work — Sajid Hussain</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="index.html">Sajid Hussain</a>
+      <nav aria-label="Primary navigation">
+        <a href="work.html">Work</a>
+        <a href="writing.html">Writing</a>
+        <a href="teaching.html">Teaching</a>
+        <a href="stats.html">Stats</a>
+        <a href="background.html">Background</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="section container" id="work">
+      <div class="section-heading">
+        <span>01</span>
+        <h2>Work</h2>
+      </div>
+
+      <div class="project-list">
+        <article class="project">
+          <div class="project-meta">AI ENGINEERING · 2026</div>
+          <h3>AI Terminal Agent</h3>
+          <p>
+            Building an AI-powered terminal agent that can reason over
+            development tasks, use tools, work with code, and execute
+            multi-step workflows.
+          </p>
+          <div class="tags">
+            <span>Python</span><span>LLMs</span><span>Agents</span><span>Tools</span>
+          </div>
+          <div class="project-links">
+            <a href="https://github.com/Sajidcodes" target="_blank" rel="noreferrer">GitHub ↗</a>
+          </div>
+        </article>
+
+        <article class="project">
+          <div class="project-meta">GENERATIVE AI · RAG</div>
+          <h3>Multi-Agent AI RAG System</h3>
+          <p class="project-lead">
+            Designed and built a multi-agent AI RAG system using Google ADK,
+            FastAPI, and ChromaDB, ingesting 36,000 chunks across 11
+            structured and unstructured sources with modular, testable components.
+          </p>
+          <ul>
+            <li>Built an LLM evaluation harness using RAGAS-style metrics and 100+ annotated traces to validate output quality and support responsible-AI review before deployment.</li>
+            <li>Instrumented end-to-end observability via LangSmith and exported traces to Google Cloud to monitor reliability and diagnose failures in production.</li>
+            <li>Reduced p99 latency 29% to approximately 2.3 seconds while holding per-query cost under $0.0005, balancing performance, reliability, and cost.</li>
+            <li>Containerized services with Docker for consistent deployment across environments.</li>
+            <li>Invited Speaker, NJ AI Literacy Summit — "Building Smarter Conversations: RAG for Education."</li>
+          </ul>
+          <div class="tags">
+            <span>Google ADK</span><span>FastAPI</span><span>ChromaDB</span>
+            <span>LangSmith</span><span>RAG</span><span>Docker</span>
+          </div>
+        </article>
+
+        <article class="project">
+          <div class="project-meta">GENERATIVE AI · NLP</div>
+          <h3>Diagnosing and Mitigating Bias in Large Language Models</h3>
+          <p>
+            Evaluated biases in language models including BERT and GPT-2,
+            examining gender, race, and cultural bias.
+          </p>
+          <div class="tags"><span>BERT</span><span>GPT-2</span><span>NLP</span><span>Responsible AI</span></div>
+        </article>
+
+        <article class="project">
+          <div class="project-meta">TRANSFORMERS · SPEECH</div>
+          <h3>Speaker Classification using Transformers</h3>
+          <p>
+            Applied self-attention mechanisms and optimized transformer
+            parameters on a speech dataset featuring 600 speakers, achieving
+            96.85% categorization accuracy and reducing training time by 20%.
+          </p>
+          <div class="tags"><span>Transformers</span><span>Self-Attention</span><span>Deep Learning</span></div>
+        </article>
+
+        <article class="project">
+          <div class="project-meta">DATA VISUALIZATION</div>
+          <h3>HR Dashboard</h3>
+          <p>
+            Designed and developed an interactive Tableau HR dashboard for
+            workforce metrics including attrition rate by gender and job
+            satisfaction to support data-driven decisions.
+          </p>
+          <div class="tags"><span>Tableau</span><span>Analytics</span><span>Visualization</span></div>
+        </article>
+      </div>
+
+      <a class="text-link" href="https://github.com/Sajidcodes" target="_blank" rel="noreferrer">
+        Explore code on GitHub →
+      </a>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

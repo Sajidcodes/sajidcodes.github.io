@@ -1,0 +1,217 @@
+<!-- stats.html (Stats + Certifications merged) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stats — Sajid Hussain</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    #stats .stats-grid,
+    #stats .cert-grid {
+      display: grid;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    #stats .stats-grid { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+    .stat-card {
+      border: 1px solid var(--border, #e5e5e5);
+      border-radius: 10px;
+      padding: 1.25rem 1.25rem 1.1rem;
+      background: var(--card-bg, transparent);
+    }
+    .stat-card .stat-platform {
+      display: flex; align-items: center; justify-content: space-between;
+      font-family: var(--mono-font, "DM Mono", monospace);
+      font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--muted, #777); margin-bottom: 0.85rem;
+    }
+    .stat-card .stat-platform .live-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: #2fae5f;
+      display: inline-block; margin-right: 0.4em;
+      box-shadow: 0 0 0 0 rgba(47, 174, 95, 0.55); animation: live-pulse 2s infinite;
+    }
+    .stat-card .stat-platform .live-dot.is-static { background: var(--muted, #999); animation: none; box-shadow: none; }
+    @keyframes live-pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(47, 174, 95, 0.45); }
+      70%  { box-shadow: 0 0 0 6px rgba(47, 174, 95, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(47, 174, 95, 0); }
+    }
+    .stat-card .stat-number { font-family: var(--mono-font, "DM Mono", monospace); font-size: 2.1rem; font-weight: 500; line-height: 1; }
+    .stat-card .stat-label { margin-top: 0.4rem; font-size: 0.9rem; color: var(--muted, #777); }
+    .stat-card .stat-sub { margin-top: 0.9rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .stat-card .stat-sub span {
+      font-family: var(--mono-font, "DM Mono", monospace); font-size: 0.72rem;
+      border: 1px solid var(--border, #e5e5e5); border-radius: 999px;
+      padding: 0.2rem 0.6rem; color: var(--muted, #777);
+    }
+    .stats-note, .cert-note { margin-top: 1rem; font-size: 0.82rem; color: var(--muted, #888); }
+    #stats .cert-grid { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); margin-top: 3rem; }
+    .cert-card {
+      border: 1px solid var(--border, #e5e5e5); border-radius: 10px; overflow: hidden;
+      display: flex; flex-direction: column; text-decoration: none; color: inherit;
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+    .cert-card:hover { transform: translateY(-2px); border-color: var(--fg, #111); }
+    .cert-card .cert-image {
+      aspect-ratio: 4 / 3; background: var(--card-bg, #f4f4f4);
+      display: flex; align-items: center; justify-content: center; padding: 1.5rem;
+    }
+    .cert-card .cert-image img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .cert-card .cert-body { padding: 1rem 1.1rem 1.2rem; border-top: 1px solid var(--border, #e5e5e5); }
+    .cert-card .cert-issuer {
+      font-family: var(--mono-font, "DM Mono", monospace); font-size: 0.72rem;
+      letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted, #777);
+    }
+    .cert-card .cert-title { margin-top: 0.35rem; font-weight: 600; font-size: 1rem; }
+    .cert-card .cert-date { margin-top: 0.35rem; font-size: 0.82rem; color: var(--muted, #777); }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="index.html">Sajid Hussain</a>
+      <nav aria-label="Primary navigation">
+        <a href="work.html">Work</a>
+        <a href="writing.html">Writing</a>
+        <a href="teaching.html">Teaching</a>
+        <a href="stats.html">Stats</a>
+        <a href="background.html">Background</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="section container" id="stats">
+      <div class="section-heading">
+        <span>05</span>
+        <h2>Stats & certifications</h2>
+      </div>
+
+      <p class="section-intro">
+        Pulled live from my practice profiles, plus credentials and completed programs, most recent first.
+      </p>
+
+      <div class="stats-grid">
+        <div class="stat-card" id="codewars-card">
+          <div class="stat-platform">
+            <span><span class="live-dot" id="codewars-dot"></span>Codewars</span>
+            <a href="https://www.codewars.com/users/Sajidcodes" target="_blank" rel="noreferrer">Profile ↗</a>
+          </div>
+          <div class="stat-number" id="codewars-honor">—</div>
+          <div class="stat-label">Honor points</div>
+          <div class="stat-sub" id="codewars-sub"><span>Loading…</span></div>
+        </div>
+        <div class="stat-card" id="sql-card">
+          <div class="stat-platform">
+            <span><span class="live-dot is-static"></span>SQL</span>
+            <span id="sql-updated">—</span>
+          </div>
+          <div class="stat-number" id="sql-solved">—</div>
+          <div class="stat-label">Problems solved</div>
+          <div class="stat-sub" id="sql-sub"></div>
+        </div>
+      </div>
+
+      <p class="stats-note">
+        Codewars honor and rank update automatically on page load. The SQL card is
+        manually synced — see <code>SQL_STATS</code> in the script below.
+      </p>
+
+      <div class="cert-grid" id="cert-grid">
+        <!-- populated by JS from the CERTIFICATIONS array -->
+      </div>
+
+      <p class="cert-note">
+        Replace the placeholder entries in <code>CERTIFICATIONS</code> (bottom of
+        this file) with your actual certifications — image path, title, issuer,
+        date earned, and a link to the verification/credential page if there is one.
+      </p>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+  <script>
+    const CODEWARS_USERNAME = "Sajidcodes";
+
+    async function loadCodewarsStats() {
+      const honorEl = document.getElementById("codewars-honor");
+      const subEl = document.getElementById("codewars-sub");
+      const dotEl = document.getElementById("codewars-dot");
+      try {
+        const res = await fetch(`https://www.codewars.com/api/v1/users/${CODEWARS_USERNAME}`);
+        if (!res.ok) throw new Error(`Codewars API responded ${res.status}`);
+        const data = await res.json();
+        honorEl.textContent = (data.honor ?? 0).toLocaleString();
+        const rankName = data.ranks?.overall?.name ?? "Unranked";
+        subEl.innerHTML = "";
+        const span = document.createElement("span");
+        span.textContent = rankName;
+        subEl.appendChild(span);
+      } catch (err) {
+        honorEl.textContent = "—";
+        subEl.innerHTML = "<span>Couldn't load live data — check console</span>";
+        if (dotEl) dotEl.classList.add("is-static");
+        console.warn("Codewars stats failed to load:", err);
+      }
+    }
+
+    const SQL_STATS = {
+      solved: 78,
+      platform: "PostgreSQL",
+      lastUpdated: "2026-08-10",
+    };
+
+    function renderSqlStats() {
+      document.getElementById("sql-solved").textContent = SQL_STATS.solved;
+      document.getElementById("sql-updated").textContent = `Synced ${SQL_STATS.lastUpdated}`;
+      const sub = document.getElementById("sql-sub");
+      sub.innerHTML = "";
+      const span = document.createElement("span");
+      span.textContent = SQL_STATS.platform;
+      sub.appendChild(span);
+    }
+
+    const CERTIFICATIONS = [
+      { title: "Certification title", issuer: "Issuing organization", date: "2026", image: "assets/certs/placeholder-1.png", url: "" },
+      { title: "Certification title", issuer: "Issuing organization", date: "2026", image: "assets/certs/placeholder-2.png", url: "" },
+      { title: "Certification title", issuer: "Issuing organization", date: "2025", image: "assets/certs/placeholder-3.png", url: "" },
+    ];
+
+    function renderCertifications() {
+      const grid = document.getElementById("cert-grid");
+      grid.innerHTML = "";
+      CERTIFICATIONS.forEach((cert) => {
+        const Tag = cert.url ? "a" : "div";
+        const card = document.createElement(Tag);
+        card.className = "cert-card";
+        if (cert.url) {
+          card.href = cert.url;
+          card.target = "_blank";
+          card.rel = "noreferrer";
+        }
+        card.innerHTML = `
+          <div class="cert-image">
+            <img src="${cert.image}" alt="${cert.title} badge" loading="lazy"
+                 onerror="this.style.display='none'; this.parentElement.textContent='No image yet';" />
+          </div>
+          <div class="cert-body">
+            <div class="cert-issuer">${cert.issuer}</div>
+            <div class="cert-title">${cert.title}</div>
+            <div class="cert-date">${cert.date}</div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    loadCodewarsStats();
+    renderSqlStats();
+    renderCertifications();
+  </script>
+</body>
+</html>
