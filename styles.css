@@ -52,6 +52,7 @@ button, input, textarea, select { font: inherit; }
 .brand {
   font-weight: 700;
   letter-spacing: -.03em;
+  font-size: 20px; 
 }
 
 .nav nav {
