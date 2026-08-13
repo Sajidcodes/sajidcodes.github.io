@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>01 — Project Overview | Terminal Agent</title>
+
+    <link rel="stylesheet" href="../styles.css">
+
+    <style>
+        .notes-page {
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 80px 24px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 60px;
+            font-size: 14px;
+            text-decoration: none;
+            color: inherit;
+            opacity: .6;
+        }
+
+        .section-number {
+            font-size: 13px;
+            letter-spacing: .12em;
+            opacity: .5;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-size: clamp(42px, 7vw, 72px);
+            line-height: 1;
+            margin: 15px 0 40px;
+        }
+
+        .notes {
+            font-size: 18px;
+            line-height: 1.8;
+        }
+
+        .notes h2 {
+            margin-top: 60px;
+        }
+
+        .notes code {
+            padding: 3px 6px;
+            background: rgba(128,128,128,.15);
+            border-radius: 4px;
+        }
+
+        .notes pre {
+            padding: 20px;
+            overflow-x: auto;
+            background: rgba(128,128,128,.1);
+            border-radius: 8px;
+        }
+
+        .section-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 80px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(128,128,128,.25);
+        }
+
+        .section-navigation a {
+            text-decoration: none;
+            color: inherit;
+            opacity: .65;
+        }
+
+        .section-navigation a:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+
+<main class="notes-page">
+
+    <a href="index.html" class="back-link">
+        ← All Terminal Agent Sections
+    </a>
+
+    <div class="section-number">
+        01 · Terminal Agent
+    </div>
+
+    <h1>Project Overview</h1>
+
+    <article class="notes">
+
+        <p>
+            This project is an investigation into AI-powered terminal agents
+            that can reason over software engineering tasks, use tools,
+            execute commands, modify files, and work through multi-step
+            workflows.
+        </p>
+
+        <h2>Why I'm Building This</h2>
+
+        <p>
+            My goal is to understand what it actually takes to build,
+            evaluate, and improve production-quality terminal agents.
+        </p>
+
+        <h2>Current Status</h2>
+
+        <p>
+            I am currently experimenting with Harbor and Terminal-Bench
+            and establishing baseline results using the Oracle agent.
+        </p>
+
+        <pre><code>Terminal-Bench 2.1
+Agent: Oracle
+Trials: 2
+Mean Reward: 1.000
+Runtime: 5m 08s</code></pre>
+
+        <h2>Notes</h2>
+
+        <p>
+            Add your detailed notes here as you learn.
+        </p>
+
+    </article>
+
+    <nav class="section-navigation">
+
+        <span></span>
+
+        <a href="02-environment.html">
+            Next: Environment →
+        </a>
+
+    </nav>
+
+</main>
+
+</body>
+</html>
