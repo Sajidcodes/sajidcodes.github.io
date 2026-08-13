@@ -1,1 +1,345 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Terminal Agent — Sajid Hussain</title>
+
+    <link rel="stylesheet" href="../styles.css">
+
+    <style>
+        .terminal-agent-page {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 80px 24px;
+        }
+
+        .project-header {
+            margin-bottom: 70px;
+        }
+
+        .project-label {
+            font-size: 13px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            opacity: 0.6;
+            margin-bottom: 20px;
+        }
+
+        .project-header h1 {
+            font-size: clamp(42px, 7vw, 80px);
+            line-height: 0.95;
+            margin: 0 0 30px;
+        }
+
+        .project-description {
+            max-width: 700px;
+            font-size: 20px;
+            line-height: 1.6;
+            opacity: 0.75;
+        }
+
+        .modules-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(128,128,128,.3);
+            padding-bottom: 15px;
+        }
+
+        .modules-header h2 {
+            margin: 0;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        .module-count {
+            font-size: 13px;
+            opacity: .6;
+        }
+
+        .module-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .module {
+            display: grid;
+            grid-template-columns: 70px 1fr 30px;
+            align-items: center;
+            padding: 22px 10px;
+            border-bottom: 1px solid rgba(128,128,128,.2);
+            text-decoration: none;
+            color: inherit;
+            transition: padding .2s ease, opacity .2s ease;
+        }
+
+        .module:hover {
+            padding-left: 20px;
+            opacity: .65;
+        }
+
+        .module-number {
+            font-size: 13px;
+            opacity: .45;
+        }
+
+        .module-title {
+            font-size: 18px;
+        }
+
+        .module-arrow {
+            font-size: 18px;
+            opacity: .5;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 50px;
+            font-size: 14px;
+            text-decoration: none;
+            color: inherit;
+            opacity: .6;
+        }
+
+        .back-link:hover {
+            opacity: 1;
+        }
+
+        @media (max-width: 600px) {
+            .terminal-agent-page {
+                padding: 50px 20px;
+            }
+
+            .module {
+                grid-template-columns: 50px 1fr 20px;
+                padding: 18px 5px;
+            }
+
+            .module-title {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="terminal-agent-page">
+
+        <a href="../work.html" class="back-link">
+            ← Back to Work
+        </a>
+
+        <header class="project-header">
+
+            <div class="project-label">
+                AI ENGINEERING · 2026
+            </div>
+
+            <h1>AI Terminal Agent</h1>
+
+            <p class="project-description">
+                A hands-on investigation into autonomous terminal agents,
+                agentic coding workflows, Harbor, Terminal-Bench,
+                verification, evaluation, and real-world agent performance.
+            </p>
+
+        </header>
+
+
+        <section>
+
+            <div class="modules-header">
+
+                <h2>Project Notes</h2>
+
+                <div class="module-count">
+                    28 sections
+                </div>
+
+            </div>
+
+
+            <div class="module-list">
+
+                <a href="01-overview.html" class="module">
+                    <span class="module-number">01</span>
+                    <span class="module-title">Project Overview</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+                <a href="02-environment.html" class="module">
+                    <span class="module-number">02</span>
+                    <span class="module-title">Environment & Setup</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+                <a href="03-harbor.html" class="module">
+                    <span class="module-number">03</span>
+                    <span class="module-title">Harbor</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+                <a href="04-terminal-bench.html" class="module">
+                    <span class="module-number">04</span>
+                    <span class="module-title">Terminal-Bench</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+                <a href="05-tasks.html" class="module">
+                    <span class="module-number">05</span>
+                    <span class="module-title">Tasks</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+                <a href="06-agents.html" class="module">
+                    <span class="module-number">06</span>
+                    <span class="module-title">Agents</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+                <a href="07-oracle.html" class="module">
+                    <span class="module-number">07</span>
+                    <span class="module-title">Oracle Baseline</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+                <a href="08-verifiers.html" class="module">
+                    <span class="module-number">08</span>
+                    <span class="module-title">Verifiers</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+                <a href="09-rewards.html" class="module">
+                    <span class="module-number">09</span>
+                    <span class="module-title">Rewards & Scoring</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+                <a href="10-docker.html" class="module">
+                    <span class="module-number">10</span>
+                    <span class="module-title">Docker Environment</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+                <a href="11-agent-execution.html" class="module">
+                    <span class="module-number">11</span>
+                    <span class="module-title">Agent Execution</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+                <a href="12-tool-use.html" class="module">
+                    <span class="module-number">12</span>
+                    <span class="module-title">Tool Use</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+                <a href="13-context.html" class="module">
+                    <span class="module-number">13</span>
+                    <span class="module-title">Context Management</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+                <a href="14-planning.html" class="module">
+                    <span class="module-number">14</span>
+                    <span class="module-title">Task Planning</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+                <a href="15-failure-modes.html" class="module">
+                    <span class="module-number">15</span>
+                    <span class="module-title">Failure Modes</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+                <a href="16-evaluation.html" class="module">
+                    <span class="module-number">16</span>
+                    <span class="module-title">Evaluation</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+                <a href="17-benchmarking.html" class="module">
+                    <span class="module-number">17</span>
+                    <span class="module-title">Benchmarking</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+                <a href="18-baselines.html" class="module">
+                    <span class="module-number">18</span>
+                    <span class="module-title">Baselines</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+                <a href="19-experiments.html" class="module">
+                    <span class="module-number">19</span>
+                    <span class="module-title">Experiments</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+                <a href="20-results.html" class="module">
+                    <span class="module-number">20</span>
+                    <span class="module-title">Results</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+                <a href="21-observability.html" class="module">
+                    <span class="module-number">21</span>
+                    <span class="module-title">Observability</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+                <a href="22-cost.html" class="module">
+                    <span class="module-number">22</span>
+                    <span class="module-title">Cost</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+                <a href="23-latency.html" class="module">
+                    <span class="module-number">23</span>
+                    <span class="module-title">Latency</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+                <a href="24-custom-agent.html" class="module">
+                    <span class="module-number">24</span>
+                    <span class="module-title">Custom Agent</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+                <a href="25-improvements.html" class="module">
+                    <span class="module-number">25</span>
+                    <span class="module-title">Improvements</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+                <a href="26-lessons.html" class="module">
+                    <span class="module-number">26</span>
+                    <span class="module-title">Lessons Learned</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+                <a href="27-future.html" class="module">
+                    <span class="module-number">27</span>
+                    <span class="module-title">Future Work</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+                <a href="28-conclusion.html" class="module">
+                    <span class="module-number">28</span>
+                    <span class="module-title">Conclusion</span>
+                    <span class="module-arrow">↗</span>
+                </a>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+</html>
