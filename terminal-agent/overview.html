@@ -44,12 +44,19 @@
 
         .notes h2 {
             margin-top: 60px;
+            font-size: 28px;
         }
 
-        .notes code {
-            padding: 3px 6px;
-            background: rgba(128,128,128,.15);
-            border-radius: 4px;
+        .notes p {
+            margin-bottom: 25px;
+        }
+
+        .notes ul {
+            padding-left: 25px;
+        }
+
+        .notes li {
+            margin-bottom: 12px;
         }
 
         .notes pre {
@@ -57,6 +64,18 @@
             overflow-x: auto;
             background: rgba(128,128,128,.1);
             border-radius: 8px;
+            line-height: 1.6;
+        }
+
+        .notes code {
+            font-family: "DM Mono", monospace;
+        }
+
+        .highlight {
+            border-left: 3px solid currentColor;
+            padding: 20px 25px;
+            margin: 40px 0;
+            background: rgba(128,128,128,.06);
         }
 
         .section-navigation {
@@ -88,7 +107,7 @@
     </a>
 
     <div class="section-number">
-        01 · Terminal Agent
+        01 · AI TERMINAL AGENT
     </div>
 
     <h1>Project Overview</h1>
@@ -96,46 +115,112 @@
     <article class="notes">
 
         <p>
-            This project is an investigation into AI-powered terminal agents
-            that can reason over software engineering tasks, use tools,
-            execute commands, modify files, and work through multi-step
-            workflows.
+            The Terminal Agent project is a hands-on investigation into
+            how AI agents can operate inside a real terminal environment
+            to solve software engineering tasks.
         </p>
-
-        <h2>Why I'm Building This</h2>
 
         <p>
-            My goal is to understand what it actually takes to build,
-            evaluate, and improve production-quality terminal agents.
+            Rather than treating an LLM as a simple chatbot, this project
+            explores what happens when an AI system can inspect an environment,
+            execute commands, modify files, run programs, use tools, and
+            iteratively verify its own work.
         </p>
 
-        <h2>Current Status</h2>
+
+        <div class="highlight">
+
+            <strong>Core Question</strong>
+
+            <p>
+                How capable are AI agents at independently completing
+                real terminal-based software engineering tasks?
+            </p>
+
+        </div>
+
+
+        <h2>Why This Project?</h2>
 
         <p>
-            I am currently experimenting with Harbor and Terminal-Bench
-            and establishing baseline results using the Oracle agent.
+            Modern AI coding systems are moving beyond code completion.
+            They can increasingly operate as autonomous agents that interact
+            with development environments and execute multi-step workflows.
         </p>
 
-        <pre><code>Terminal-Bench 2.1
-Agent: Oracle
-Trials: 2
+        <p>
+            I want to understand the engineering behind these systems:
+            how agents are constructed, how they interact with tools,
+            how their performance is measured, and where they fail.
+        </p>
+
+
+        <h2>What I'm Exploring</h2>
+
+        <ul>
+            <li>Terminal-based AI agents</li>
+            <li>Agent tool use and command execution</li>
+            <li>Harbor agent infrastructure</li>
+            <li>Terminal-Bench evaluation</li>
+            <li>Task environments and Docker isolation</li>
+            <li>Agent timeouts and resource constraints</li>
+            <li>Verifiers and automated evaluation</li>
+            <li>Rewards and benchmark scoring</li>
+            <li>Agent reliability and failure modes</li>
+            <li>Building and evaluating a custom terminal agent</li>
+        </ul>
+
+
+        <h2>Initial Experiment</h2>
+
+        <p>
+            The first experiment uses Harbor with the built-in
+            <strong>Oracle</strong> agent against Terminal-Bench 2.1.
+        </p>
+
+        <pre><code>Dataset:     terminal-bench/terminal-bench-2-1
+Agent:       oracle
+Trials:      2
+Concurrency: 2
+Exceptions:  0
 Mean Reward: 1.000
-Runtime: 5m 08s</code></pre>
+Runtime:     5m 08s</code></pre>
 
-        <h2>Notes</h2>
+
+        <h2>Initial Result</h2>
 
         <p>
-            Add your detailed notes here as you learn.
+            Both selected trials received a reward of <strong>1.0</strong>,
+            resulting in a mean reward of <strong>1.000</strong>.
+        </p>
+
+        <p>
+            This establishes an initial baseline for future experiments.
+            The two-trial sample is intentionally small and should not be
+            interpreted as a general Terminal-Bench performance score.
+        </p>
+
+
+        <h2>What Comes Next?</h2>
+
+        <p>
+            The next stages of the project are to understand the individual
+            components of the evaluation system, reproduce experiments,
+            inspect task and verifier behavior, and eventually compare a
+            custom agent against established baselines.
         </p>
 
     </article>
 
+
     <nav class="section-navigation">
 
-        <span></span>
+        <a href="index.html">
+            ← All Sections
+        </a>
 
         <a href="02-environment.html">
-            Next: Environment →
+            Environment →
         </a>
 
     </nav>
