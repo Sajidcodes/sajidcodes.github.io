@@ -1,217 +1,245 @@
-const API_URL =
+const IEEE_API =
   "https://events.vtools.ieee.org/RST/events/api/public/v8/events/list";
 
-const eventsList = document.getElementById("events-list");
-const status = document.getElementById("event-status");
 
 async function loadIEEEEvents() {
-  status.textContent = "Connecting to IEEE...";
+
+  const container =
+    document.getElementById("ieee-events");
 
   try {
-    const url = new URL(API_URL);
-
-    url.searchParams.set("limit", "100");
-    url.searchParams.set("sort", "-start-time");
-
-    console.log("Requesting:", url.toString());
-
-    const response = await fetch(url);
-
-    console.log("HTTP status:", response.status);
-    console.log("Response:", response);
-
-    if (!response.ok) {
-      throw new Error(`IEEE API returned HTTP ${response.status}`);
-    }
-
-    const text = await response.text();
-
-    console.log("Raw IEEE response:", text);
-
-    let data;
-
-    try {
-      data = JSON.parse(text);
-    } catch (error) {
-      throw new Error(
-        "IEEE returned something that is not valid JSON."
-      );
-    }
-
-    console.log("Parsed IEEE data:", data);
 
     /*
-     * IEEE's response structure may differ from the simple
-     * data.events assumption.
+     * Build API request
+     *
+     * limit=1000
+     *     Get up to 1,000 events
+     *
+     * sort=-start-time
+     *     Newest events first
      */
 
-    let events = [];
+    const url = new URL(IEEE_API);
 
-    if (Array.isArray(data)) {
-      events = data;
-    } else if (Array.isArray(data.data)) {
-      events = data.data;
-    } else if (Array.isArray(data.events)) {
-      events = data.events;
-    } else if (
-      data.data &&
-      Array.isArray(data.data.events)
-    ) {
-      events = data.data.events;
+    url.searchParams.set("limit", "1000");
+    url.searchParams.set("sort", "-start-time");
+
+
+    console.log(
+      "Loading IEEE events from:",
+      url.toString()
+    );
+
+
+    const response =
+      await fetch(url);
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        `IEEE API returned HTTP ${response.status}`
+      );
+
     }
 
-    console.log("Events detected:", events);
+
+    const data =
+      await response.json();
+
+
+    console.log(
+      "IEEE API response:",
+      data
+    );
+
+
+    /*
+     * IEEE uses a JSON:API-style response.
+     *
+     * Normally the events are inside:
+     *
+     * data.data
+     */
+
+    const events =
+      Array.isArray(data.data)
+        ? data.data
+        : [];
+
 
     if (events.length === 0) {
 
-      status.textContent =
-        "IEEE API responded, but no events were detected.";
-
-      eventsList.innerHTML = `
-        <div class="ieee-api-debug">
-          <p>
-            The IEEE API responded, but the event structure
-            was not recognized.
-          </p>
-
-          <p>
-            Open your browser console and look for:
-          </p>
-
-          <code>
-            Parsed IEEE data
-          </code>
-        </div>
+      container.innerHTML = `
+        <p class="form-status">
+          No IEEE events were returned.
+        </p>
       `;
 
       return;
     }
 
-    renderEvents(events);
 
-    status.textContent =
-      `${events.length} events loaded from IEEE`;
+    /*
+     * Render events
+     */
+
+    container.innerHTML = "";
+
+
+    events.forEach(event => {
+
+      const attributes =
+        event.attributes || {};
+
+
+      const title =
+        attributes.title ||
+        "IEEE Event";
+
+
+      const startTime =
+        attributes["start-time"] ||
+        attributes.start_time ||
+        "";
+
+
+      const endTime =
+        attributes["end-time"] ||
+        attributes.end_time ||
+        "";
+
+
+      const eventId =
+        event.id;
+
+
+      const eventURL =
+        `https://events.vtools.ieee.org/m/${eventId}`;
+
+
+      const description =
+        attributes.description ||
+        "";
+
+
+      const location =
+        attributes.location ||
+        attributes.city ||
+        "";
+
+
+      const article =
+        document.createElement("article");
+
+
+      article.className =
+        "project ieee-event";
+
+
+      article.innerHTML = `
+
+        <p class="project-meta">
+          ${formatDate(startTime)}
+        </p>
+
+
+        <h3>
+          ${escapeHTML(title)}
+        </h3>
+
+
+        ${
+          location
+            ? `
+              <p class="eyebrow">
+                ${escapeHTML(location)}
+              </p>
+            `
+            : ""
+        }
+
+
+        ${
+          description
+            ? `
+              <p class="project-lead">
+                ${escapeHTML(
+                  stripHTML(description)
+                )}
+              </p>
+            `
+            : ""
+        }
+
+
+        <a
+          class="text-link"
+          href="${eventURL}"
+          target="_blank"
+          rel="noreferrer"
+        >
+          View IEEE Event →
+        </a>
+
+      `;
+
+
+      container.appendChild(article);
+
+    });
+
+
+    /*
+     * Show number of events
+     */
+
+    const count =
+      document.createElement("p");
+
+    count.className =
+      "form-status";
+
+    count.textContent =
+      `${events.length} IEEE events loaded`;
+
+    container.prepend(count);
+
 
   } catch (error) {
 
-    console.error("IEEE API ERROR:", error);
+    console.error(
+      "IEEE API error:",
+      error
+    );
 
-    status.textContent =
-      "Unable to load IEEE events.";
 
-    eventsList.innerHTML = `
+    container.innerHTML = `
+
       <div class="ieee-api-debug">
 
         <p>
-          <strong>IEEE API error</strong>
+          <strong>
+            Unable to load IEEE events.
+          </strong>
         </p>
 
         <p>
           ${escapeHTML(error.message)}
         </p>
 
-        <p>
-          Open Chrome DevTools → Console to see
-          the detailed API response.
-        </p>
-
       </div>
+
     `;
+
   }
+
 }
 
 
-function renderEvents(events) {
-
-  eventsList.innerHTML = "";
-
-  events.forEach((event) => {
-
-    /*
-     * JSON:API responses commonly store fields inside
-     * event.attributes.
-     */
-
-    const attributes = event.attributes || event;
-
-    const title =
-      attributes.title ||
-      event.title ||
-      "IEEE Event";
-
-    const start =
-      attributes["start-time"] ||
-      attributes.start_time ||
-      attributes.startTime ||
-      event["start-time"] ||
-      event.start_time ||
-      event.startTime;
-
-    const description =
-      attributes.description ||
-      event.description ||
-      "";
-
-    const eventId =
-      event.id ||
-      attributes.id;
-
-    const eventURL =
-      attributes.url ||
-      event.url ||
-      (
-        eventId
-          ? `https://events.vtools.ieee.org/m/${eventId}`
-          : "#"
-      );
-
-    const article =
-      document.createElement("article");
-
-    article.className = "ieee-event";
-
-    article.innerHTML = `
-
-      <div class="ieee-event-date">
-        ${formatDate(start)}
-      </div>
-
-      <div class="ieee-event-content">
-
-        <p class="eyebrow">
-          IEEE EVENT
-        </p>
-
-        <h2>
-          ${escapeHTML(title)}
-        </h2>
-
-        ${
-          description
-            ? `
-              <p>
-                ${escapeHTML(stripHTML(description))}
-              </p>
-            `
-            : ""
-        }
-
-        <a
-          href="${eventURL}"
-          target="_blank"
-          rel="noreferrer"
-          class="text-link"
-        >
-          View IEEE Event ↗
-        </a>
-
-      </div>
-
-    `;
-
-    eventsList.appendChild(article);
-  });
-}
+/* ---------------------------------
+   Helpers
+---------------------------------- */
 
 
 function formatDate(value) {
@@ -220,11 +248,21 @@ function formatDate(value) {
     return "DATE TBD";
   }
 
-  const date = new Date(value);
 
-  if (Number.isNaN(date.getTime())) {
+  const date =
+    new Date(value);
+
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+
     return value;
+
   }
+
 
   return date.toLocaleDateString(
     "en-US",
@@ -234,30 +272,56 @@ function formatDate(value) {
       day: "numeric"
     }
   );
+
 }
 
 
 function stripHTML(html) {
 
-  const div = document.createElement("div");
+  const div =
+    document.createElement("div");
 
-  div.innerHTML = html;
+  div.innerHTML =
+    html;
 
-  return div.textContent ||
-         div.innerText ||
-         "";
+  return (
+    div.textContent ||
+    div.innerText ||
+    ""
+  );
+
 }
 
 
 function escapeHTML(value) {
 
   return String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
 }
 
+
+/* ---------------------------------
+   Start
+---------------------------------- */
 
 loadIEEEEvents();
