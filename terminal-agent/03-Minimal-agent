@@ -185,18 +185,3 @@ Would we choose again: Yes for Phase 2 — deployment-style packaging is a
 ```
 
 ---
-
-## 9. Honest self-assessment against "Definition of Done"
-
-| Requirement | Status |
-|---|---|
-| Explain the concept | ✅ |
-| Explain why it's needed | ✅ |
-| Implement a basic version | ✅ (with guided hints, own debugging) |
-| Debug it | ✅ (real bugs, documented above) |
-| Test it | ✅ (traced step-by-step, verified message-list growth) |
-| Measure it | ❌ — no benchmark score yet, that requires the real shell tool + Harbor wiring |
-| Explain tradeoffs | ✅ (fake vs. real tool, External vs. Installed agent) |
-| Connect to larger architecture | ✅ (this loop = the Act/Observe edge of the AGENT SYSTEM box) |
-
-**Conclusion:** Phase 2's core mechanism is understood and demonstrated. The phase itself is not complete until the same loop runs against a real terminal and produces a scored V0 baseline.
