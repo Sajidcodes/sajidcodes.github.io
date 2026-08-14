@@ -457,4 +457,17 @@ button, input, textarea, select { font: inherit; }
   max-width: 100%;
   object-fit: contain;
 }
+.award-photos {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.award-photos img {
+  width: 180px;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
 
