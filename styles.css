@@ -424,26 +424,7 @@ button, input, textarea, select { font: inherit; }
   text-transform: uppercase;
   letter-spacing: .05em;
 }
-.community-image {
-  width: 640px;
-  height: 427px;
-  flex-shrink: 0;
-  overflow: hidden;
-}
 
-.community-image img,
-.community-item > img,
-.featured-event-photo img,
-.award-photo img,
-.moments-grid img {
-  width: 640px;
-  height: 427px;
-  max-width: 640px;
-  max-height: 427px;
-  object-fit: cover;
-  display: block;
-  border-radius: 6px;
-}
 @media (max-width: 760px) {
   .container { width: min(calc(100% - 28px), var(--max)); }
   .site-header { position: static; }
@@ -461,3 +442,19 @@ button, input, textarea, select { font: inherit; }
   .progress-card { align-items: flex-start; flex-direction: column; gap: 12px; }
   .footer { flex-direction: column; }
 }
+/* Custom image sizes */
+
+.award-photo img {
+  width: 350px;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.community-image img {
+  width: 220px;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+
