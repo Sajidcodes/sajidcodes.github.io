@@ -1,5 +1,5 @@
 const IEEE_PROXY =
-  "https://YOUR-WORKER-NAME.YOUR-SUBDOMAIN.workers.dev";
+  "https://sajid-ieee-events.response-sajidhussain.workers.dev";
 
 
 async function loadIEEEEvents() {
