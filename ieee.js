@@ -1,5 +1,5 @@
-const IEEE_API =
-  "https://events.vtools.ieee.org/RST/events/api/public/v8/events/list";
+const IEEE_PROXY =
+  "https://YOUR-WORKER-NAME.YOUR-SUBDOMAIN.workers.dev";
 
 
 async function loadIEEEEvents() {
@@ -7,175 +7,71 @@ async function loadIEEEEvents() {
   const container =
     document.getElementById("ieee-events");
 
+  if (!container) {
+    return;
+  }
+
   try {
 
-    /*
-     * Build API request
-     *
-     * limit=1000
-     *     Get up to 1,000 events
-     *
-     * sort=-start-time
-     *     Newest events first
-     */
-
-    const url = new URL(IEEE_API);
-
-    url.searchParams.set("limit", "1000");
-    url.searchParams.set("sort", "-start-time");
-
-
-    console.log(
-      "Loading IEEE events from:",
-      url.toString()
-    );
-
-
     const response =
-      await fetch(url);
-
+      await fetch(IEEE_PROXY);
 
     if (!response.ok) {
-
       throw new Error(
-        `IEEE API returned HTTP ${response.status}`
+        `Server returned HTTP ${response.status}`
       );
-
     }
 
-
-    const data =
+    const result =
       await response.json();
 
+    console.log("IEEE events:", result);
 
-    console.log(
-      "IEEE API response:",
-      data
-    );
-
-
-    /*
-     * IEEE uses a JSON:API-style response.
-     *
-     * Normally the events are inside:
-     *
-     * data.data
-     */
-
-    const events =
-      Array.isArray(data.data)
-        ? data.data
-        : [];
-
-
-    if (events.length === 0) {
+    if (!result.events || result.events.length === 0) {
 
       container.innerHTML = `
         <p class="form-status">
-          No IEEE events were returned.
+          No IEEE NJ Coast Young Professionals events found.
         </p>
       `;
 
       return;
     }
 
-
-    /*
-     * Render events
-     */
-
     container.innerHTML = "";
 
-
-    events.forEach(event => {
-
-      const attributes =
-        event.attributes || {};
-
-
-      const title =
-        attributes.title ||
-        "IEEE Event";
-
-
-      const startTime =
-        attributes["start-time"] ||
-        attributes.start_time ||
-        "";
-
-
-      const endTime =
-        attributes["end-time"] ||
-        attributes.end_time ||
-        "";
-
-
-      const eventId =
-        event.id;
-
-
-      const eventURL =
-        `https://events.vtools.ieee.org/m/${eventId}`;
-
-
-      const description =
-        attributes.description ||
-        "";
-
-
-      const location =
-        attributes.location ||
-        attributes.city ||
-        "";
-
+    result.events.forEach(event => {
 
       const article =
         document.createElement("article");
 
-
       article.className =
-        "project ieee-event";
-
+        "project";
 
       article.innerHTML = `
 
         <p class="project-meta">
-          ${formatDate(startTime)}
+          ${escapeHTML(event.date)}
+          · IEEE NJ COAST YP
         </p>
 
-
         <h3>
-          ${escapeHTML(title)}
+          ${escapeHTML(event.title)}
         </h3>
 
-
         ${
-          location
-            ? `
-              <p class="eyebrow">
-                ${escapeHTML(location)}
-              </p>
-            `
-            : ""
-        }
-
-
-        ${
-          description
+          event.description
             ? `
               <p class="project-lead">
-                ${escapeHTML(
-                  stripHTML(description)
-                )}
+                ${escapeHTML(event.description)}
               </p>
             `
             : ""
         }
-
 
         <a
           class="text-link"
-          href="${eventURL}"
+          href="${escapeHTML(event.url)}"
           target="_blank"
           rel="noreferrer"
         >
@@ -184,15 +80,10 @@ async function loadIEEEEvents() {
 
       `;
 
-
       container.appendChild(article);
 
     });
 
-
-    /*
-     * Show number of events
-     */
 
     const count =
       document.createElement("p");
@@ -201,7 +92,7 @@ async function loadIEEEEvents() {
       "form-status";
 
     count.textContent =
-      `${events.length} IEEE events loaded`;
+      `${result.events.length} IEEE NJ Coast YP events`;
 
     container.prepend(count);
 
@@ -209,26 +100,15 @@ async function loadIEEEEvents() {
   } catch (error) {
 
     console.error(
-      "IEEE API error:",
+      "IEEE loading error:",
       error
     );
 
-
     container.innerHTML = `
 
-      <div class="ieee-api-debug">
-
-        <p>
-          <strong>
-            Unable to load IEEE events.
-          </strong>
-        </p>
-
-        <p>
-          ${escapeHTML(error.message)}
-        </p>
-
-      </div>
+      <p class="form-status">
+        Unable to load IEEE events.
+      </p>
 
     `;
 
@@ -237,91 +117,16 @@ async function loadIEEEEvents() {
 }
 
 
-/* ---------------------------------
-   Helpers
----------------------------------- */
-
-
-function formatDate(value) {
-
-  if (!value) {
-    return "DATE TBD";
-  }
-
-
-  const date =
-    new Date(value);
-
-
-  if (
-    Number.isNaN(
-      date.getTime()
-    )
-  ) {
-
-    return value;
-
-  }
-
-
-  return date.toLocaleDateString(
-    "en-US",
-    {
-      year: "numeric",
-      month: "short",
-      day: "numeric"
-    }
-  );
-
-}
-
-
-function stripHTML(html) {
-
-  const div =
-    document.createElement("div");
-
-  div.innerHTML =
-    html;
-
-  return (
-    div.textContent ||
-    div.innerText ||
-    ""
-  );
-
-}
-
-
 function escapeHTML(value) {
 
-  return String(value)
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-    .replace(
-      /</g,
-      "&lt;"
-    )
-    .replace(
-      />/g,
-      "&gt;"
-    )
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-    .replace(
-      /'/g,
-      "&#039;"
-    );
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 
 }
 
-
-/* ---------------------------------
-   Start
----------------------------------- */
 
 loadIEEEEvents();
