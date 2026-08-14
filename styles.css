@@ -424,16 +424,26 @@ button, input, textarea, select { font: inherit; }
   text-transform: uppercase;
   letter-spacing: .05em;
 }
-/* Small images — everything else stays unchanged */
+.community-image {
+  width: 120px;
+  height: 80px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
 .community-image img,
+.community-item > img,
 .featured-event-photo img,
 .award-photo img,
-.moments-grid img,
-.community-item > img {
+.moments-grid img {
   width: 120px;
-  height: 90px;
+  height: 80px;
+  max-width: 120px;
+  max-height: 80px;
   object-fit: cover;
+  display: block;
   border-radius: 6px;
+}
 }
 @media (max-width: 760px) {
   .container { width: min(calc(100% - 28px), var(--max)); }
