@@ -470,4 +470,10 @@ button, input, textarea, select { font: inherit; }
   max-width: 100%;
   object-fit: contain;
 }
+.featured-event-photo img {
+  width: 300px;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
 
