@@ -423,10 +423,9 @@ button, input, textarea, select { font: inherit; }
   font-size: 9px;
   text-transform: uppercase;
   letter-spacing: .05em;
-}
-.community-image {
-  width: 240px;
-  height: 160px;
+}.community-image {
+  width: 480px;
+  height: 320px;
   flex-shrink: 0;
   overflow: hidden;
 }
@@ -436,10 +435,10 @@ button, input, textarea, select { font: inherit; }
 .featured-event-photo img,
 .award-photo img,
 .moments-grid img {
-  width: 240px;
-  height: 160px;
-  max-width: 240px;
-  max-height: 160px;
+  width: 480px;
+  height: 320px;
+  max-width: 480px;
+  max-height: 320px;
   object-fit: cover;
   display: block;
   border-radius: 6px;
