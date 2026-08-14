@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>IEEE API Test</h1>
+
+<pre id="result">Testing...</pre>
+
+<script>
+fetch("https://events.vtools.ieee.org/RST/events/api/public/v8/events/list?limit=10")
+  .then(response => {
+    document.getElementById("result").textContent =
+      "HTTP " + response.status;
+    return response.text();
+  })
+  .then(data => {
+    console.log(data);
+  })
+  .catch(error => {
+    document.getElementById("result").textContent =
+      "ERROR: " + error;
+  });
+</script>
+
+</body>
+</html>
