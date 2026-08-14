@@ -445,7 +445,7 @@ button, input, textarea, select { font: inherit; }
 /* Custom image sizes */
 
 .award-photo img {
-  width: 350px;
+  width: 450px;
   height: auto;
   max-width: 100%;
   object-fit: contain;
