@@ -1,66 +1,383 @@
-# Phase 2 — Minimal Agent: Understanding Tool Calling from Scratch
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-**Project:** Terminal Agent Engineering Lab (building a terminal-based AI agent, evaluated on Terminal-Bench)
-**Phase:** 2 — Minimal Agent
-**Status:** Core mechanism complete. Real terminal tool + Harbor integration still open (see "What's Next").
+  <title>02 — Minimal Agent | AI Terminal Agent</title>
 
----
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-## 1. Goal for this session
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
 
-Phase 1 validated the measurement instrument (Harbor + Terminal-Bench), but I hadn't written a single line of agent code yet. The goal for Phase 2 is to build the smallest possible working agent loop, with no framework, so I understand exactly what every later abstraction (LangGraph, ADK, etc.) would be hiding from me.
+  <link rel="stylesheet" href="../styles.css" />
 
-Today's narrower goal: understand **tool calling** — the mechanism that lets a language model request an action instead of just replying with text — by building and tracing it by hand, before wiring it into a real terminal.
+  <style>
+    .article {
+      max-width: 900px;
+      margin: 0 auto;
+    }
 
----
+    .article-header {
+      margin-bottom: 60px;
+    }
 
-## 2. Why start with a fake tool instead of the real shell
+    .article-meta {
+      font-family: "DM Mono", monospace;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
 
-**Decision:** Build the loop first with a trivial, obviously-fake tool (`get_weather`) before touching real shell execution.
+    .article h1 {
+      font-size: clamp(36px, 6vw, 64px);
+      line-height: 1.05;
+      margin-bottom: 24px;
+    }
 
-**Why:** Tool calling itself has several new moving parts to internalize — the tool schema (a description you send, not code), the model's tool-call response (structured data, not text), JSON parsing of arguments, and the "send the result back" round-trip. Debugging all of that *at the same time* as `subprocess`, exit codes, and shell quoting would have conflated two separate sources of bugs.
+    .article-intro {
+      font-size: 19px;
+      line-height: 1.7;
+      max-width: 760px;
+    }
 
-**Alternative considered:** Jump straight to a `run_command` tool wired to real `subprocess` execution.
+    .article section {
+      margin-bottom: 64px;
+    }
 
-**Why not:** Any bug would be ambiguous — is it in my understanding of tool calling, or in shell execution? Isolating one variable at a time (per this project's own experimental discipline) applies to *learning*, not just benchmark experiments.
+    .article h2 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
 
-**Would I do this again:** Yes. The fake tool made every step of the mechanism visible without a second category of failure mode competing for attention.
+    .article h3 {
+      font-size: 20px;
+      margin-top: 32px;
+      margin-bottom: 12px;
+    }
 
-**Known limitation surfaced by this choice:** the stub always returns "sunny and 72°F" regardless of input — the model has no way to know the tool is fake. This turned into a real insight (see Section 5).
+    .article p,
+    .article li {
+      font-size: 16px;
+      line-height: 1.8;
+    }
 
----
+    .article ul {
+      padding-left: 24px;
+    }
 
-## 3. The mental model: waiter and kitchen
+    .article li {
+      margin-bottom: 10px;
+    }
 
-- **The model** = a waiter. It can *ask* for something, but cannot cook.
-- **The tool schema** (a plain Python dict, no logic) = a menu listing — describes what's available, not the food itself.
-- **My Python function** = the kitchen — the only thing that actually does work.
-- **The model's tool-call response** = the waiter shouting an order to the kitchen window — a *request*, not a result.
-- **My code reading `tool_call.function.name` / `.arguments`** = me standing at the kitchen window, hearing the order.
-- **Calling the real function** = the kitchen cooking.
-- **Sending the result back as a `role: "tool"` message** = carrying the plate back to the waiter, so it can tell the customer.
+    .decision {
+      border-left: 3px solid currentColor;
+      padding: 20px 24px;
+      margin: 24px 0;
+    }
 
-The model never executes anything itself. It only ever requests. All execution happens in my own code.
+    .decision strong {
+      display: block;
+      margin-bottom: 8px;
+    }
 
----
+    pre {
+      overflow-x: auto;
+      padding: 24px;
+      margin: 24px 0;
+      border: 1px solid rgba(128,128,128,0.25);
+      background: rgba(128,128,128,0.06);
+      font-family: "DM Mono", monospace;
+      font-size: 13px;
+      line-height: 1.7;
+    }
 
-## 4. What I built
+    code {
+      font-family: "DM Mono", monospace;
+    }
 
-Using the OpenAI SDK (`openai` Python package), not the Anthropic SDK — I'd already used the OpenAI API before, so I built on existing familiarity rather than introducing a second new tool at the same time.
+    .table-wrapper {
+      overflow-x: auto;
+      margin: 24px 0;
+    }
 
-### 4.1 — The real function (the "kitchen")
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
 
-```python
-def get_weather(city: str) -> str:
-    return f"It's sunny and 72°F in {city}."
-```
+    th,
+    td {
+      text-align: left;
+      vertical-align: top;
+      padding: 14px;
+      border-bottom: 1px solid rgba(128,128,128,0.25);
+    }
 
-### 4.2 — The tool schema (the "menu")
+    th {
+      font-family: "DM Mono", monospace;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
 
-Just data — no logic. Tells the model the tool exists, what it's for, and what arguments it needs.
+    .status {
+      display: inline-block;
+      font-family: "DM Mono", monospace;
+      font-size: 12px;
+      padding: 6px 10px;
+      border: 1px solid currentColor;
+      margin-top: 10px;
+    }
 
-```python
-weather_tool = {
+    .back-link {
+      display: inline-block;
+      margin-bottom: 50px;
+      font-family: "DM Mono", monospace;
+      font-size: 13px;
+    }
+
+    .next-link {
+      margin-top: 60px;
+      padding-top: 30px;
+      border-top: 1px solid rgba(128,128,128,0.25);
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="site-header">
+  <div class="container nav">
+
+    <a class="brand" href="../index.html">
+      Sajid Hussain
+    </a>
+
+    <nav aria-label="Primary navigation">
+      <a href="../work.html">Work</a>
+      <a href="../writing.html">Writing</a>
+      <a href="../teaching.html">Teaching</a>
+      <a href="../stats.html">Stats</a>
+      <a href="../background.html">Background</a>
+      <a href="../contact.html">Contact</a>
+    </nav>
+
+  </div>
+</header>
+
+
+<main class="section">
+
+  <div class="container article">
+
+    <a class="back-link" href="index.html">
+      ← Back to Terminal Agent
+    </a>
+
+
+    <!-- HEADER -->
+
+    <header class="article-header">
+
+      <div class="article-meta">
+        AI TERMINAL AGENT · PHASE 2
+      </div>
+
+      <h1>
+        Minimal Agent:
+        Understanding Tool Calling from Scratch
+      </h1>
+
+      <p class="article-intro">
+        Building the smallest possible agent loop without a framework,
+        starting with a fake tool before connecting the system to a real
+        terminal environment.
+      </p>
+
+      <div class="status">
+        CORE MECHANISM COMPLETE · TERMINAL + HARBOR INTEGRATION OPEN
+      </div>
+
+    </header>
+
+
+    <!-- 1 -->
+
+    <section>
+
+      <h2>1. Goal for this session</h2>
+
+      <p>
+        Phase 1 validated the measurement instrument
+        (Harbor + Terminal-Bench), but I hadn't written a single line
+        of agent code yet.
+      </p>
+
+      <p>
+        The goal for Phase 2 is to build the smallest possible working
+        agent loop, with no framework, so I understand exactly what
+        every later abstraction — LangGraph, ADK, and others — would
+        be hiding from me.
+      </p>
+
+      <p>
+        Today's narrower goal was to understand
+        <strong>tool calling</strong>: the mechanism that lets a language
+        model request an action instead of simply replying with text.
+      </p>
+
+    </section>
+
+
+    <!-- 2 -->
+
+    <section>
+
+      <h2>2. Why start with a fake tool instead of the real shell</h2>
+
+      <div class="decision">
+
+        <strong>Decision</strong>
+
+        Build the loop first with a trivial, obviously-fake tool
+        (<code>get_weather</code>) before touching real shell execution.
+
+      </div>
+
+      <p>
+        Tool calling introduces several moving parts:
+      </p>
+
+      <ul>
+        <li>the tool schema</li>
+        <li>the model's tool-call response</li>
+        <li>JSON parsing of arguments</li>
+        <li>executing the requested function</li>
+        <li>sending the result back to the model</li>
+      </ul>
+
+      <p>
+        Debugging all of that simultaneously with
+        <code>subprocess</code>, exit codes, and shell quoting would
+        conflate two separate sources of bugs.
+      </p>
+
+      <p>
+        The fake tool isolates the tool-calling mechanism first.
+      </p>
+
+      <div class="decision">
+
+        <strong>Alternative considered</strong>
+
+        Jump directly to a <code>run_command</code> tool using
+        <code>subprocess</code>.
+
+      </div>
+
+      <p>
+        I rejected that approach because any failure would be ambiguous:
+        was the problem with my understanding of tool calling or with
+        shell execution?
+      </p>
+
+      <p>
+        The principle is simple:
+        <strong>one variable at a time.</strong>
+      </p>
+
+    </section>
+
+
+    <!-- 3 -->
+
+    <section>
+
+      <h2>3. The mental model: waiter and kitchen</h2>
+
+      <ul>
+
+        <li>
+          <strong>The model</strong> = a waiter.
+          It can ask for something, but cannot cook.
+        </li>
+
+        <li>
+          <strong>The tool schema</strong> = a menu.
+          It describes what's available but contains no execution logic.
+        </li>
+
+        <li>
+          <strong>My Python function</strong> = the kitchen.
+          This is where the actual work happens.
+        </li>
+
+        <li>
+          <strong>The model's tool-call response</strong> =
+          the waiter placing an order.
+        </li>
+
+        <li>
+          <strong>Reading <code>tool_call.function.name</code>
+          and <code>.arguments</code></strong> =
+          receiving that order.
+        </li>
+
+        <li>
+          <strong>Calling the function</strong> =
+          the kitchen preparing the result.
+        </li>
+
+        <li>
+          <strong>Sending a <code>role: "tool"</code> message</strong> =
+          carrying the result back to the waiter.
+        </li>
+
+      </ul>
+
+      <p>
+        The model never executes the function itself.
+        It only requests an action.
+        The application code performs the actual execution.
+      </p>
+
+    </section>
+
+
+    <!-- 4 -->
+
+    <section>
+
+      <h2>4. What I built</h2>
+
+      <p>
+        I used the OpenAI SDK rather than introducing another SDK at the
+        same time. The objective here was to understand the mechanism,
+        not learn a new provider interface.
+      </p>
+
+
+      <h3>4.1 — The real function</h3>
+
+<pre><code>def get_weather(city: str) -&gt; str:
+    return f"It's sunny and 72°F in {city}."</code></pre>
+
+
+      <h3>4.2 — The tool schema</h3>
+
+      <p>
+        The schema is just data. It tells the model that the tool exists,
+        what it does, and which arguments it expects.
+      </p>
+
+<pre><code>weather_tool = {
     "type": "function",
     "function": {
         "name": "get_weather",
@@ -68,20 +385,28 @@ weather_tool = {
         "parameters": {
             "type": "object",
             "properties": {
-                "city": {"type": "string", "description": "The city name"}
+                "city": {
+                    "type": "string",
+                    "description": "The city name"
+                }
             },
             "required": ["city"]
         }
     }
-}
-```
+}</code></pre>
 
-### 4.3 — The full loop
 
-```python
-messages = [{"role": "user", "content": "What's the weather in Paris?"}]
+      <h3>4.3 — The full loop</h3>
+
+<pre><code>messages = [
+    {
+        "role": "user",
+        "content": "What's the weather in Paris?"
+    }
+]
 
 for step in range(5):
+
     response = client.chat.completions.create(
         model="gpt-4o",
         messages=messages,
@@ -91,97 +416,306 @@ for step in range(5):
     message = response.choices[0].message
 
     if message.tool_calls:
+
         tool_call = message.tool_calls[0]
 
-        messages.append(message)  # the model's own request, echoed back
+        messages.append(message)
 
-        args_dict = json.loads(tool_call.function.arguments)
-        result = get_weather(args_dict["city"])
+        args_dict = json.loads(
+            tool_call.function.arguments
+        )
+
+        result = get_weather(
+            args_dict["city"]
+        )
 
         messages.append({
             "role": "tool",
-            "tool_call_id": tool_call.id,   # links result to the specific request
+            "tool_call_id": tool_call.id,
             "content": result
         })
-        continue  # let the model see the result and decide what's next
+
+        continue
 
     else:
-        print("Final answer:", message.content)
-        break
-```
 
-### 4.4 — Traced output (actual run)
+        print(
+            "Final answer:",
+            message.content
+        )
 
-```
-=== STEP 0 ===
+        break</code></pre>
+
+
+      <h3>4.4 — Traced output</h3>
+
+<pre><code>=== STEP 0 ===
 Sending 1 message(s) to the model...
+
 Model requested tool: get_weather
-With arguments: {"city":"Paris"}
-Tool actually returned: It's sunny and 72°F in Paris.
-Appended tool result to messages. Looping again...
+
+With arguments:
+{"city":"Paris"}
+
+Tool actually returned:
+It's sunny and 72°F in Paris.
+
+Appended tool result to messages.
+Looping again...
+
 === STEP 1 ===
+
 Sending 3 message(s) to the model...
-Model gave a plain-text answer — no more tools needed.
-Final answer: The weather in Paris is currently sunny with a temperature of 72°F.
-```
 
-Message count went 1 → 3 in one iteration: the original question (1), the model's own tool-call message appended by me (2), and my hand-built tool-result message (3). Two `.append()` calls, two new items.
+Model gave a plain-text answer —
+no more tools needed.
 
----
+Final answer:
+The weather in Paris is currently
+sunny with a temperature of 72°F.</code></pre>
 
-## 5. Debugging log — real mistakes, kept intentionally
+      <p>
+        The message count went from
+        <strong>1 → 3</strong> during one tool-call iteration:
+      </p>
 
-Documenting the actual wrong turns, not just the final code, because that's the more useful record for learning (and more honest).
+      <ol>
+        <li>The original user question</li>
+        <li>The model's tool-call message</li>
+        <li>The tool-result message</li>
+      </ol>
 
-| Mistake | What I thought | What was actually true |
-|---|---|---|
-| Tried to build the tool schema as a `def` function | Assumed a "tool" was always a callable | The schema sent to the API is just a *description* (a dict) — a separate thing from the Python function that does the real work |
-| `args_str = weather_tool["function"]` | Assumed the model's answer lived inside the tool definition I sent | The tool definition never changes — the model's actual request only exists in the API `response`, after the call |
-| `if message.role == 'tool':` | Thought I needed to check whether a message was a tool result | `message` here is always the *assistant's* message (role is always `"assistant"`); I needed to *create* a new tool-result message, not check for one |
-| `get_weather()` with no arguments | Forgot the tool's arguments arrive as a JSON *string*, not a ready-to-use dict | Had to `json.loads(tool_call.function.arguments)` first, then index into the resulting dict |
-| Called `get_weather(...)` but nothing printed | Assumed calling a function shows its output | `return` hands a value back silently — printing requires capturing the return value explicitly |
+    </section>
 
----
 
-## 6. Key insight: the model trusts the tool completely
+    <!-- 5 -->
 
-The model has no way to know `get_weather` is a stub that ignores real weather conditions. It sees a tool result and treats it as ground truth — it cannot distinguish a real API call from a hardcoded fake string. This isn't just a toy-example quirk; it's a real reliability concern (this project's Phase 3 and Phase 17 territory): **a tool that silently returns wrong data is exactly as dangerous as a model that hallucinates**, because everything downstream is built on top of whatever the tool reported, with zero built-in skepticism.
+    <section>
 
-This is one reason a real shell (Phase 2's next step) is actually a *better* first real tool than most APIs: shell output is unavoidably real. There's no stub to accidentally trust.
+      <h2>5. Debugging log</h2>
 
----
+      <p>
+        I'm intentionally keeping the wrong turns. They are more useful
+        for understanding the system than pretending the final code
+        appeared fully formed.
+      </p>
 
-## 7. Why the model called the tool instead of answering directly
+      <div class="table-wrapper">
 
-The model has no reliable, current knowledge of live weather — it was trained on data with a cutoff, and weather changes constantly regardless. Given a relevant tool in its `tools` list, it preferred using the tool over guessing, because guessing risks confidently fabricating an answer. This isn't hardcoded behavior on my part — it's the model's own judgment about when external data is more trustworthy than its own internal knowledge. (Note: this is an observed behavior in one run with one model, not a verified general claim from documentation — worth treating as **HYPOTHESIS**, not **FACT**, until tested across more cases.)
+        <table>
 
----
+          <thead>
+            <tr>
+              <th>Mistake</th>
+              <th>What I thought</th>
+              <th>What was actually true</th>
+            </tr>
+          </thead>
 
-## 8. What's next (not done yet)
+          <tbody>
 
-Per the project's own Phase 2 deliverable ("minimal **working agent**"), this session covered the *mechanism* but not the full deliverable:
+            <tr>
+              <td>Built the tool schema as a function</td>
+              <td>A tool must be callable.</td>
+              <td>
+                The schema sent to the API is a description.
+                The Python function is a separate execution layer.
+              </td>
+            </tr>
 
-- [ ] Replace `get_weather(city)` with a real `run_command(command)` tool using `subprocess` — same loop, real execution
-- [ ] Wire this loop into Harbor's `BaseAgent.run(instruction, environment, context)` interface (confirmed via Harbor docs: External Agent, not Installed Agent — see decision below)
-- [ ] Run against one real Terminal-Bench task through Harbor
-- [ ] Record the first honest baseline score — **V0**
+            <tr>
+              <td>Looked inside the tool definition for the model's answer</td>
+              <td>The model's request would appear inside the tool definition.</td>
+              <td>
+                The tool definition never changes.
+                The actual request appears in the API response.
+              </td>
+            </tr>
 
-### Architecture Decision Record: External Agent vs. Installed Agent
+            <tr>
+              <td>Checked <code>message.role == "tool"</code></td>
+              <td>I needed to detect a tool result.</td>
+              <td>
+                The model's message is an assistant message.
+                My application creates the tool-result message.
+              </td>
+            </tr>
 
-```
-Decision: Build the agent as a Harbor "External Agent" (BaseAgent subclass)
-Why: run() receives the environment directly and expects the caller to invoke
-     environment.exec() itself — this exposes the exact loop being built here,
-     nothing hidden.
-Alternatives considered: Installed Agent (BaseInstalledAgent) — runs headless
-     inside the container itself.
-Evidence: Harbor's own agent documentation, verified directly (not assumed
-     from memory).
-Tradeoff: External Agent requires no container-packaging step, but also means
-     less parity with how production agents like Claude Code are actually
-     deployed (they run installed/headless).
-Would we choose again: Yes for Phase 2 — deployment-style packaging is a
-     Phase 7 (production engineering) concern, not a Phase 2 one.
-```
+            <tr>
+              <td>Called <code>get_weather()</code> without arguments</td>
+              <td>The arguments would somehow be passed automatically.</td>
+              <td>
+                Tool arguments arrive as a JSON string and must be parsed.
+              </td>
+            </tr>
 
----
+            <tr>
+              <td>Called the function but saw no output</td>
+              <td>Calling a function prints its result.</td>
+              <td>
+                <code>return</code> passes a value back.
+                Printing requires explicitly displaying the returned value.
+              </td>
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </section>
+
+
+    <!-- 6 -->
+
+    <section>
+
+      <h2>6. Key insight: the model trusts the tool</h2>
+
+      <p>
+        The model has no way to know that
+        <code>get_weather</code> is a stub that ignores real weather data.
+      </p>
+
+      <p>
+        It sees a tool result and treats that result as information supplied
+        by the tool.
+      </p>
+
+      <p>
+        That exposes an important reliability issue:
+        <strong>a tool that silently returns incorrect data can be just as
+        dangerous as a model hallucination.</strong>
+      </p>
+
+      <p>
+        Everything downstream depends on the result returned by the
+        execution layer.
+      </p>
+
+      <p>
+        This is one reason the next step — connecting the loop to a real
+        shell — is important. The shell gives the agent an actual execution
+        environment rather than a fabricated result.
+      </p>
+
+    </section>
+
+
+    <!-- 7 -->
+
+    <section>
+
+      <h2>7. Why did the model call the tool?</h2>
+
+      <p>
+        In this experiment, the model chose to use the available weather
+        tool rather than answer directly.
+      </p>
+
+      <p>
+        That makes intuitive sense: live weather changes continuously,
+        while the model's internal knowledge is not a live data source.
+      </p>
+
+      <p>
+        However, this observation came from one run with one model.
+        I therefore treat the stronger claim about why the model made
+        this choice as a <strong>hypothesis</strong>, not a universal fact.
+      </p>
+
+    </section>
+
+
+    <!-- 8 -->
+
+    <section>
+
+      <h2>8. What's next</h2>
+
+      <p>
+        This session demonstrated the tool-calling mechanism, but Phase 2's
+        full deliverable is a minimal working terminal agent.
+      </p>
+
+      <ul>
+
+        <li>
+          Replace <code>get_weather()</code> with a real
+          <code>run_command()</code> tool.
+        </li>
+
+        <li>
+          Execute commands inside the Terminal-Bench environment.
+        </li>
+
+        <li>
+          Wire the loop into Harbor's
+          <code>BaseAgent.run()</code> interface.
+        </li>
+
+        <li>
+          Run the agent against a real Terminal-Bench task.
+        </li>
+
+        <li>
+          Record the first honest baseline score:
+          <strong>V0</strong>.
+        </li>
+
+      </ul>
+
+
+      <h3>Architecture Decision Record: External Agent vs. Installed Agent</h3>
+
+<pre><code>Decision:
+Build the agent as a Harbor External Agent
+(BaseAgent subclass).
+
+Why:
+run() receives the environment directly and expects
+the caller to invoke environment.exec() itself.
+
+This exposes the exact loop being built here.
+
+Alternative:
+Installed Agent (BaseInstalledAgent).
+
+Tradeoff:
+External Agent requires no container-packaging step,
+but provides less parity with production agents that
+run headless inside their environment.
+
+Decision:
+Use External Agent for Phase 2.
+
+Reason:
+Deployment-style packaging belongs to Phase 7,
+not Phase 2.</code></pre>
+
+    </section>
+
+
+    <!-- NEXT -->
+
+    <div class="next-link">
+
+      <p>
+        <strong>Next:</strong>
+        <a href="03-harbor.html">
+          03 — Harbor →
+        </a>
+      </p>
+
+    </div>
+
+  </div>
+
+</main>
+
+
+<script src="../script.js"></script>
+
+</body>
+</html>
