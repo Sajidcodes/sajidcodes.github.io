@@ -1,0 +1,202 @@
+# Phase 2 — Minimal Agent: Understanding Tool Calling from Scratch
+
+**Project:** Terminal Agent Engineering Lab (building a terminal-based AI agent, evaluated on Terminal-Bench)
+**Phase:** 2 — Minimal Agent
+**Status:** Core mechanism complete. Real terminal tool + Harbor integration still open (see "What's Next").
+
+---
+
+## 1. Goal for this session
+
+Phase 1 validated the measurement instrument (Harbor + Terminal-Bench), but I hadn't written a single line of agent code yet. The goal for Phase 2 is to build the smallest possible working agent loop, with no framework, so I understand exactly what every later abstraction (LangGraph, ADK, etc.) would be hiding from me.
+
+Today's narrower goal: understand **tool calling** — the mechanism that lets a language model request an action instead of just replying with text — by building and tracing it by hand, before wiring it into a real terminal.
+
+---
+
+## 2. Why start with a fake tool instead of the real shell
+
+**Decision:** Build the loop first with a trivial, obviously-fake tool (`get_weather`) before touching real shell execution.
+
+**Why:** Tool calling itself has several new moving parts to internalize — the tool schema (a description you send, not code), the model's tool-call response (structured data, not text), JSON parsing of arguments, and the "send the result back" round-trip. Debugging all of that *at the same time* as `subprocess`, exit codes, and shell quoting would have conflated two separate sources of bugs.
+
+**Alternative considered:** Jump straight to a `run_command` tool wired to real `subprocess` execution.
+
+**Why not:** Any bug would be ambiguous — is it in my understanding of tool calling, or in shell execution? Isolating one variable at a time (per this project's own experimental discipline) applies to *learning*, not just benchmark experiments.
+
+**Would I do this again:** Yes. The fake tool made every step of the mechanism visible without a second category of failure mode competing for attention.
+
+**Known limitation surfaced by this choice:** the stub always returns "sunny and 72°F" regardless of input — the model has no way to know the tool is fake. This turned into a real insight (see Section 5).
+
+---
+
+## 3. The mental model: waiter and kitchen
+
+- **The model** = a waiter. It can *ask* for something, but cannot cook.
+- **The tool schema** (a plain Python dict, no logic) = a menu listing — describes what's available, not the food itself.
+- **My Python function** = the kitchen — the only thing that actually does work.
+- **The model's tool-call response** = the waiter shouting an order to the kitchen window — a *request*, not a result.
+- **My code reading `tool_call.function.name` / `.arguments`** = me standing at the kitchen window, hearing the order.
+- **Calling the real function** = the kitchen cooking.
+- **Sending the result back as a `role: "tool"` message** = carrying the plate back to the waiter, so it can tell the customer.
+
+The model never executes anything itself. It only ever requests. All execution happens in my own code.
+
+---
+
+## 4. What I built
+
+Using the OpenAI SDK (`openai` Python package), not the Anthropic SDK — I'd already used the OpenAI API before, so I built on existing familiarity rather than introducing a second new tool at the same time.
+
+### 4.1 — The real function (the "kitchen")
+
+```python
+def get_weather(city: str) -> str:
+    return f"It's sunny and 72°F in {city}."
+```
+
+### 4.2 — The tool schema (the "menu")
+
+Just data — no logic. Tells the model the tool exists, what it's for, and what arguments it needs.
+
+```python
+weather_tool = {
+    "type": "function",
+    "function": {
+        "name": "get_weather",
+        "description": "Get the current weather for a city.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "city": {"type": "string", "description": "The city name"}
+            },
+            "required": ["city"]
+        }
+    }
+}
+```
+
+### 4.3 — The full loop
+
+```python
+messages = [{"role": "user", "content": "What's the weather in Paris?"}]
+
+for step in range(5):
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=messages,
+        tools=[weather_tool]
+    )
+
+    message = response.choices[0].message
+
+    if message.tool_calls:
+        tool_call = message.tool_calls[0]
+
+        messages.append(message)  # the model's own request, echoed back
+
+        args_dict = json.loads(tool_call.function.arguments)
+        result = get_weather(args_dict["city"])
+
+        messages.append({
+            "role": "tool",
+            "tool_call_id": tool_call.id,   # links result to the specific request
+            "content": result
+        })
+        continue  # let the model see the result and decide what's next
+
+    else:
+        print("Final answer:", message.content)
+        break
+```
+
+### 4.4 — Traced output (actual run)
+
+```
+=== STEP 0 ===
+Sending 1 message(s) to the model...
+Model requested tool: get_weather
+With arguments: {"city":"Paris"}
+Tool actually returned: It's sunny and 72°F in Paris.
+Appended tool result to messages. Looping again...
+=== STEP 1 ===
+Sending 3 message(s) to the model...
+Model gave a plain-text answer — no more tools needed.
+Final answer: The weather in Paris is currently sunny with a temperature of 72°F.
+```
+
+Message count went 1 → 3 in one iteration: the original question (1), the model's own tool-call message appended by me (2), and my hand-built tool-result message (3). Two `.append()` calls, two new items.
+
+---
+
+## 5. Debugging log — real mistakes, kept intentionally
+
+Documenting the actual wrong turns, not just the final code, because that's the more useful record for learning (and more honest).
+
+| Mistake | What I thought | What was actually true |
+|---|---|---|
+| Tried to build the tool schema as a `def` function | Assumed a "tool" was always a callable | The schema sent to the API is just a *description* (a dict) — a separate thing from the Python function that does the real work |
+| `args_str = weather_tool["function"]` | Assumed the model's answer lived inside the tool definition I sent | The tool definition never changes — the model's actual request only exists in the API `response`, after the call |
+| `if message.role == 'tool':` | Thought I needed to check whether a message was a tool result | `message` here is always the *assistant's* message (role is always `"assistant"`); I needed to *create* a new tool-result message, not check for one |
+| `get_weather()` with no arguments | Forgot the tool's arguments arrive as a JSON *string*, not a ready-to-use dict | Had to `json.loads(tool_call.function.arguments)` first, then index into the resulting dict |
+| Called `get_weather(...)` but nothing printed | Assumed calling a function shows its output | `return` hands a value back silently — printing requires capturing the return value explicitly |
+
+---
+
+## 6. Key insight: the model trusts the tool completely
+
+The model has no way to know `get_weather` is a stub that ignores real weather conditions. It sees a tool result and treats it as ground truth — it cannot distinguish a real API call from a hardcoded fake string. This isn't just a toy-example quirk; it's a real reliability concern (this project's Phase 3 and Phase 17 territory): **a tool that silently returns wrong data is exactly as dangerous as a model that hallucinates**, because everything downstream is built on top of whatever the tool reported, with zero built-in skepticism.
+
+This is one reason a real shell (Phase 2's next step) is actually a *better* first real tool than most APIs: shell output is unavoidably real. There's no stub to accidentally trust.
+
+---
+
+## 7. Why the model called the tool instead of answering directly
+
+The model has no reliable, current knowledge of live weather — it was trained on data with a cutoff, and weather changes constantly regardless. Given a relevant tool in its `tools` list, it preferred using the tool over guessing, because guessing risks confidently fabricating an answer. This isn't hardcoded behavior on my part — it's the model's own judgment about when external data is more trustworthy than its own internal knowledge. (Note: this is an observed behavior in one run with one model, not a verified general claim from documentation — worth treating as **HYPOTHESIS**, not **FACT**, until tested across more cases.)
+
+---
+
+## 8. What's next (not done yet)
+
+Per the project's own Phase 2 deliverable ("minimal **working agent**"), this session covered the *mechanism* but not the full deliverable:
+
+- [ ] Replace `get_weather(city)` with a real `run_command(command)` tool using `subprocess` — same loop, real execution
+- [ ] Wire this loop into Harbor's `BaseAgent.run(instruction, environment, context)` interface (confirmed via Harbor docs: External Agent, not Installed Agent — see decision below)
+- [ ] Run against one real Terminal-Bench task through Harbor
+- [ ] Record the first honest baseline score — **V0**
+
+### Architecture Decision Record: External Agent vs. Installed Agent
+
+```
+Decision: Build the agent as a Harbor "External Agent" (BaseAgent subclass)
+Why: run() receives the environment directly and expects the caller to invoke
+     environment.exec() itself — this exposes the exact loop being built here,
+     nothing hidden.
+Alternatives considered: Installed Agent (BaseInstalledAgent) — runs headless
+     inside the container itself.
+Evidence: Harbor's own agent documentation, verified directly (not assumed
+     from memory).
+Tradeoff: External Agent requires no container-packaging step, but also means
+     less parity with how production agents like Claude Code are actually
+     deployed (they run installed/headless).
+Would we choose again: Yes for Phase 2 — deployment-style packaging is a
+     Phase 7 (production engineering) concern, not a Phase 2 one.
+```
+
+---
+
+## 9. Honest self-assessment against "Definition of Done"
+
+| Requirement | Status |
+|---|---|
+| Explain the concept | ✅ |
+| Explain why it's needed | ✅ |
+| Implement a basic version | ✅ (with guided hints, own debugging) |
+| Debug it | ✅ (real bugs, documented above) |
+| Test it | ✅ (traced step-by-step, verified message-list growth) |
+| Measure it | ❌ — no benchmark score yet, that requires the real shell tool + Harbor wiring |
+| Explain tradeoffs | ✅ (fake vs. real tool, External vs. Installed agent) |
+| Connect to larger architecture | ✅ (this loop = the Act/Observe edge of the AGENT SYSTEM box) |
+
+**Conclusion:** Phase 2's core mechanism is understood and demonstrated. The phase itself is not complete until the same loop runs against a real terminal and produces a scored V0 baseline.
