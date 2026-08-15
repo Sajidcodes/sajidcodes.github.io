@@ -40,13 +40,14 @@ async function loadIEEEEvents() {
     }
 
 
-    container.innerHTML = "";
+    /*
+     * Convert IEEE date strings into a sortable number.
+     *
+     * Example:
+     * "31 Jul 2026 05:00 PM EDT"
+     */
 
-
-    // Parse IEEE's date format:
-    // "31 Jul 2026 05:00 PM EDT"
-
-    const parseIEEEDate = (dateString) => {
+    function parseIEEEDate(dateString) {
 
       const match = String(dateString).match(
         /^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})\s+(\d{1,2}):(\d{2})\s+(AM|PM)\s+(EST|EDT)$/i
@@ -54,20 +55,32 @@ async function loadIEEEEvents() {
 
 
       if (!match) {
+        console.warn(
+          "Could not parse IEEE date:",
+          dateString
+        );
+
         return 0;
       }
 
 
-      const [
-        ,
-        day,
-        monthName,
-        year,
-        hour,
-        minute,
-        ampm,
-        timezone
-      ] = match;
+      const day =
+        Number(match[1]);
+
+      const month =
+        match[2].substring(0, 3);
+
+      const year =
+        Number(match[3]);
+
+      let hour =
+        Number(match[4]);
+
+      const minute =
+        Number(match[5]);
+
+      const ampm =
+        match[6].toUpperCase();
 
 
       const months = {
@@ -86,56 +99,72 @@ async function loadIEEEEvents() {
       };
 
 
-      let h = Number(hour);
+      if (ampm === "PM" && hour !== 12) {
+        hour += 12;
+      }
 
-
-      if (
-        ampm.toUpperCase() === "PM" &&
-        h !== 12
-      ) {
-        h += 12;
+      if (ampm === "AM" && hour === 12) {
+        hour = 0;
       }
 
 
-      if (
-        ampm.toUpperCase() === "AM" &&
-        h === 12
-      ) {
-        h = 0;
-      }
+      /*
+       * We only need the date/time for sorting.
+       * Use UTC consistently so browser timezone
+       * does not affect the ordering.
+       */
+
+      return Date.UTC(
+        year,
+        months[month],
+        day,
+        hour,
+        minute
+      );
+
+    }
 
 
-      const offset =
-        timezone.toUpperCase() === "EDT"
-          ? "-04:00"
-          : "-05:00";
-
-
-      const month =
-        months[monthName.substring(0, 3)];
-
-
-      return new Date(
-        `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}T${String(h).padStart(2, "0")}:${minute}:00${offset}`
-      ).getTime();
-
-    };
-
-
-    // Sort newest → oldest
+    /*
+     * IMPORTANT:
+     *
+     * Create a NEW array and sort it.
+     * This guarantees the original API data
+     * isn't being rendered accidentally.
+     */
 
     const events =
-      [...result.events].sort((a, b) => {
+      [...result.events].sort(
+        (a, b) => {
 
-        return (
-          parseIEEEDate(b.date) -
-          parseIEEEDate(a.date)
-        );
+          const dateA =
+            parseIEEEDate(a.date);
 
-      });
+          const dateB =
+            parseIEEEDate(b.date);
+
+          return dateB - dateA;
+
+        }
+      );
 
 
-    // Render events
+    console.log(
+      "Sorted IEEE events:",
+      events.map(event => event.date)
+    );
+
+
+    /*
+     * Clear loading message.
+     */
+
+    container.innerHTML = "";
+
+
+    /*
+     * Render newest → oldest.
+     */
 
     events.forEach(event => {
 
@@ -185,7 +214,9 @@ async function loadIEEEEvents() {
     });
 
 
-    // Event count
+    /*
+     * Event count.
+     */
 
     const count =
       document.createElement("p");
