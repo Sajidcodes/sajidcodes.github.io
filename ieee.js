@@ -27,6 +27,7 @@ async function loadIEEEEvents() {
 
     console.log("IEEE events:", result);
 
+
     if (!result.events || result.events.length === 0) {
 
       container.innerHTML = `
@@ -38,19 +39,113 @@ async function loadIEEEEvents() {
       return;
     }
 
+
     container.innerHTML = "";
 
-const events = [...result.events].sort((a, b) => {
-  return new Date(b.date) - new Date(a.date);
-});
 
-events.forEach(event => {
+    // Parse IEEE's date format:
+    // "31 Jul 2026 05:00 PM EDT"
+
+    const parseIEEEDate = (dateString) => {
+
+      const match = String(dateString).match(
+        /^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})\s+(\d{1,2}):(\d{2})\s+(AM|PM)\s+(EST|EDT)$/i
+      );
+
+
+      if (!match) {
+        return 0;
+      }
+
+
+      const [
+        ,
+        day,
+        monthName,
+        year,
+        hour,
+        minute,
+        ampm,
+        timezone
+      ] = match;
+
+
+      const months = {
+        Jan: 0,
+        Feb: 1,
+        Mar: 2,
+        Apr: 3,
+        May: 4,
+        Jun: 5,
+        Jul: 6,
+        Aug: 7,
+        Sep: 8,
+        Oct: 9,
+        Nov: 10,
+        Dec: 11
+      };
+
+
+      let h = Number(hour);
+
+
+      if (
+        ampm.toUpperCase() === "PM" &&
+        h !== 12
+      ) {
+        h += 12;
+      }
+
+
+      if (
+        ampm.toUpperCase() === "AM" &&
+        h === 12
+      ) {
+        h = 0;
+      }
+
+
+      const offset =
+        timezone.toUpperCase() === "EDT"
+          ? "-04:00"
+          : "-05:00";
+
+
+      const month =
+        months[monthName.substring(0, 3)];
+
+
+      return new Date(
+        `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}T${String(h).padStart(2, "0")}:${minute}:00${offset}`
+      ).getTime();
+
+    };
+
+
+    // Sort newest → oldest
+
+    const events =
+      [...result.events].sort((a, b) => {
+
+        return (
+          parseIEEEDate(b.date) -
+          parseIEEEDate(a.date)
+        );
+
+      });
+
+
+    // Render events
+
+    events.forEach(event => {
 
       const article =
         document.createElement("article");
 
+
       article.className =
         "project";
+
 
       article.innerHTML = `
 
@@ -84,19 +179,25 @@ events.forEach(event => {
 
       `;
 
+
       container.appendChild(article);
 
     });
 
 
+    // Event count
+
     const count =
       document.createElement("p");
+
 
     count.className =
       "form-status";
 
+
     count.textContent =
-      `${result.events.length} IEEE NJ Coast YP events`;
+      `${events.length} IEEE NJ Coast YP events`;
+
 
     container.prepend(count);
 
@@ -107,6 +208,7 @@ events.forEach(event => {
       "IEEE loading error:",
       error
     );
+
 
     container.innerHTML = `
 
