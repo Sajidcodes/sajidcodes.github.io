@@ -40,7 +40,11 @@ async function loadIEEEEvents() {
 
     container.innerHTML = "";
 
-    result.events.forEach(event => {
+const events = [...result.events].sort((a, b) => {
+  return new Date(b.date) - new Date(a.date);
+});
+
+events.forEach(event => {
 
       const article =
         document.createElement("article");
