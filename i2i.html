@@ -9,7 +9,7 @@
 
   <meta
     name="description"
-    content="From Idea to Impact — a workshop on practical AI, innovation, responsible adoption, and turning ideas into real-world impact, delivered by Sajid Hussain at Kean University."
+    content="From Idea to Impact — a practical AI workshop delivered by Sajid Hussain at Kean University covering AI value, healthcare applications, agentic AI, product thinking, production readiness, and measuring impact."
   />
 
   <style>
@@ -19,8 +19,9 @@
       --text: #171717;
       --muted: #6b6b6b;
       --border: #e8e5df;
-      --accent: #111111;
       --soft: #f1efe9;
+      --accent: #008c9e;
+      --dark: #20295f;
       --max: 1100px;
     }
 
@@ -64,20 +65,18 @@
 
     .nav-inner {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 20px;
+      align-items: center;
     }
 
     .brand {
-      font-weight: 700;
+      font-weight: 750;
       letter-spacing: -0.02em;
     }
 
     .back-link {
       color: var(--muted);
       font-size: 14px;
-      transition: color 0.2s ease;
     }
 
     .back-link:hover {
@@ -87,59 +86,57 @@
     /* HERO */
 
     .hero {
-      padding: 100px 0 80px;
-      max-width: 900px;
+      padding: 100px 0 70px;
+      max-width: 950px;
     }
 
     .eyebrow {
       margin: 0 0 18px;
-      color: var(--muted);
+      color: var(--accent);
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 750;
       letter-spacing: 0.16em;
       text-transform: uppercase;
     }
 
     h1 {
       margin: 0;
-      max-width: 900px;
       font-size: clamp(48px, 7vw, 86px);
       line-height: 0.98;
       letter-spacing: -0.055em;
-      font-weight: 750;
     }
 
     .hero-description {
-      max-width: 720px;
-      margin: 32px 0 0;
-      color: #4f4f4f;
-      font-size: clamp(18px, 2vw, 23px);
-      line-height: 1.55;
+      max-width: 780px;
+      margin: 30px 0 0;
+      color: #4d4d4d;
+      font-size: clamp(19px, 2.2vw, 25px);
+      line-height: 1.5;
     }
 
     .hero-meta {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 32px;
+      gap: 9px;
+      margin-top: 30px;
     }
 
     .tag {
       padding: 8px 13px;
       border: 1px solid var(--border);
       border-radius: 999px;
-      background: var(--surface);
-      color: #4c4c4c;
+      background: white;
+      color: #555;
       font-size: 13px;
     }
 
-    /* FEATURE IMAGE */
+    /* IMAGE */
 
     .hero-image {
-      margin: 0 0 100px;
+      margin-bottom: 90px;
       overflow: hidden;
-      border-radius: 18px;
       border: 1px solid var(--border);
+      border-radius: 18px;
       background: var(--soft);
     }
 
@@ -150,11 +147,11 @@
       object-fit: cover;
     }
 
-    /* CONTENT */
+    /* LAYOUT */
 
     .content {
       display: grid;
-      grid-template-columns: 220px 1fr;
+      grid-template-columns: 210px 1fr;
       gap: 80px;
       padding-bottom: 100px;
     }
@@ -166,10 +163,10 @@
     }
 
     .sidebar-title {
-      margin-bottom: 18px;
+      margin-bottom: 15px;
       color: var(--muted);
       font-size: 11px;
-      font-weight: 700;
+      font-weight: 750;
       letter-spacing: 0.14em;
       text-transform: uppercase;
     }
@@ -186,30 +183,26 @@
     }
 
     section {
+      margin-bottom: 95px;
       scroll-margin-top: 40px;
-      margin-bottom: 90px;
-    }
-
-    section:last-child {
-      margin-bottom: 0;
     }
 
     h2 {
       margin: 0 0 22px;
-      font-size: clamp(30px, 4vw, 46px);
+      font-size: clamp(32px, 4vw, 48px);
       line-height: 1.05;
-      letter-spacing: -0.035em;
+      letter-spacing: -0.04em;
     }
 
     h3 {
-      margin: 40px 0 10px;
+      margin: 0 0 10px;
       font-size: 20px;
-      letter-spacing: -0.015em;
+      line-height: 1.2;
     }
 
     p {
       margin: 0 0 20px;
-      color: #454545;
+      color: #464646;
       font-size: 17px;
     }
 
@@ -222,7 +215,7 @@
     .highlight {
       margin: 35px 0;
       padding: 28px 30px;
-      border-left: 3px solid var(--text);
+      border-left: 4px solid var(--accent);
       background: var(--soft);
     }
 
@@ -238,27 +231,23 @@
     .cards {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
+      gap: 15px;
       margin-top: 30px;
     }
 
     .card {
-      padding: 26px;
+      padding: 27px;
       border: 1px solid var(--border);
       border-radius: 14px;
       background: var(--surface);
     }
 
     .card-number {
-      margin-bottom: 14px;
-      color: var(--muted);
+      margin-bottom: 15px;
+      color: var(--accent);
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 750;
       letter-spacing: 0.1em;
-    }
-
-    .card h3 {
-      margin: 0 0 10px;
     }
 
     .card p {
@@ -266,33 +255,150 @@
       font-size: 15px;
     }
 
-    /* PHOTO GRID */
+    /* FRAMEWORK */
 
-    .photo-grid {
-      display: grid;
-      grid-template-columns: 1.4fr 1fr;
-      gap: 14px;
+    .framework {
       margin-top: 35px;
+      padding: 35px;
+      border-radius: 16px;
+      background: var(--dark);
+      color: white;
     }
 
-    .photo-grid img {
-      width: 100%;
-      height: 360px;
-      object-fit: cover;
-      border-radius: 14px;
+    .framework-title {
+      margin-bottom: 25px;
+      font-size: 25px;
+      font-weight: 750;
+    }
+
+    .framework-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+
+    .framework-step {
+      padding: 20px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+    }
+
+    .framework-step span {
+      display: block;
+      margin-bottom: 8px;
+      opacity: 0.65;
+      font-size: 11px;
+      font-weight: 750;
+      letter-spacing: 0.1em;
+    }
+
+    .framework-step strong {
+      display: block;
+      font-size: 17px;
+    }
+
+    /* VALUE GRID */
+
+    .value-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    .value-card {
+      padding: 28px;
       border: 1px solid var(--border);
-      background: var(--soft);
+      border-radius: 14px;
+      background: white;
     }
 
-    .photo-grid img:nth-child(2) {
-      height: 360px;
+    .value-card .number {
+      display: inline-flex;
+      width: 36px;
+      height: 36px;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      font-weight: 750;
+    }
+
+    .value-card p {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    /* CODE / PRODUCTION EXAMPLE */
+
+    .scenario {
+      margin-top: 35px;
+      padding: 30px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: #fff;
+    }
+
+    .scenario-title {
+      margin-bottom: 22px;
+      font-size: 19px;
+      font-weight: 750;
+    }
+
+    .message {
+      margin: 10px 0;
+      padding: 13px 16px;
+      border-radius: 8px;
+      background: var(--soft);
+      font-size: 14px;
+    }
+
+    .message.ai {
+      border-left: 3px solid var(--accent);
+    }
+
+    .warning {
+      margin-top: 20px;
+      padding: 17px;
+      border-radius: 8px;
+      background: #f5e9e9;
+      font-size: 14px;
+    }
+
+    /* ROADMAP */
+
+    .roadmap {
+      display: grid;
+      gap: 0;
+      margin-top: 30px;
+    }
+
+    .roadmap-item {
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      gap: 25px;
+      padding: 25px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .roadmap-number {
+      color: var(--accent);
+      font-weight: 750;
+      font-size: 13px;
+    }
+
+    .roadmap-item p {
+      margin: 0;
+      font-size: 15px;
     }
 
     /* TAKEAWAYS */
 
     .takeaways {
       display: grid;
-      gap: 14px;
+      gap: 0;
       margin-top: 30px;
     }
 
@@ -300,7 +406,7 @@
       display: grid;
       grid-template-columns: 45px 1fr;
       gap: 18px;
-      padding: 20px 0;
+      padding: 21px 0;
       border-top: 1px solid var(--border);
     }
 
@@ -311,7 +417,7 @@
     .takeaway-number {
       color: var(--muted);
       font-size: 13px;
-      font-weight: 700;
+      font-weight: 750;
     }
 
     .takeaway p {
@@ -322,7 +428,8 @@
     /* QUOTE */
 
     .quote {
-      padding: 55px 0;
+      margin-top: 40px;
+      padding: 50px 0;
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
     }
@@ -330,7 +437,7 @@
     .quote p {
       margin: 0;
       color: var(--text);
-      font-size: clamp(25px, 4vw, 40px);
+      font-size: clamp(25px, 4vw, 39px);
       line-height: 1.2;
       letter-spacing: -0.025em;
     }
@@ -346,17 +453,16 @@
 
     .button {
       display: inline-flex;
-      align-items: center;
       padding: 12px 18px;
       border-radius: 8px;
-      background: var(--accent);
+      background: var(--text);
       color: white;
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 650;
     }
 
     .button.secondary {
-      background: var(--surface);
+      background: white;
       color: var(--text);
       border: 1px solid var(--border);
     }
@@ -373,12 +479,9 @@
     /* MOBILE */
 
     @media (max-width: 800px) {
-      .hero {
-        padding: 70px 0 60px;
-      }
 
-      .hero-image {
-        margin-bottom: 70px;
+      .hero {
+        padding: 70px 0 55px;
       }
 
       .content {
@@ -387,31 +490,38 @@
 
       .sidebar {
         position: static;
-        margin-bottom: 50px;
+        margin-bottom: 55px;
         padding-bottom: 25px;
         border-bottom: 1px solid var(--border);
       }
 
       .sidebar a {
         display: inline-block;
-        margin-right: 18px;
+        margin-right: 15px;
       }
 
-      section {
-        margin-bottom: 65px;
-      }
-
-      .cards {
+      .cards,
+      .value-grid {
         grid-template-columns: 1fr;
       }
 
-      .photo-grid {
+      .framework-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .roadmap-item {
+        grid-template-columns: 60px 1fr;
+      }
+    }
+
+    @media (max-width: 500px) {
+
+      .framework-grid {
         grid-template-columns: 1fr;
       }
 
-      .photo-grid img,
-      .photo-grid img:nth-child(2) {
-        height: 300px;
+      .hero-image {
+        border-radius: 12px;
       }
     }
   </style>
@@ -423,6 +533,7 @@
 
   <nav>
     <div class="container nav-inner">
+
       <a href="index.html" class="brand">
         Sajid Hussain
       </a>
@@ -430,15 +541,16 @@
       <a href="index.html" class="back-link">
         ← Back to portfolio
       </a>
+
     </div>
   </nav>
 
 
-  <!-- HERO -->
-
   <main>
 
     <div class="container">
+
+      <!-- HERO -->
 
       <header class="hero">
 
@@ -451,23 +563,26 @@
         </h1>
 
         <p class="hero-description">
-          Leading conversations on practical AI, innovation, responsible
-          adoption, and the journey from an idea to something that creates
-          meaningful real-world impact.
+          A practical framework for turning AI ideas into solutions that
+          create measurable value — from identifying the right problem to
+          building, validating, deploying, and scaling an AI system.
         </p>
 
         <div class="hero-meta">
-          <span class="tag">AI Leadership</span>
-          <span class="tag">Workshop</span>
+
+          <span class="tag">AI Strategy</span>
           <span class="tag">Generative AI</span>
-          <span class="tag">Innovation</span>
+          <span class="tag">Agentic AI</span>
+          <span class="tag">Product Thinking</span>
+          <span class="tag">Production AI</span>
           <span class="tag">Responsible AI</span>
+
         </div>
 
       </header>
 
 
-      <!-- HERO PHOTO -->
+      <!-- HERO IMAGE -->
 
       <div class="hero-image">
 
@@ -483,30 +598,32 @@
 
       <div class="content">
 
+
         <!-- SIDEBAR -->
 
         <aside class="sidebar">
 
           <div class="sidebar-title">
-            On this page
+            Workshop
           </div>
 
           <a href="#opportunity">The Opportunity</a>
-          <a href="#conversation">The Conversation</a>
-          <a href="#practice">AI in Practice</a>
-          <a href="#impact">Idea → Impact</a>
+          <a href="#value">AI Creates Value</a>
+          <a href="#applications">AI in Practice</a>
+          <a href="#agentic">Agentic AI</a>
+          <a href="#product">Product Thinking</a>
+          <a href="#production">Production Thinking</a>
+          <a href="#roadmap">Implementation</a>
           <a href="#takeaways">Key Takeaways</a>
           <a href="#perspective">My Perspective</a>
 
         </aside>
 
 
-        <!-- MAIN CONTENT -->
-
         <div>
 
 
-          <!-- THE OPPORTUNITY -->
+          <!-- OPPORTUNITY -->
 
           <section id="opportunity">
 
@@ -515,29 +632,33 @@
             </p>
 
             <h2>
-              AI is moving quickly. Understanding how to use it matters just as much.
+              Why do smart people with good ideas build things nobody uses?
             </h2>
 
             <p class="lead">
-              The challenge is no longer simply understanding what artificial
-              intelligence can do. The bigger question is how we translate
-              rapidly evolving AI capabilities into ideas, solutions, and
-              opportunities that create meaningful impact.
+              AI has made it easier than ever to build impressive prototypes.
+              But building something technically impressive is not the same as
+              creating something people need, trust, adopt, and use.
             </p>
 
             <p>
               The <strong>“IDea to Impact”</strong> workshop at Kean University
-              created an opportunity to explore that transition: how people can
-              move from identifying an interesting idea to thinking critically
-              about implementation, value, responsibility, and impact.
+              explored the gap between an AI idea and a solution that creates
+              measurable value.
+            </p>
+
+            <p>
+              The central question was simple:
+              <strong>How do we move from “This is a cool AI idea” to
+              “This solves a real problem”?</strong>
             </p>
 
             <div class="highlight">
 
               <p>
-                The goal was not to treat AI as technology for technology's sake,
-                but to explore how emerging capabilities can become tools for
-                solving real problems.
+                The best AI solutions do not start with the fanciest model.
+                They start with a real problem, a specific user, and a clear
+                definition of value.
               </p>
 
             </div>
@@ -545,174 +666,441 @@
           </section>
 
 
-          <!-- THE CONVERSATION -->
+          <!-- VALUE -->
 
-          <section id="conversation">
+          <section id="value">
 
             <p class="eyebrow">
-              02 · THE CONVERSATION
+              02 · AI CREATES VALUE
             </p>
 
             <h2>
-              Turning curiosity into action.
+              A simple lens for evaluating AI use cases.
             </h2>
 
             <p>
-              The workshop focused on the space between an idea and its
-              implementation. That means asking better questions before
-              reaching for a model, platform, or tool.
+              We explored four fundamental ways AI can create business and
+              organizational value.
             </p>
 
-            <div class="cards">
+            <div class="value-grid">
 
-              <div class="card">
+              <div class="value-card">
 
-                <div class="card-number">
-                  01
-                </div>
+                <div class="number">1</div>
 
-                <h3>
-                  Identify the problem
-                </h3>
+                <h3>Cost</h3>
 
                 <p>
-                  Start with a meaningful problem rather than starting with a
-                  technology. Understand who experiences the problem and why it
-                  matters.
+                  Perform the same work cheaper or faster by reducing manual
+                  effort, processing time, or operational overhead.
                 </p>
 
               </div>
 
 
-              <div class="card">
+              <div class="value-card">
 
-                <div class="card-number">
-                  02
-                </div>
+                <div class="number">2</div>
 
-                <h3>
-                  Explore what AI enables
-                </h3>
+                <h3>Revenue</h3>
 
                 <p>
-                  Evaluate where AI can augment human capabilities, accelerate
-                  workflows, improve access to information, or unlock new forms
-                  of interaction.
+                  Sell more, improve conversion, increase productivity, or
+                  create opportunities for better margins.
                 </p>
 
               </div>
 
 
-              <div class="card">
+              <div class="value-card">
 
-                <div class="card-number">
-                  03
-                </div>
+                <div class="number">3</div>
 
-                <h3>
-                  Think beyond the prototype
-                </h3>
+                <h3>Experience</h3>
 
                 <p>
-                  Consider evaluation, reliability, cost, latency, security,
-                  privacy, users, and organizational adoption — not just whether
-                  a demo works.
+                  Improve customer and employee journeys through better
+                  personalization, responsiveness, and access to information.
                 </p>
 
               </div>
 
 
-              <div class="card">
+              <div class="value-card">
 
-                <div class="card-number">
-                  04
-                </div>
+                <div class="number">4</div>
 
-                <h3>
-                  Measure the impact
-                </h3>
+                <h3>Capability Shift</h3>
 
                 <p>
-                  Define what success looks like and determine whether the
-                  resulting solution actually improves the problem it was built
-                  to address.
+                  Augment people and enable new capabilities rather than simply
+                  thinking about AI as a replacement for human work.
                 </p>
 
               </div>
 
             </div>
 
+            <div class="highlight">
+
+              <p>
+                <strong>
+                  AI creates value when it improves a key metric in a
+                  measurable, repeatable way on a decision or workflow.
+                </strong>
+              </p>
+
+            </div>
+
           </section>
 
 
-          <!-- AI IN PRACTICE -->
+          <!-- HEALTHCARE -->
 
-          <section id="practice">
+          <section id="applications">
 
             <p class="eyebrow">
               03 · AI IN PRACTICE
             </p>
 
             <h2>
-              From AI concepts to real-world applications.
+              From AI capabilities to real-world applications.
             </h2>
 
             <p>
-              The conversation connected emerging AI capabilities with practical
-              applications. Rather than presenting AI as a black box, the focus
-              was on understanding how these systems can be thoughtfully applied
-              to real problems.
+              Healthcare provided a useful lens for discussing where AI can
+              create value — and why deployment requires much more than a
+              working model.
             </p>
 
-            <p>
-              Topics can include examples such as generative AI, large language
-              models, intelligent agents, automation, data-driven decision
-              making, and human-AI collaboration.
-            </p>
+            <div class="cards">
 
-            <div class="highlight">
+              <div class="card">
 
-              <p>
-                <strong>Technology is the enabler. Impact is the outcome.</strong>
-              </p>
+                <div class="card-number">
+                  HEALTHCARE
+                </div>
 
-            </div>
+                <h3>
+                  Clinical Decision Support
+                </h3>
 
-            <!-- Replace these with your actual workshop photos -->
+                <p>
+                  AI systems can analyze clinical information to support
+                  clinicians in decision-making and information retrieval.
+                </p>
 
-            <div class="photo-grid">
+              </div>
 
-              <img
-                src="images/idea-to-impact-2.jpeg"
-                alt="Participants during the IDea to Impact workshop at Kean University"
-              />
 
-              <img
-                src="images/idea-to-impact-3.jpeg"
-                alt="Sajid Hussain presenting during the IDea to Impact workshop"
-              />
+              <div class="card">
+
+                <div class="card-number">
+                  HEALTHCARE
+                </div>
+
+                <h3>
+                  Drug Discovery
+                </h3>
+
+                <p>
+                  AI can accelerate the exploration and prioritization of
+                  potential drug candidates.
+                </p>
+
+              </div>
+
+
+              <div class="card">
+
+                <div class="card-number">
+                  HEALTHCARE
+                </div>
+
+                <h3>
+                  Patient Monitoring
+                </h3>
+
+                <p>
+                  Intelligent systems can continuously analyze signals and
+                  surface patterns that may require attention.
+                </p>
+
+              </div>
+
+
+              <div class="card">
+
+                <div class="card-number">
+                  HEALTHCARE
+                </div>
+
+                <h3>
+                  Administrative Automation
+                </h3>
+
+                <p>
+                  AI can support scheduling, documentation, billing, and other
+                  repetitive operational workflows.
+                </p>
+
+              </div>
+
+
+              <div class="card">
+
+                <div class="card-number">
+                  HEALTHCARE
+                </div>
+
+                <h3>
+                  Personalized Care
+                </h3>
+
+                <p>
+                  Data-driven systems can support more individualized care
+                  decisions based on relevant patient information.
+                </p>
+
+              </div>
+
+
+              <div class="card">
+
+                <div class="card-number">
+                  HEALTHCARE
+                </div>
+
+                <h3>
+                  Clinical Workflows
+                </h3>
+
+                <p>
+                  Automation can reduce repetitive administrative work and
+                  allow clinicians to spend more time on higher-value tasks.
+                </p>
+
+              </div>
 
             </div>
 
           </section>
 
 
-          <!-- IDEA TO IMPACT -->
+          <!-- PRODUCTION CHATBOT -->
 
-          <section id="impact">
+          <section id="production">
 
             <p class="eyebrow">
-              04 · IDEA → IMPACT
+              04 · PRODUCTION THINKING
             </p>
 
             <h2>
-              Building the bridge between possibility and implementation.
+              A chatbot can work perfectly and still be a bad system.
+            </h2>
+
+            <p class="lead">
+              One example explored what happens when an AI chatbot is designed
+              without considering concurrency, conversation state, latency,
+              token usage, and cost.
+            </p>
+
+            <div class="scenario">
+
+              <div class="scenario-title">
+                The seemingly simple interaction
+              </div>
+
+              <div class="message">
+                <strong>User:</strong>
+                “I'm feeling really depressed today and I just can't...”
+              </div>
+
+              <div class="message ai">
+                <strong>AI:</strong>
+                Generates a long empathetic response.
+              </div>
+
+              <div class="message">
+                <strong>User:</strong>
+                Sends another message before the first response finishes.
+              </div>
+
+              <div class="message">
+                <strong>System:</strong>
+                Sends another request containing the full conversation history.
+              </div>
+
+              <div class="message">
+                <strong>User:</strong>
+                Continues sending messages rapidly.
+              </div>
+
+              <div class="warning">
+                <strong>The production problem:</strong>
+                repeated requests, growing conversation history, token
+                consumption, concurrent requests, latency, and API cost can
+                compound rapidly.
+              </div>
+
+            </div>
+
+            <div class="highlight">
+
+              <p>
+                A production AI engineer has to ask:
+                <strong>
+                  What happens when the user behaves in a way I didn't expect?
+                </strong>
+              </p>
+
+            </div>
+
+            <p>
+              This is the difference between a demo and a system that could
+              actually ship. Production systems have to account for real users,
+              slow networks, malformed inputs, concurrency, unexpected behavior,
+              cost, reliability, security, and malicious intent.
+            </p>
+
+          </section>
+
+
+          <!-- AGENTIC AI -->
+
+          <section id="agentic">
+
+            <p class="eyebrow">
+              05 · AGENTIC AI
+            </p>
+
+            <h2>
+              Should your business use Agentic AI?
+            </h2>
+
+            <p class="lead">
+              The question is not whether agents are exciting. The question is
+              whether an agent is the right tool for a specific workflow.
+            </p>
+
+            <p>
+              We examined why successful automation initiatives generally begin
+              with a narrow, repetitive, high-volume process rather than trying
+              to automate everything at once.
+            </p>
+
+            <div class="cards">
+
+              <div class="card">
+
+                <div class="card-number">
+                  START SMALL
+                </div>
+
+                <h3>
+                  Pick one workflow
+                </h3>
+
+                <p>
+                  Identify a narrow process with clear inputs, predictable
+                  outcomes, meaningful volume, and measurable performance.
+                </p>
+
+              </div>
+
+
+              <div class="card">
+
+                <div class="card-number">
+                  PROVE VALUE
+                </div>
+
+                <h3>
+                  Establish a baseline
+                </h3>
+
+                <p>
+                  Measure the current process before introducing AI so the
+                  improvement can actually be demonstrated.
+                </p>
+
+              </div>
+
+
+              <div class="card">
+
+                <div class="card-number">
+                  VALIDATE
+                </div>
+
+                <h3>
+                  Test failure modes
+                </h3>
+
+                <p>
+                  Determine what happens when the system encounters ambiguity,
+                  missing information, unexpected inputs, or edge cases.
+                </p>
+
+              </div>
+
+
+              <div class="card">
+
+                <div class="card-number">
+                  SCALE
+                </div>
+
+                <h3>
+                  Expand deliberately
+                </h3>
+
+                <p>
+                  Scale only after the first workflow demonstrates reliable
+                  value and the operational model is understood.
+                </p>
+
+              </div>
+
+            </div>
+
+            <div class="highlight">
+
+              <p>
+                <strong>
+                  The lesson: don't automate everything.
+                </strong>
+                Pick one boring, repetitive, high-volume process and prove
+                that AI can make it meaningfully better.
+              </p>
+
+            </div>
+
+          </section>
+
+
+          <!-- PRODUCT THINKING -->
+
+          <section id="product">
+
+            <p class="eyebrow">
+              06 · PRODUCT THINKING
+            </p>
+
+            <h2>
+              The technology is rarely the whole value proposition.
             </h2>
 
             <p>
-              One of the most important lessons in AI is that a successful
-              prototype is only the beginning. Real impact requires understanding
-              the environment in which a solution will operate.
+              A recurring problem with AI projects is building something
+              technically sophisticated that nobody needs, trusts, or adopts.
+            </p>
+
+            <p>
+              We looked at examples such as healthcare tools patients did not
+              trust, enterprise systems that did not fit existing workflows,
+              and technically impressive products that failed to retain users.
             </p>
 
             <div class="cards">
@@ -720,12 +1108,12 @@
               <div class="card">
 
                 <h3>
-                  Human-centered
+                  Clear Problem Statement
                 </h3>
 
                 <p>
-                  Design AI systems around the people who will use them and the
-                  problems they actually experience.
+                  What specific user wastes time or money doing what painful
+                  process today?
                 </p>
 
               </div>
@@ -734,12 +1122,12 @@
               <div class="card">
 
                 <h3>
-                  Responsible
+                  Specific User
                 </h3>
 
                 <p>
-                  Consider accuracy, bias, privacy, security, transparency, and
-                  appropriate human oversight.
+                  Who exactly is the user? What is their context, workflow,
+                  constraint, and current behavior?
                 </p>
 
               </div>
@@ -748,12 +1136,12 @@
               <div class="card">
 
                 <h3>
-                  Practical
+                  Value Proposition
                 </h3>
 
                 <p>
-                  Evaluate feasibility, infrastructure, cost, scalability, and
-                  operational requirements.
+                  Instead of the old way, what can the user do now — and what
+                  measurable outcome does that create?
                 </p>
 
               </div>
@@ -762,12 +1150,11 @@
               <div class="card">
 
                 <h3>
-                  Measurable
+                  Success Metric
                 </h3>
 
                 <p>
-                  Define meaningful outcomes and evaluate whether AI is actually
-                  producing the intended value.
+                  What metric will prove that the solution actually works?
                 </p>
 
               </div>
@@ -777,30 +1164,426 @@
           </section>
 
 
-          <!-- KEY TAKEAWAYS -->
+          <!-- CHATGPT TEST -->
+
+          <section>
+
+            <p class="eyebrow">
+              07 · DIFFERENTIATION
+            </p>
+
+            <h2>
+              “Why build this when ChatGPT exists?”
+            </h2>
+
+            <p class="lead">
+              Every AI product needs a compelling answer to this question.
+            </p>
+
+            <p>
+              Saying “ours is better,” “ours is specialized,” or “ours uses
+              RAG” does not explain why a customer should care.
+            </p>
+
+            <div class="cards">
+
+              <div class="card">
+
+                <h3>
+                  Domain Data
+                </h3>
+
+                <p>
+                  The system uses proprietary or domain-specific information
+                  that a general-purpose model does not have access to.
+                </p>
+
+              </div>
+
+
+              <div class="card">
+
+                <h3>
+                  Workflow Integration
+                </h3>
+
+                <p>
+                  The solution is embedded directly into the workflow rather
+                  than requiring users to copy and paste information between
+                  systems.
+                </p>
+
+              </div>
+
+
+              <div class="card">
+
+                <h3>
+                  Compliance & Security
+                </h3>
+
+                <p>
+                  The architecture addresses the organization's security,
+                  privacy, compliance, and governance requirements.
+                </p>
+
+              </div>
+
+
+              <div class="card">
+
+                <h3>
+                  Non-Technical UX
+                </h3>
+
+                <p>
+                  The product makes AI useful without requiring users to
+                  understand models, prompts, embeddings, or retrieval systems.
+                </p>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- DEMO / PITCH -->
+
+          <section>
+
+            <p class="eyebrow">
+              08 · DEMO & STORYTELLING
+            </p>
+
+            <h2>
+              Nobody cares how complicated the technology is if you cannot
+              explain why it matters.
+            </h2>
+
+            <p>
+              A strong AI project needs more than a technical architecture.
+              It needs a clear narrative that connects the problem, solution,
+              evidence, and impact.
+            </p>
+
+            <div class="highlight">
+
+              <p>
+                <strong>
+                  “Nurses waste 2 hours a day triaging patient messages.
+                  Our AI reduces that workflow to 30 seconds.”
+                </strong>
+              </p>
+
+            </div>
+
+            <p>
+              That story communicates a problem, a user, a measurable outcome,
+              and a reason to care — before discussing the underlying technology.
+            </p>
+
+            <div class="cards">
+
+              <div class="card">
+
+                <h3>
+                  Problem
+                </h3>
+
+                <p>
+                  State the pain in one sentence and quantify it whenever
+                  possible.
+                </p>
+
+              </div>
+
+
+              <div class="card">
+
+                <h3>
+                  Working Demo
+                </h3>
+
+                <p>
+                  Show the system working smoothly against realistic inputs.
+                </p>
+
+              </div>
+
+
+              <div class="card">
+
+                <h3>
+                  Business Viability
+                </h3>
+
+                <p>
+                  Explain why the solution could become a sustainable product
+                  or workflow improvement.
+                </p>
+
+              </div>
+
+
+              <div class="card">
+
+                <h3>
+                  Storytelling
+                </h3>
+
+                <p>
+                  Build a simple narrative: problem → solution → evidence →
+                  impact.
+                </p>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- IMPLEMENTATION -->
+
+          <section id="roadmap">
+
+            <p class="eyebrow">
+              09 · IMPLEMENTATION ROADMAP
+            </p>
+
+            <h2>
+              From assessment to scale.
+            </h2>
+
+            <p>
+              Turning an AI idea into an organizational capability requires a
+              deliberate implementation path.
+            </p>
+
+            <div class="framework">
+
+              <div class="framework-title">
+                AI Implementation Roadmap
+              </div>
+
+              <div class="framework-grid">
+
+                <div class="framework-step">
+                  <span>01</span>
+                  <strong>Assessment</strong>
+                </div>
+
+                <div class="framework-step">
+                  <span>02</span>
+                  <strong>Planning</strong>
+                </div>
+
+                <div class="framework-step">
+                  <span>03</span>
+                  <strong>Pilot</strong>
+                </div>
+
+                <div class="framework-step">
+                  <span>04</span>
+                  <strong>Scale</strong>
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="roadmap">
+
+              <div class="roadmap-item">
+
+                <div class="roadmap-number">
+                  ASSESS
+                </div>
+
+                <p>
+                  Identify high-value workflows, current pain points,
+                  constraints, stakeholders, data, and measurable opportunities.
+                </p>
+
+              </div>
+
+
+              <div class="roadmap-item">
+
+                <div class="roadmap-number">
+                  PLAN
+                </div>
+
+                <p>
+                  Define the architecture, users, success metrics, governance,
+                  security requirements, and implementation strategy.
+                </p>
+
+              </div>
+
+
+              <div class="roadmap-item">
+
+                <div class="roadmap-number">
+                  PILOT
+                </div>
+
+                <p>
+                  Start with a narrow use case and validate the solution with
+                  real users and realistic conditions.
+                </p>
+
+              </div>
+
+
+              <div class="roadmap-item">
+
+                <div class="roadmap-number">
+                  SCALE
+                </div>
+
+                <p>
+                  Expand only after the system demonstrates reliable value,
+                  operational readiness, and measurable outcomes.
+                </p>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- MEASUREMENT -->
+
+          <section>
+
+            <p class="eyebrow">
+              10 · MEASURING SUCCESS
+            </p>
+
+            <h2>
+              If you cannot measure the improvement, you have not demonstrated
+              the impact.
+            </h2>
+
+            <p>
+              Success metrics should be defined before scaling an AI solution.
+              Depending on the use case, metrics can include:
+            </p>
+
+            <div class="cards">
+
+              <div class="card">
+                <h3>Time</h3>
+                <p>
+                  How much faster is the workflow?
+                </p>
+              </div>
+
+              <div class="card">
+                <h3>Cost</h3>
+                <p>
+                  How much operational cost is reduced?
+                </p>
+              </div>
+
+              <div class="card">
+                <h3>Quality</h3>
+                <p>
+                  Does the system improve accuracy or consistency?
+                </p>
+              </div>
+
+              <div class="card">
+                <h3>Adoption</h3>
+                <p>
+                  Are people actually using the system?
+                </p>
+              </div>
+
+              <div class="card">
+                <h3>Reliability</h3>
+                <p>
+                  Does it continue to work under realistic conditions?
+                </p>
+              </div>
+
+              <div class="card">
+                <h3>Business Impact</h3>
+                <p>
+                  Does the solution improve the metric that actually matters?
+                </p>
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- PRODUCTION MINDSET -->
+
+          <section>
+
+            <p class="eyebrow">
+              11 · THE PRODUCTION MINDSET
+            </p>
+
+            <h2>
+              What happens when 1,000 people use it tomorrow?
+            </h2>
+
+            <p class="lead">
+              The best AI systems are not necessarily the ones with the most
+              sophisticated models. They are the ones where someone thought
+              carefully about how the system could fail — and fixed those
+              failure modes before users encountered them.
+            </p>
+
+            <p>
+              Production thinking means considering real users with unusual
+              names, slow internet connections, malformed inputs, unexpected
+              behavior, high traffic, rising API costs, security threats,
+              latency, and malicious intent.
+            </p>
+
+            <div class="highlight">
+
+              <p>
+                <strong>
+                  Before writing a single line of code, ask:
+                  “If 1,000 people used this tomorrow, what would catch on fire
+                  first?”
+                </strong>
+              </p>
+
+            </div>
+
+          </section>
+
+
+          <!-- TAKEAWAYS -->
 
           <section id="takeaways">
 
             <p class="eyebrow">
-              05 · KEY TAKEAWAYS
+              12 · KEY TAKEAWAYS
             </p>
 
             <h2>
-              What I wanted participants to leave with.
+              The principles I wanted participants to leave with.
             </h2>
 
             <div class="takeaways">
 
               <div class="takeaway">
 
-                <div class="takeaway-number">
-                  01
-                </div>
+                <div class="takeaway-number">01</div>
 
                 <p>
-                  <strong>Start with problems, not technology.</strong>
-                  The strongest AI solutions begin with a clear understanding
-                  of the problem they are trying to solve.
+                  <strong>Start with the problem.</strong>
+                  Technology should serve a clearly defined user need.
                 </p>
 
               </div>
@@ -808,14 +1591,12 @@
 
               <div class="takeaway">
 
-                <div class="takeaway-number">
-                  02
-                </div>
+                <div class="takeaway-number">02</div>
 
                 <p>
-                  <strong>AI literacy is becoming essential.</strong>
-                  People across disciplines need enough understanding of AI to
-                  identify opportunities, limitations, and risks.
+                  <strong>Define value.</strong>
+                  Know whether the opportunity is about cost, revenue,
+                  experience, or a capability shift.
                 </p>
 
               </div>
@@ -823,14 +1604,12 @@
 
               <div class="takeaway">
 
-                <div class="takeaway-number">
-                  03
-                </div>
+                <div class="takeaway-number">03</div>
 
                 <p>
-                  <strong>Prototypes are not products.</strong>
-                  Moving from an impressive demo to a dependable system requires
-                  engineering, evaluation, governance, and measurement.
+                  <strong>Start narrow.</strong>
+                  Prove an AI workflow on one specific, high-value use case
+                  before attempting to scale.
                 </p>
 
               </div>
@@ -838,14 +1617,12 @@
 
               <div class="takeaway">
 
-                <div class="takeaway-number">
-                  04
-                </div>
+                <div class="takeaway-number">04</div>
 
                 <p>
-                  <strong>Responsible adoption matters.</strong>
-                  The goal should not be to adopt AI everywhere, but to identify
-                  where it can genuinely improve outcomes.
+                  <strong>Differentiate on value.</strong>
+                  Domain data, workflow integration, compliance, security, and
+                  UX can matter more than model sophistication.
                 </p>
 
               </div>
@@ -853,14 +1630,25 @@
 
               <div class="takeaway">
 
-                <div class="takeaway-number">
-                  05
-                </div>
+                <div class="takeaway-number">05</div>
 
                 <p>
-                  <strong>Ideas need execution.</strong>
-                  The value of an idea ultimately comes from what happens when
-                  it moves from conversation into the real world.
+                  <strong>Measure the outcome.</strong>
+                  A successful AI system improves a meaningful metric in a
+                  measurable and repeatable way.
+                </p>
+
+              </div>
+
+
+              <div class="takeaway">
+
+                <div class="takeaway-number">06</div>
+
+                <p>
+                  <strong>Think about failure before launch.</strong>
+                  Production readiness means anticipating how real users and
+                  real systems will behave.
                 </p>
 
               </div>
@@ -875,46 +1663,51 @@
           <section id="perspective">
 
             <p class="eyebrow">
-              06 · MY PERSPECTIVE
+              13 · MY PERSPECTIVE
             </p>
 
             <h2>
-              AI leadership is about making the technology useful.
+              AI leadership is about connecting technology to impact.
             </h2>
 
             <p class="lead">
-              I believe AI leadership sits at the intersection of technology,
-              people, and impact.
+              I believe the most important AI skill is not knowing which model
+              to use. It is knowing <strong>where AI should be used</strong> —
+              and where it should not.
             </p>
 
             <p>
-              Building AI systems requires strong engineering and technical
-              foundations. But meaningful adoption requires something more:
-              the ability to communicate what the technology can do, recognize
-              where it should be used, understand its limitations, and help
-              people translate possibilities into action.
+              Building AI systems requires technical depth. Creating impact
+              requires a broader perspective: understanding users, workflows,
+              business value, product design, risk, infrastructure, evaluation,
+              and adoption.
             </p>
 
             <p>
-              That is the role I aim to play — building AI systems while also
-              helping organizations, educators, and communities understand how
-              those systems can be applied responsibly and effectively.
+              My approach is to bridge those worlds — taking emerging AI
+              capabilities and translating them into systems that are useful,
+              measurable, reliable, and responsible.
             </p>
 
             <div class="quote">
 
               <p>
-                “AI leadership is not simply about building models. It is about
-                helping people understand what is possible, identifying where AI
-                creates genuine value, and turning that vision into action.”
+                “Nobody cares how it works.
+                They care that it works — and why it matters.”
               </p>
 
             </div>
 
+            <p style="margin-top: 35px;">
+              That is the mindset behind <strong>From Idea to Impact</strong>:
+              move beyond AI demos and start thinking like the person who has
+              to make the system actually work in the real world.
+            </p>
+
           </section>
 
 
-          <!-- EVENT LINKS -->
+          <!-- LINKS -->
 
           <section>
 
@@ -923,18 +1716,19 @@
             </p>
 
             <h2>
-              The conversation continues.
+              Explore the work behind the conversation.
             </h2>
 
             <p>
-              Explore the event, presentation materials, or related work to see
-              how these ideas connect to my broader work in AI engineering,
-              education, and innovation.
+              The workshop connects directly to my broader work across AI
+              engineering, generative AI, agentic systems, education, and
+              production AI.
             </p>
 
             <div class="links">
 
-              <!-- Replace with your actual LinkedIn post -->
+              <!-- Replace with your actual LinkedIn post URL -->
+
               <a
                 href="https://www.linkedin.com/"
                 target="_blank"
@@ -964,8 +1758,6 @@
 
   </main>
 
-
-  <!-- FOOTER -->
 
   <footer>
 
