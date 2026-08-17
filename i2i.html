@@ -1,0 +1,980 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>From Idea to Impact — AI Leadership | Sajid Hussain</title>
+
+  <meta
+    name="description"
+    content="From Idea to Impact — a workshop on practical AI, innovation, responsible adoption, and turning ideas into real-world impact, delivered by Sajid Hussain at Kean University."
+  />
+
+  <style>
+    :root {
+      --bg: #fbfaf7;
+      --surface: #ffffff;
+      --text: #171717;
+      --muted: #6b6b6b;
+      --border: #e8e5df;
+      --accent: #111111;
+      --soft: #f1efe9;
+      --max: 1100px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+      line-height: 1.65;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      width: min(var(--max), calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    /* NAV */
+
+    nav {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .back-link {
+      color: var(--muted);
+      font-size: 14px;
+      transition: color 0.2s ease;
+    }
+
+    .back-link:hover {
+      color: var(--text);
+    }
+
+    /* HERO */
+
+    .hero {
+      padding: 100px 0 80px;
+      max-width: 900px;
+    }
+
+    .eyebrow {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 900px;
+      font-size: clamp(48px, 7vw, 86px);
+      line-height: 0.98;
+      letter-spacing: -0.055em;
+      font-weight: 750;
+    }
+
+    .hero-description {
+      max-width: 720px;
+      margin: 32px 0 0;
+      color: #4f4f4f;
+      font-size: clamp(18px, 2vw, 23px);
+      line-height: 1.55;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 32px;
+    }
+
+    .tag {
+      padding: 8px 13px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface);
+      color: #4c4c4c;
+      font-size: 13px;
+    }
+
+    /* FEATURE IMAGE */
+
+    .hero-image {
+      margin: 0 0 100px;
+      overflow: hidden;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: var(--soft);
+    }
+
+    .hero-image img {
+      display: block;
+      width: 100%;
+      max-height: 650px;
+      object-fit: cover;
+    }
+
+    /* CONTENT */
+
+    .content {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 80px;
+      padding-bottom: 100px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 30px;
+      align-self: start;
+    }
+
+    .sidebar-title {
+      margin-bottom: 18px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 6px 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .sidebar a:hover {
+      color: var(--text);
+    }
+
+    section {
+      scroll-margin-top: 40px;
+      margin-bottom: 90px;
+    }
+
+    section:last-child {
+      margin-bottom: 0;
+    }
+
+    h2 {
+      margin: 0 0 22px;
+      font-size: clamp(30px, 4vw, 46px);
+      line-height: 1.05;
+      letter-spacing: -0.035em;
+    }
+
+    h3 {
+      margin: 40px 0 10px;
+      font-size: 20px;
+      letter-spacing: -0.015em;
+    }
+
+    p {
+      margin: 0 0 20px;
+      color: #454545;
+      font-size: 17px;
+    }
+
+    .lead {
+      color: var(--text);
+      font-size: 21px;
+      line-height: 1.55;
+    }
+
+    .highlight {
+      margin: 35px 0;
+      padding: 28px 30px;
+      border-left: 3px solid var(--text);
+      background: var(--soft);
+    }
+
+    .highlight p {
+      margin: 0;
+      color: var(--text);
+      font-size: 20px;
+      line-height: 1.5;
+    }
+
+    /* CARDS */
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 30px;
+    }
+
+    .card {
+      padding: 26px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface);
+    }
+
+    .card-number {
+      margin-bottom: 14px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+    }
+
+    .card p {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    /* PHOTO GRID */
+
+    .photo-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 14px;
+      margin-top: 35px;
+    }
+
+    .photo-grid img {
+      width: 100%;
+      height: 360px;
+      object-fit: cover;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--soft);
+    }
+
+    .photo-grid img:nth-child(2) {
+      height: 360px;
+    }
+
+    /* TAKEAWAYS */
+
+    .takeaways {
+      display: grid;
+      gap: 14px;
+      margin-top: 30px;
+    }
+
+    .takeaway {
+      display: grid;
+      grid-template-columns: 45px 1fr;
+      gap: 18px;
+      padding: 20px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .takeaway:last-child {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .takeaway-number {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .takeaway p {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    /* QUOTE */
+
+    .quote {
+      padding: 55px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .quote p {
+      margin: 0;
+      color: var(--text);
+      font-size: clamp(25px, 4vw, 40px);
+      line-height: 1.2;
+      letter-spacing: -0.025em;
+    }
+
+    /* LINKS */
+
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      padding: 12px 18px;
+      border-radius: 8px;
+      background: var(--accent);
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .button.secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    /* FOOTER */
+
+    footer {
+      padding: 35px 0;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* MOBILE */
+
+    @media (max-width: 800px) {
+      .hero {
+        padding: 70px 0 60px;
+      }
+
+      .hero-image {
+        margin-bottom: 70px;
+      }
+
+      .content {
+        display: block;
+      }
+
+      .sidebar {
+        position: static;
+        margin-bottom: 50px;
+        padding-bottom: 25px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .sidebar a {
+        display: inline-block;
+        margin-right: 18px;
+      }
+
+      section {
+        margin-bottom: 65px;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .photo-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .photo-grid img,
+      .photo-grid img:nth-child(2) {
+        height: 300px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVIGATION -->
+
+  <nav>
+    <div class="container nav-inner">
+      <a href="index.html" class="brand">
+        Sajid Hussain
+      </a>
+
+      <a href="index.html" class="back-link">
+        ← Back to portfolio
+      </a>
+    </div>
+  </nav>
+
+
+  <!-- HERO -->
+
+  <main>
+
+    <div class="container">
+
+      <header class="hero">
+
+        <p class="eyebrow">
+          AI LEADERSHIP · KEAN UNIVERSITY · 2026
+        </p>
+
+        <h1>
+          From Idea to Impact
+        </h1>
+
+        <p class="hero-description">
+          Leading conversations on practical AI, innovation, responsible
+          adoption, and the journey from an idea to something that creates
+          meaningful real-world impact.
+        </p>
+
+        <div class="hero-meta">
+          <span class="tag">AI Leadership</span>
+          <span class="tag">Workshop</span>
+          <span class="tag">Generative AI</span>
+          <span class="tag">Innovation</span>
+          <span class="tag">Responsible AI</span>
+        </div>
+
+      </header>
+
+
+      <!-- HERO PHOTO -->
+
+      <div class="hero-image">
+
+        <img
+          src="images/idea-to-impact.jpeg"
+          alt="Sajid Hussain delivering the IDea to Impact workshop at Kean University"
+        />
+
+      </div>
+
+
+      <!-- CONTENT -->
+
+      <div class="content">
+
+        <!-- SIDEBAR -->
+
+        <aside class="sidebar">
+
+          <div class="sidebar-title">
+            On this page
+          </div>
+
+          <a href="#opportunity">The Opportunity</a>
+          <a href="#conversation">The Conversation</a>
+          <a href="#practice">AI in Practice</a>
+          <a href="#impact">Idea → Impact</a>
+          <a href="#takeaways">Key Takeaways</a>
+          <a href="#perspective">My Perspective</a>
+
+        </aside>
+
+
+        <!-- MAIN CONTENT -->
+
+        <div>
+
+
+          <!-- THE OPPORTUNITY -->
+
+          <section id="opportunity">
+
+            <p class="eyebrow">
+              01 · THE OPPORTUNITY
+            </p>
+
+            <h2>
+              AI is moving quickly. Understanding how to use it matters just as much.
+            </h2>
+
+            <p class="lead">
+              The challenge is no longer simply understanding what artificial
+              intelligence can do. The bigger question is how we translate
+              rapidly evolving AI capabilities into ideas, solutions, and
+              opportunities that create meaningful impact.
+            </p>
+
+            <p>
+              The <strong>“IDea to Impact”</strong> workshop at Kean University
+              created an opportunity to explore that transition: how people can
+              move from identifying an interesting idea to thinking critically
+              about implementation, value, responsibility, and impact.
+            </p>
+
+            <div class="highlight">
+
+              <p>
+                The goal was not to treat AI as technology for technology's sake,
+                but to explore how emerging capabilities can become tools for
+                solving real problems.
+              </p>
+
+            </div>
+
+          </section>
+
+
+          <!-- THE CONVERSATION -->
+
+          <section id="conversation">
+
+            <p class="eyebrow">
+              02 · THE CONVERSATION
+            </p>
+
+            <h2>
+              Turning curiosity into action.
+            </h2>
+
+            <p>
+              The workshop focused on the space between an idea and its
+              implementation. That means asking better questions before
+              reaching for a model, platform, or tool.
+            </p>
+
+            <div class="cards">
+
+              <div class="card">
+
+                <div class="card-number">
+                  01
+                </div>
+
+                <h3>
+                  Identify the problem
+                </h3>
+
+                <p>
+                  Start with a meaningful problem rather than starting with a
+                  technology. Understand who experiences the problem and why it
+                  matters.
+                </p>
+
+              </div>
+
+
+              <div class="card">
+
+                <div class="card-number">
+                  02
+                </div>
+
+                <h3>
+                  Explore what AI enables
+                </h3>
+
+                <p>
+                  Evaluate where AI can augment human capabilities, accelerate
+                  workflows, improve access to information, or unlock new forms
+                  of interaction.
+                </p>
+
+              </div>
+
+
+              <div class="card">
+
+                <div class="card-number">
+                  03
+                </div>
+
+                <h3>
+                  Think beyond the prototype
+                </h3>
+
+                <p>
+                  Consider evaluation, reliability, cost, latency, security,
+                  privacy, users, and organizational adoption — not just whether
+                  a demo works.
+                </p>
+
+              </div>
+
+
+              <div class="card">
+
+                <div class="card-number">
+                  04
+                </div>
+
+                <h3>
+                  Measure the impact
+                </h3>
+
+                <p>
+                  Define what success looks like and determine whether the
+                  resulting solution actually improves the problem it was built
+                  to address.
+                </p>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- AI IN PRACTICE -->
+
+          <section id="practice">
+
+            <p class="eyebrow">
+              03 · AI IN PRACTICE
+            </p>
+
+            <h2>
+              From AI concepts to real-world applications.
+            </h2>
+
+            <p>
+              The conversation connected emerging AI capabilities with practical
+              applications. Rather than presenting AI as a black box, the focus
+              was on understanding how these systems can be thoughtfully applied
+              to real problems.
+            </p>
+
+            <p>
+              Topics can include examples such as generative AI, large language
+              models, intelligent agents, automation, data-driven decision
+              making, and human-AI collaboration.
+            </p>
+
+            <div class="highlight">
+
+              <p>
+                <strong>Technology is the enabler. Impact is the outcome.</strong>
+              </p>
+
+            </div>
+
+            <!-- Replace these with your actual workshop photos -->
+
+            <div class="photo-grid">
+
+              <img
+                src="images/idea-to-impact-2.jpeg"
+                alt="Participants during the IDea to Impact workshop at Kean University"
+              />
+
+              <img
+                src="images/idea-to-impact-3.jpeg"
+                alt="Sajid Hussain presenting during the IDea to Impact workshop"
+              />
+
+            </div>
+
+          </section>
+
+
+          <!-- IDEA TO IMPACT -->
+
+          <section id="impact">
+
+            <p class="eyebrow">
+              04 · IDEA → IMPACT
+            </p>
+
+            <h2>
+              Building the bridge between possibility and implementation.
+            </h2>
+
+            <p>
+              One of the most important lessons in AI is that a successful
+              prototype is only the beginning. Real impact requires understanding
+              the environment in which a solution will operate.
+            </p>
+
+            <div class="cards">
+
+              <div class="card">
+
+                <h3>
+                  Human-centered
+                </h3>
+
+                <p>
+                  Design AI systems around the people who will use them and the
+                  problems they actually experience.
+                </p>
+
+              </div>
+
+
+              <div class="card">
+
+                <h3>
+                  Responsible
+                </h3>
+
+                <p>
+                  Consider accuracy, bias, privacy, security, transparency, and
+                  appropriate human oversight.
+                </p>
+
+              </div>
+
+
+              <div class="card">
+
+                <h3>
+                  Practical
+                </h3>
+
+                <p>
+                  Evaluate feasibility, infrastructure, cost, scalability, and
+                  operational requirements.
+                </p>
+
+              </div>
+
+
+              <div class="card">
+
+                <h3>
+                  Measurable
+                </h3>
+
+                <p>
+                  Define meaningful outcomes and evaluate whether AI is actually
+                  producing the intended value.
+                </p>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- KEY TAKEAWAYS -->
+
+          <section id="takeaways">
+
+            <p class="eyebrow">
+              05 · KEY TAKEAWAYS
+            </p>
+
+            <h2>
+              What I wanted participants to leave with.
+            </h2>
+
+            <div class="takeaways">
+
+              <div class="takeaway">
+
+                <div class="takeaway-number">
+                  01
+                </div>
+
+                <p>
+                  <strong>Start with problems, not technology.</strong>
+                  The strongest AI solutions begin with a clear understanding
+                  of the problem they are trying to solve.
+                </p>
+
+              </div>
+
+
+              <div class="takeaway">
+
+                <div class="takeaway-number">
+                  02
+                </div>
+
+                <p>
+                  <strong>AI literacy is becoming essential.</strong>
+                  People across disciplines need enough understanding of AI to
+                  identify opportunities, limitations, and risks.
+                </p>
+
+              </div>
+
+
+              <div class="takeaway">
+
+                <div class="takeaway-number">
+                  03
+                </div>
+
+                <p>
+                  <strong>Prototypes are not products.</strong>
+                  Moving from an impressive demo to a dependable system requires
+                  engineering, evaluation, governance, and measurement.
+                </p>
+
+              </div>
+
+
+              <div class="takeaway">
+
+                <div class="takeaway-number">
+                  04
+                </div>
+
+                <p>
+                  <strong>Responsible adoption matters.</strong>
+                  The goal should not be to adopt AI everywhere, but to identify
+                  where it can genuinely improve outcomes.
+                </p>
+
+              </div>
+
+
+              <div class="takeaway">
+
+                <div class="takeaway-number">
+                  05
+                </div>
+
+                <p>
+                  <strong>Ideas need execution.</strong>
+                  The value of an idea ultimately comes from what happens when
+                  it moves from conversation into the real world.
+                </p>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- MY PERSPECTIVE -->
+
+          <section id="perspective">
+
+            <p class="eyebrow">
+              06 · MY PERSPECTIVE
+            </p>
+
+            <h2>
+              AI leadership is about making the technology useful.
+            </h2>
+
+            <p class="lead">
+              I believe AI leadership sits at the intersection of technology,
+              people, and impact.
+            </p>
+
+            <p>
+              Building AI systems requires strong engineering and technical
+              foundations. But meaningful adoption requires something more:
+              the ability to communicate what the technology can do, recognize
+              where it should be used, understand its limitations, and help
+              people translate possibilities into action.
+            </p>
+
+            <p>
+              That is the role I aim to play — building AI systems while also
+              helping organizations, educators, and communities understand how
+              those systems can be applied responsibly and effectively.
+            </p>
+
+            <div class="quote">
+
+              <p>
+                “AI leadership is not simply about building models. It is about
+                helping people understand what is possible, identifying where AI
+                creates genuine value, and turning that vision into action.”
+              </p>
+
+            </div>
+
+          </section>
+
+
+          <!-- EVENT LINKS -->
+
+          <section>
+
+            <p class="eyebrow">
+              CONTINUE EXPLORING
+            </p>
+
+            <h2>
+              The conversation continues.
+            </h2>
+
+            <p>
+              Explore the event, presentation materials, or related work to see
+              how these ideas connect to my broader work in AI engineering,
+              education, and innovation.
+            </p>
+
+            <div class="links">
+
+              <!-- Replace with your actual LinkedIn post -->
+              <a
+                href="https://www.linkedin.com/"
+                target="_blank"
+                rel="noreferrer"
+                class="button"
+              >
+                View on LinkedIn ↗
+              </a>
+
+              <a
+                href="index.html"
+                class="button secondary"
+              >
+                ← Back to Portfolio
+              </a>
+
+            </div>
+
+          </section>
+
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <!-- FOOTER -->
+
+  <footer>
+
+    <div class="container">
+      © 2026 Sajid Hussain · AI Engineer · Data Scientist · Educator
+    </div>
+
+  </footer>
+
+</body>
+</html>
+```
