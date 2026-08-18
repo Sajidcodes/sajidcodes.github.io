@@ -1,42 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>Foundations of Programming — What Is Programming?</title>
+  <title>Foundations of Programming | Python</title>
 
-<style>
-:root {
-    --bg: #fafaf8;
-    --surface: #ffffff;
-    --surface-soft: #f4f4f0;
-    --text: #171717;
-    --muted: #666;
-    --border: #deded8;
-    --accent: #1f5eff;
-    --accent-dark: #1648c7;
-    --green: #137333;
-    --red: #b42318;
-    --code-bg: #171717;
-    --code-text: #f5f5f5;
-    --shadow: 0 8px 30px rgba(0,0,0,.06);
-    --max-width: 980px;
-}
+  <!-- Pyodide -->
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.28.2/full/pyodide.js"></script>
 
-* {
-    box-sizing: border-box;
-}
+  <style>
+    :root {
+      --bg: #fbfbf8;
+      --surface: #ffffff;
+      --text: #171717;
+      --muted: #666;
+      --light: #e7e7e2;
+      --accent: #1f5eff;
+      --accent-light: #eef3ff;
+      --success: #176b3a;
+      --success-bg: #edf8f1;
+      --warning: #8a5a00;
+      --warning-bg: #fff8e7;
+      --code-bg: #171717;
+      --code-text: #f5f5f5;
+      --max: 900px;
+      --radius: 12px;
+    }
 
-html {
-    scroll-behavior: smooth;
-}
+    * {
+      box-sizing: border-box;
+    }
 
-body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family:
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family:
         -apple-system,
         BlinkMacSystemFont,
         "Segoe UI",
@@ -44,1349 +48,1528 @@ body {
         Helvetica,
         Arial,
         sans-serif;
-    line-height: 1.7;
-}
+      line-height: 1.7;
+    }
 
-.container {
-    width: min(var(--max-width), calc(100% - 40px));
-    margin: 0 auto;
-}
+    .page {
+      width: min(var(--max), calc(100% - 40px));
+      margin: 0 auto;
+      padding: 70px 0 100px;
+    }
 
-/* --------------------------------
-   Header
--------------------------------- */
+    /* --------------------------------
+       HEADER
+    -------------------------------- */
 
-header {
-    border-bottom: 1px solid var(--border);
-    background: rgba(250,250,248,.95);
-    backdrop-filter: blur(10px);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
+    .hero {
+      margin-bottom: 70px;
+    }
 
-.header-inner {
-    width: min(var(--max-width), calc(100% - 40px));
-    margin: 0 auto;
-    min-height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-}
+    .eyebrow {
+      font-size: 0.82rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
 
-.brand {
-    font-weight: 700;
-    color: var(--text);
-    text-decoration: none;
-}
+    h1 {
+      font-size: clamp(2.4rem, 6vw, 4.5rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      margin: 0 0 20px;
+      font-weight: 700;
+    }
 
-.nav {
-    display: flex;
-    gap: 18px;
-    align-items: center;
-}
+    .hero p {
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 1.15rem;
+      margin: 0;
+    }
 
-.nav a {
-    color: var(--muted);
-    text-decoration: none;
-    font-size: .92rem;
-}
+    /* --------------------------------
+       SECTIONS
+    -------------------------------- */
 
-.nav a:hover {
-    color: var(--text);
-}
+    section {
+      margin-bottom: 85px;
+    }
 
-/* --------------------------------
-   Hero
--------------------------------- */
+    .section-number {
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
 
-.hero {
-    padding: 75px 0 55px;
-    border-bottom: 1px solid var(--border);
-}
+    h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin: 0 0 20px;
+    }
 
-.eyebrow {
-    color: var(--accent);
-    font-weight: 700;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    font-size: .78rem;
-}
+    h3 {
+      font-size: 1.55rem;
+      line-height: 1.25;
+      margin: 55px 0 18px;
+      letter-spacing: -0.02em;
+    }
 
-h1 {
-    font-size: clamp(2.3rem, 6vw, 4.3rem);
-    line-height: 1.05;
-    letter-spacing: -.04em;
-    margin: 12px 0 22px;
-}
+    h4 {
+      margin: 30px 0 12px;
+      font-size: 1.1rem;
+    }
 
-.hero p {
-    max-width: 760px;
-    color: var(--muted);
-    font-size: 1.12rem;
-}
+    p {
+      margin: 0 0 18px;
+    }
 
-/* --------------------------------
-   Content
--------------------------------- */
+    ul,
+    ol {
+      padding-left: 25px;
+      margin-bottom: 25px;
+    }
 
-main {
-    padding: 55px 0 100px;
-}
+    li {
+      margin-bottom: 7px;
+    }
 
-section {
-    margin-bottom: 80px;
-}
+    /* --------------------------------
+       LEARNING TARGET
+    -------------------------------- */
 
-h2 {
-    font-size: 2rem;
-    line-height: 1.2;
-    margin-bottom: 24px;
-    letter-spacing: -.025em;
-}
+    .learning-target {
+      background: var(--accent-light);
+      border-left: 4px solid var(--accent);
+      padding: 20px 24px;
+      margin: 25px 0 35px;
+      border-radius: 0 var(--radius) var(--radius) 0;
+    }
 
-h3 {
-    font-size: 1.35rem;
-    margin-top: 40px;
-    margin-bottom: 14px;
-}
+    .learning-target strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+    }
 
-h4 {
-    margin-top: 30px;
-    margin-bottom: 10px;
-}
+    /* --------------------------------
+       SUMMARY
+    -------------------------------- */
 
-p {
-    margin: 0 0 18px;
-}
+    .summary {
+      background: var(--surface);
+      border: 1px solid var(--light);
+      border-radius: var(--radius);
+      padding: 24px 26px;
+      margin: 35px 0 45px;
+    }
 
-ul,
-ol {
-    padding-left: 26px;
-}
+    .summary-title {
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
 
-li {
-    margin-bottom: 7px;
-}
+    .summary ul {
+      margin-bottom: 0;
+    }
 
-strong {
-    font-weight: 700;
-}
+    /* --------------------------------
+       EXAMPLES
+    -------------------------------- */
 
-.callout {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-left: 4px solid var(--accent);
-    padding: 20px 22px;
-    border-radius: 10px;
-    margin: 24px 0;
-}
+    .example {
+      margin: 30px 0 38px;
+    }
 
-.callout p:last-child {
-    margin-bottom: 0;
-}
+    .example-title {
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
 
-.definition {
-    background: var(--surface-soft);
-    border: 1px solid var(--border);
-    padding: 22px;
-    border-radius: 12px;
-    margin: 22px 0;
-}
+    .analogy {
+      background: var(--warning-bg);
+      border-left: 4px solid #d49a00;
+      padding: 18px 22px;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      margin: 22px 0;
+    }
 
-.definition strong {
-    display: block;
-    font-size: 1.05rem;
-    margin-bottom: 5px;
-}
+    /* --------------------------------
+       STATIC CODE
+    -------------------------------- */
 
-.flow {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 24px;
-    margin: 25px 0;
-    text-align: center;
-    font-weight: 600;
-}
-
-.flow span {
-    display: inline-block;
-    margin: 5px 8px;
-}
-
-.arrow {
-    color: var(--accent);
-    font-size: 1.3rem;
-}
-
-/* --------------------------------
-   Code examples
--------------------------------- */
-
-.code-example {
-    margin: 28px 0;
-    border: 1px solid #292929;
-    border-radius: 12px;
-    overflow: hidden;
-    background: var(--code-bg);
-    box-shadow: var(--shadow);
-}
-
-.code-title {
-    padding: 11px 15px;
-    background: #242424;
-    color: #ddd;
-    font-size: .84rem;
-    font-weight: 600;
-    border-bottom: 1px solid #333;
-}
-
-.code-editor {
-    width: 100%;
-    min-height: 70px;
-    resize: none;
-    overflow-y: hidden;
-    display: block;
-
-    border: 0;
-    outline: 0;
-
-    padding: 17px;
-    background: var(--code-bg);
-    color: var(--code-text);
-
-    font-family:
+    pre.static-code {
+      background: var(--code-bg);
+      color: var(--code-text);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      overflow-x: auto;
+      margin: 20px 0;
+      font-family:
         "SFMono-Regular",
         Consolas,
         "Liberation Mono",
         Menlo,
         monospace;
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
 
-    font-size: .92rem;
-    line-height: 1.6;
-    tab-size: 4;
-}
-
-.code-controls {
-    display: flex;
-    gap: 9px;
-    padding: 11px 15px;
-    background: #242424;
-    border-top: 1px solid #333;
-}
-
-.run-btn,
-.reset-btn {
-    border: 0;
-    border-radius: 7px;
-    padding: 8px 14px;
-    font-weight: 600;
-    cursor: pointer;
-    font-size: .85rem;
-}
-
-.run-btn {
-    background: #fff;
-    color: #111;
-}
-
-.run-btn:hover {
-    background: #eaeaea;
-}
-
-.reset-btn {
-    background: transparent;
-    color: #ccc;
-    border: 1px solid #555;
-}
-
-.reset-btn:hover {
-    background: #333;
-}
-
-.output {
-    min-height: 44px;
-    padding: 13px 15px;
-    background: #0d0d0d;
-    color: #e7e7e7;
-    border-top: 1px solid #333;
-
-    white-space: pre-wrap;
-    font-family:
+    code {
+      font-family:
         "SFMono-Regular",
         Consolas,
+        "Liberation Mono",
+        Menlo,
         monospace;
+    }
 
-    font-size: .88rem;
-}
+    p code,
+    li code {
+      background: #eeeeeb;
+      padding: 2px 6px;
+      border-radius: 5px;
+      font-size: 0.9em;
+    }
 
-.output.success {
-    color: #d7f7dc;
-}
+    /* --------------------------------
+       PYTHON RUNNER
+    -------------------------------- */
 
-.output.error {
-    color: #ffb4ab;
-}
+    .python-example {
+      border: 1px solid var(--light);
+      border-radius: var(--radius);
+      background: var(--surface);
+      margin: 30px 0 42px;
+      overflow: hidden;
+    }
 
-/* --------------------------------
-   Static code
--------------------------------- */
+    .python-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
 
-pre.static-code {
-    background: var(--code-bg);
-    color: var(--code-text);
-    padding: 20px;
-    border-radius: 10px;
-    overflow-x: auto;
-    line-height: 1.6;
-    font-family:
+    .python-title {
+      font-weight: 700;
+    }
+
+    .python-status {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .editor-wrapper {
+      background: var(--code-bg);
+      padding: 18px;
+    }
+
+    .code-editor {
+      display: block;
+      width: 100%;
+      min-height: 90px;
+      resize: none;
+      overflow-y: hidden;
+      border: none;
+      outline: none;
+      border-radius: 8px;
+      padding: 15px;
+      background: #111;
+      color: #f4f4f4;
+      font-family:
         "SFMono-Regular",
         Consolas,
+        "Liberation Mono",
+        Menlo,
         monospace;
-}
-
-/* --------------------------------
-   Comparison
--------------------------------- */
-
-.compare {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 25px 0;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.compare th,
-.compare td {
-    padding: 15px;
-    border-bottom: 1px solid var(--border);
-    text-align: left;
-    vertical-align: top;
-}
-
-.compare th {
-    background: var(--surface-soft);
-}
-
-.compare tr:last-child td {
-    border-bottom: 0;
-}
-
-/* --------------------------------
-   Step cards
--------------------------------- */
-
-.steps {
-    display: grid;
-    gap: 14px;
-    margin: 25px 0;
-}
-
-.step {
-    display: grid;
-    grid-template-columns: 45px 1fr;
-    gap: 15px;
-    padding: 18px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    background: var(--surface);
-}
-
-.step-number {
-    width: 34px;
-    height: 34px;
-    display: grid;
-    place-items: center;
-    border-radius: 50%;
-    background: var(--text);
-    color: white;
-    font-weight: 700;
-}
-
-.step p:last-child {
-    margin-bottom: 0;
-}
-
-/* --------------------------------
-   Footer
--------------------------------- */
-
-footer {
-    border-top: 1px solid var(--border);
-    padding: 35px 0;
-    color: var(--muted);
-    font-size: .9rem;
-}
-
-/* --------------------------------
-   Mobile
--------------------------------- */
-
-@media (max-width: 700px) {
-
-    .container,
-    .header-inner {
-        width: min(100% - 28px, var(--max-width));
+      font-size: 0.92rem;
+      line-height: 1.55;
+      tab-size: 4;
     }
 
-    .nav {
-        display: none;
+    .python-controls {
+      padding: 15px 18px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--light);
     }
 
-    .hero {
-        padding: 50px 0 40px;
+    button {
+      border: none;
+      border-radius: 7px;
+      padding: 9px 15px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
     }
 
-    main {
-        padding-top: 40px;
+    .run-btn {
+      background: var(--accent);
+      color: white;
     }
 
-    section {
-        margin-bottom: 60px;
+    .reset-btn {
+      background: #eeeeeb;
+      color: var(--text);
     }
 
-    h2 {
-        font-size: 1.7rem;
+    button:hover {
+      opacity: 0.88;
     }
 
-    .code-controls {
-        flex-wrap: wrap;
+    .output {
+      padding: 18px;
     }
 
-    .compare {
-        font-size: .9rem;
+    .output-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 8px;
     }
-}
-</style>
+
+    .output-box {
+      min-height: 45px;
+      background: #f5f5f2;
+      border-radius: 8px;
+      padding: 13px 15px;
+      white-space: pre-wrap;
+      font-family:
+        "SFMono-Regular",
+        Consolas,
+        "Liberation Mono",
+        Menlo,
+        monospace;
+      font-size: 0.9rem;
+    }
+
+    .error {
+      color: #a11;
+      background: #fff1f1;
+    }
+
+    /* --------------------------------
+       THINKING QUESTIONS
+    -------------------------------- */
+
+    .thinking {
+      border: 1px solid var(--light);
+      border-radius: var(--radius);
+      padding: 22px 25px;
+      margin: 30px 0;
+      background: #fff;
+    }
+
+    .thinking-title {
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .thinking ul {
+      margin-bottom: 0;
+    }
+
+    /* --------------------------------
+       IMPORTANT IDEA
+    -------------------------------- */
+
+    .important {
+      background: var(--success-bg);
+      border-left: 4px solid var(--success);
+      padding: 20px 24px;
+      margin: 30px 0;
+      border-radius: 0 var(--radius) var(--radius) 0;
+    }
+
+    /* --------------------------------
+       EXIT TICKET
+    -------------------------------- */
+
+    .exit-ticket {
+      background: var(--text);
+      color: white;
+      border-radius: var(--radius);
+      padding: 30px;
+      margin-top: 60px;
+    }
+
+    .exit-ticket h3 {
+      margin-top: 0;
+    }
+
+    .exit-ticket ol {
+      margin-bottom: 0;
+    }
+
+    /* --------------------------------
+       DIVIDER
+    -------------------------------- */
+
+    .divider {
+      height: 1px;
+      background: var(--light);
+      margin: 70px 0;
+    }
+
+    @media (max-width: 650px) {
+      .page {
+        width: min(var(--max), calc(100% - 28px));
+        padding-top: 45px;
+      }
+
+      h3 {
+        margin-top: 42px;
+      }
+
+      .python-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<header>
-    <div class="header-inner">
-        <a href="#" class="brand">Foundations of Programming</a>
+<div class="page">
 
-        <nav class="nav">
-            <a href="#program">What Is Programming?</a>
-            <a href="#source-code">Source Code</a>
-            <a href="#python">Running Python</a>
-            <a href="#algorithms">Algorithms</a>
-            <a href="#bugs">Debugging</a>
-        </nav>
+  <!-- =========================================
+       HEADER
+  ========================================== -->
+
+  <header class="hero">
+
+    <div class="eyebrow">
+      0 · Foundations of Programming
     </div>
-</header>
+
+    <h1>
+      What Is Programming?
+    </h1>
+
+    <p>
+      Before learning Python syntax, you need to understand what programming
+      actually is, how computers execute instructions, and how programmers
+      think about problems.
+    </p>
+
+  </header>
 
 
-<div class="hero">
-    <div class="container">
+  <!-- =========================================
+       0.1 WHAT IS PROGRAMMING
+  ========================================== -->
 
-        <div class="eyebrow">0. Foundations of Programming</div>
+  <section id="what-is-programming">
 
-        <h1>What Is Programming?</h1>
+    <div class="section-number">
+      0.1
+    </div>
 
-        <p>
-            Before learning Python, it is important to understand what
-            programming actually is. In this section, you will learn how
-            programs work, how programming languages communicate instructions,
-            how Python executes code, and how programmers solve problems.
-        </p>
+    <h2>
+      What Is Programming?
+    </h2>
+
+    <p>
+      Programming is the process of creating instructions that a computer
+      can follow to solve a problem or accomplish a task.
+    </p>
+
+    <div class="analogy">
+
+      <strong>Think about a recipe.</strong>
+
+      <p>
+        A recipe gives a person a sequence of instructions.
+        A computer program does something similar: it gives a computer
+        instructions that it can execute.
+      </p>
 
     </div>
-</div>
 
 
-<main class="container">
+    <!-- ======================================
+         1. COMPUTER PROGRAM
+    ======================================= -->
+
+    <h3>
+      1. What Is a Computer Program?
+    </h3>
+
+    <p>
+      A <strong>computer program</strong> is a set of instructions that
+      tells a computer what to do.
+    </p>
+
+    <div class="learning-target">
+
+      <strong>You will be able to</strong>
+
+      <ul>
+        <li>Define a computer program.</li>
+        <li>Explain why computers need instructions.</li>
+        <li>Identify programs you use in everyday life.</li>
+      </ul>
+
+    </div>
+
+    <p>
+      Think about a recipe:
+    </p>
+
+    <ol>
+      <li>Get two eggs.</li>
+      <li>Crack the eggs.</li>
+      <li>Mix them.</li>
+      <li>Cook them.</li>
+    </ol>
+
+    <p>
+      A computer program follows the same basic idea:
+    </p>
+
+    <ol>
+      <li>Get some information.</li>
+      <li>Process the information.</li>
+      <li>Produce a result.</li>
+    </ol>
 
 
-<!-- ============================================================
-     0.1 WHAT IS PROGRAMMING
-============================================================ -->
+    <div class="example">
 
-<section id="program">
+      <div class="example-title">
+        Example — Calculator
+      </div>
 
-<h2>0.1 What Is Programming?</h2>
+      <pre class="static-code">Get 10
+Get 5
+Add them
+Display 15</pre>
 
+      <p>
+        The instructions tell the computer what information to use,
+        what operation to perform, and what result to display.
+      </p>
 
-<!-- ============================================================
-     1. COMPUTER PROGRAM
-============================================================ -->
-
-<h3>1. What Is a Computer Program?</h3>
-
-<div class="definition">
-
-<strong>A computer program is a set of instructions that tells a computer what to do.</strong>
-
-<p>
-A program receives information, processes that information, and
-produces a result.
-</p>
-
-</div>
-
-<p>
-Think of a program like a recipe.
-</p>
-
-<ol>
-    <li>Get two eggs.</li>
-    <li>Crack the eggs.</li>
-    <li>Mix them.</li>
-    <li>Cook them.</li>
-</ol>
-
-<p>
-A computer program works in a similar way:
-</p>
-
-<div class="flow">
-
-<span>Information</span>
-
-<span class="arrow">→</span>
-
-<span>Processing</span>
-
-<span class="arrow">→</span>
-
-<span>Result</span>
-
-</div>
+    </div>
 
 
-<h4>Example: A Calculator</h4>
+    <div class="example">
 
-<p>
-Imagine a calculator program that needs to add two numbers.
-</p>
+      <div class="example-title">
+        Example — Python Program
+      </div>
 
-<div class="flow">
+      <p>
+        Here is an actual Python program that performs the same basic idea:
+      </p>
 
-<span>Get 10</span>
+    </div>
 
-<span class="arrow">→</span>
 
-<span>Get 5</span>
+    <div class="python-example">
 
-<span class="arrow">→</span>
+      <div class="python-header">
 
-<span>Add them</span>
+        <div class="python-title">
+          Try It — Calculator
+        </div>
 
-<span class="arrow">→</span>
+        <div class="python-status">
+          Python runs in your browser
+        </div>
 
-<span>Display 15</span>
+      </div>
 
-</div>
+      <div class="editor-wrapper">
 
-<p>
-Here is the same idea written as Python code:
-</p>
-
-<div class="code-example" data-code>
-    <div class="code-title">Python — A Simple Calculator</div>
-
-    <textarea class="code-editor">number1 = 10
+<textarea class="code-editor">number1 = 10
 number2 = 5
 
 result = number1 + number2
 
 print(result)</textarea>
 
-    <div class="code-controls">
-        <button class="run-btn">Run ▶</button>
-        <button class="reset-btn">Reset</button>
+      </div>
+
+      <div class="python-controls">
+
+        <button class="run-btn" onclick="runPython(this)">
+          Run
+        </button>
+
+        <button class="reset-btn" onclick="resetPython(this)">
+          Reset
+        </button>
+
+      </div>
+
+      <div class="output">
+
+        <div class="output-label">
+          Output
+        </div>
+
+        <div class="output-box">
+          Click Run to execute the program.
+        </div>
+
+      </div>
+
     </div>
 
-    <div class="output">Output will appear here.</div>
-</div>
+
+    <div class="thinking">
+
+      <div class="thinking-title">
+        Think About It
+      </div>
+
+      <ul>
+        <li>
+          What would happen if the computer skipped the instruction
+          that adds the two numbers?
+        </li>
+
+        <li>
+          Does a computer know what you want it to do without being
+          given instructions?
+        </li>
+
+        <li>
+          What programs did you use today?
+        </li>
+      </ul>
+
+    </div>
 
 
-<h4>What happened?</h4>
+    <div class="summary">
 
-<div class="steps">
+      <div class="summary-title">
+        Important Idea
+      </div>
 
-<div class="step">
-<div class="step-number">1</div>
-<div>
-<strong>Get the first number</strong>
-<p>The program stores <code>10</code> in <code>number1</code>.</p>
-</div>
-</div>
+      <ul>
+        <li>A program is a set of instructions.</li>
+        <li>Computers follow instructions to perform tasks.</li>
+        <li>Programs generally receive information, process it, and produce a result.</li>
+      </ul>
 
-<div class="step">
-<div class="step-number">2</div>
-<div>
-<strong>Get the second number</strong>
-<p>The program stores <code>5</code> in <code>number2</code>.</p>
-</div>
-</div>
-
-<div class="step">
-<div class="step-number">3</div>
-<div>
-<strong>Process the information</strong>
-<p>The program adds the two numbers.</p>
-</div>
-</div>
-
-<div class="step">
-<div class="step-number">4</div>
-<div>
-<strong>Produce a result</strong>
-<p>The program displays <code>15</code>.</p>
-</div>
-</div>
-
-</div>
+    </div>
 
 
-<h4>You will be able to:</h4>
+    <!-- ======================================
+         2. PROGRAMMING LANGUAGES
+    ======================================= -->
 
-<ul>
-<li>Define a computer program.</li>
-<li>Explain why computers need instructions.</li>
-<li>Identify programs you use every day.</li>
-<li>Describe the basic input → process → output pattern.</li>
-</ul>
+    <h3>
+      2. Programming Languages
+    </h3>
 
+    <p>
+      Computers ultimately execute very low-level instructions, but humans
+      need a practical way to describe what they want computers to do.
+    </p>
 
+    <p>
+      A <strong>programming language</strong> is a formal language that
+      programmers use to write instructions for computers.
+    </p>
 
-<!-- ============================================================
-     2. PROGRAMMING LANGUAGES
-============================================================ -->
+    <div class="learning-target">
 
-<h3>2. Programming Languages</h3>
+      <strong>You will be able to</strong>
 
-<div class="definition">
+      <ul>
+        <li>Define a programming language.</li>
+        <li>Name several programming languages.</li>
+        <li>Recognize Python as a programming language.</li>
+      </ul>
 
-<strong>A programming language is a language used by programmers to give instructions to a computer.</strong>
+    </div>
 
-<p>
-Programming languages provide rules and structures that allow humans
-to describe what a computer should do.
-</p>
+    <p>
+      Some programming languages include:
+    </p>
 
-</div>
-
-<p>
-Some programming languages include:
-</p>
-
-<ul>
-<li>Python</li>
-<li>Java</li>
-<li>C++</li>
-<li>JavaScript</li>
-<li>C#</li>
-<li>Go</li>
-</ul>
-
-<p>
-Different languages have different syntax, features, and common uses.
-</p>
+    <ul>
+      <li>Python</li>
+      <li>Java</li>
+      <li>C++</li>
+      <li>JavaScript</li>
+      <li>C#</li>
+      <li>Go</li>
+    </ul>
 
 
-<h4>Example: Python</h4>
+    <div class="example">
 
-<div class="code-example" data-code>
+      <div class="example-title">
+        Example — Python
+      </div>
 
-<div class="code-title">Python</div>
+      <pre class="static-code">print("Hello, world!")</pre>
+
+      <p>
+        Python interprets this instruction as a request to display
+        <code>Hello, world!</code>.
+      </p>
+
+    </div>
+
+
+    <div class="python-example">
+
+      <div class="python-header">
+
+        <div class="python-title">
+          Try It — Python
+        </div>
+
+        <div class="python-status">
+          Edit the code
+        </div>
+
+      </div>
+
+      <div class="editor-wrapper">
 
 <textarea class="code-editor">print("Hello, world!")</textarea>
 
-<div class="code-controls">
-<button class="run-btn">Run ▶</button>
-<button class="reset-btn">Reset</button>
-</div>
+      </div>
 
-<div class="output">Output will appear here.</div>
+      <div class="python-controls">
 
-</div>
+        <button class="run-btn" onclick="runPython(this)">
+          Run
+        </button>
 
+        <button class="reset-btn" onclick="resetPython(this)">
+          Reset
+        </button>
 
-<h4>Example: JavaScript</h4>
+      </div>
 
-<pre class="static-code">console.log("Hello, world!");</pre>
+      <div class="output">
 
-<p>
-Both programs accomplish a similar task: they display a message.
-But they use different programming languages.
-</p>
+        <div class="output-label">
+          Output
+        </div>
 
+        <div class="output-box">
+          Click Run to execute the program.
+        </div>
 
-<h4>Why do we need programming languages?</h4>
+      </div>
 
-<p>
-Computers ultimately execute low-level machine instructions. Programming
-languages give humans a much more practical way to describe those
-instructions.
-</p>
-
-
-<h4>You will be able to:</h4>
-
-<ul>
-<li>Define a programming language.</li>
-<li>Name several programming languages.</li>
-<li>Recognize Python as a programming language.</li>
-<li>Understand that different languages use different syntax.</li>
-</ul>
+    </div>
 
 
+    <div class="example">
 
-<!-- ============================================================
-     3. SOURCE CODE VS MACHINE CODE
-============================================================ -->
+      <div class="example-title">
+        Example — JavaScript
+      </div>
 
-<h3 id="source-code">3. Source Code vs. Machine Code</h3>
+      <pre class="static-code">console.log("Hello, world!");</pre>
 
-<div class="definition">
+      <p>
+        JavaScript accomplishes a similar task using different syntax.
+      </p>
 
-<strong>Source code</strong>
+    </div>
 
-<p>
-Source code is the human-readable code written by a programmer.
-</p>
 
-</div>
+    <div class="thinking">
 
-<div class="definition">
+      <div class="thinking-title">
+        Think About It
+      </div>
 
-<strong>Machine code</strong>
+      <ul>
+        <li>
+          Why do you think there are many programming languages instead
+          of only one?
+        </li>
 
-<p>
-Machine code consists of low-level instructions that a processor can
-execute.
-</p>
+        <li>
+          If two languages can perform the same task, why might a
+          programmer choose one over another?
+        </li>
 
-</div>
+        <li>
+          Is Python the computer's native language?
+          Why or why not?
+        </li>
+      </ul>
 
-<p>
-Consider this simple Python program:
-</p>
+    </div>
 
-<pre class="static-code">x = 10
+
+    <div class="summary">
+
+      <div class="summary-title">
+        Important Idea
+      </div>
+
+      <ul>
+        <li>Programming languages let humans express computational instructions.</li>
+        <li>Different languages use different syntax and have different strengths.</li>
+        <li>Python is one programming language among many.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         3. SOURCE CODE VS MACHINE CODE
+    ======================================= -->
+
+    <h3>
+      3. Source Code vs. Machine Code
+    </h3>
+
+    <p>
+      When programmers write a program, they normally write it in a
+      programming language that humans can read.
+    </p>
+
+    <p>
+      This is called <strong>source code</strong>.
+    </p>
+
+    <p>
+      The processor, however, ultimately executes low-level machine
+      instructions.
+    </p>
+
+    <p>
+      This is called <strong>machine code</strong>.
+    </p>
+
+    <div class="learning-target">
+
+      <strong>You will be able to</strong>
+
+      <ul>
+        <li>Identify source code.</li>
+        <li>Explain what machine code is.</li>
+        <li>Explain the relationship between source code and machine instructions.</li>
+      </ul>
+
+    </div>
+
+
+    <div class="example">
+
+      <div class="example-title">
+        Example — Source Code
+      </div>
+
+      <p>
+        A programmer might write:
+      </p>
+
+      <pre class="static-code">x = 10
 print(x)</pre>
 
-<p>
-This is <strong>source code</strong>. A human programmer can read it and
-understand roughly what it means.
-</p>
+      <p>
+        This is source code because it is written in Python and is intended
+        to be read and modified by programmers.
+      </p>
 
+    </div>
 
-<h4>But what does machine code look like?</h4>
 
-<p>
-At the processor level, instructions are represented as binary data.
-For example, a simplified sequence of machine bytes might look like:
-</p>
+    <div class="example">
 
-<pre class="static-code">10110000 01100010</pre>
+      <div class="example-title">
+        Example — Machine Code
+      </div>
 
-<p>
-or when represented in hexadecimal:
-</p>
+      <p>
+        At a much lower level, processors execute machine instructions
+        represented as binary data.
+      </p>
 
-<pre class="static-code">B0 62</pre>
+      <pre class="static-code">10110000 01100001
+11001010 00010110
+00001111 11010001</pre>
 
-<div class="callout">
+      <p>
+        The exact binary instructions depend on the processor architecture.
+        The important idea is that this is fundamentally different from
+        the human-readable Python source code above.
+      </p>
 
-<p>
-<strong>Important:</strong>
-The machine-code bytes shown above are an illustrative example of
-what low-level processor instructions can look like. They are not the
-machine-code translation of the Python statement <code>x = 10</code>.
-</p>
+    </div>
 
-</div>
 
-<p>
-Why not?
-</p>
+    <div class="analogy">
 
-<p>
-Because Python, particularly CPython, uses another important layer:
-<strong>bytecode</strong>.
-</p>
+      <strong>Think of translation.</strong>
 
+      <p>
+        Source code is like instructions written for humans.
+        Machine instructions are the much lower-level representation
+        that the processor can execute.
+      </p>
 
-<div class="flow">
+    </div>
 
-<span>Python source code</span>
 
-<span class="arrow">→</span>
+    <div class="thinking">
 
-<span>Python bytecode</span>
+      <div class="thinking-title">
+        Think About It
+      </div>
 
-<span class="arrow">→</span>
+      <ul>
+        <li>
+          Which would be easier for you to read: Python or binary?
+        </li>
 
-<span>Python Virtual Machine</span>
+        <li>
+          Why don't programmers normally write entire applications
+          directly as binary?
+        </li>
 
-<span class="arrow">→</span>
+        <li>
+          What must happen between human-readable source code and
+          processor-executable instructions?
+        </li>
+      </ul>
 
-<span>Machine instructions</span>
+    </div>
 
-</div>
 
+    <div class="summary">
 
-<h4>Python source code</h4>
+      <div class="summary-title">
+        Important Idea
+      </div>
 
-<pre class="static-code">x = 10
-print(x)</pre>
+      <ul>
+        <li>Source code is written by programmers.</li>
+        <li>Machine code consists of low-level instructions executed by a processor.</li>
+        <li>A system must translate or process source code so the computer can execute it.</li>
+      </ul>
 
+    </div>
 
-<h4>Python bytecode</h4>
 
-<p>
-CPython internally compiles Python source into bytecode. You may see
-instructions conceptually represented like:
-</p>
+    <!-- ======================================
+         4. INTERPRETERS AND COMPILERS
+    ======================================= -->
 
-<pre class="static-code">LOAD_CONST
-STORE_NAME
-LOAD_NAME
-CALL
-RETURN_VALUE</pre>
+    <h3>
+      4. Interpreters vs. Compilers
+    </h3>
 
-<p>
-The exact bytecode depends on the Python version and implementation.
-You do not need to memorize these instructions.
-</p>
+    <p>
+      We now have an important question:
+    </p>
 
+    <p>
+      <strong>
+        If programmers write human-readable source code, how does the
+        computer actually execute it?
+      </strong>
+    </p>
 
-<h4>The important idea</h4>
+    <p>
+      Two important approaches are associated with this process:
+      <strong>interpreters</strong> and <strong>compilers</strong>.
+    </p>
 
-<table class="compare">
+    <div class="learning-target">
 
-<tr>
-<th>Level</th>
-<th>Example</th>
-<th>Who primarily works with it?</th>
-</tr>
+      <strong>You will be able to</strong>
 
-<tr>
-<td>Source code</td>
-<td><code>print("Hello")</code></td>
-<td>Programmer</td>
-</tr>
+      <ul>
+        <li>Explain the basic idea of an interpreter.</li>
+        <li>Explain the basic idea of a compiler.</li>
+        <li>Describe the difference between the two approaches.</li>
+      </ul>
 
-<tr>
-<td>Bytecode</td>
-<td>Python VM instructions</td>
-<td>Python implementation</td>
-</tr>
+    </div>
 
-<tr>
-<td>Machine code</td>
-<td>Binary/processor instructions</td>
-<td>CPU</td>
-</tr>
 
-</table>
+    <div class="example">
 
+      <div class="example-title">
+        Interpreter — Basic Idea
+      </div>
 
-<h4>You will be able to:</h4>
+      <pre class="static-code">Source Code
+     ↓
+Interpreter
+     ↓
+Execution</pre>
 
-<ul>
-<li>Explain what source code is.</li>
-<li>Explain what machine code is.</li>
-<li>Distinguish human-readable source code from low-level instructions.</li>
-<li>Explain that Python commonly introduces a bytecode layer between source code and execution.</li>
-</ul>
+      <p>
+        An interpreter is a program that processes source code and helps
+        execute it.
+      </p>
 
+    </div>
 
 
-<!-- ============================================================
-     4. INTERPRETERS VS COMPILERS
-============================================================ -->
+    <div class="example">
 
-<h3>4. Interpreters vs. Compilers</h3>
+      <div class="example-title">
+        Compiler — Basic Idea
+      </div>
 
-<div class="definition">
-
-<strong>Interpreter</strong>
-
-<p>
-An interpreter is a program that reads and executes instructions from
-a programming language.
-</p>
-
-</div>
-
-<div class="definition">
-
-<strong>Compiler</strong>
-
-<p>
-A compiler translates source code into another form, often machine code
-or an executable representation, before the resulting program is run.
-</p>
-
-</div>
-
-
-<h4>A simplified interpreter model</h4>
-
-<div class="flow">
-
-<span>Source Code</span>
-
-<span class="arrow">→</span>
-
-<span>Interpreter</span>
-
-<span class="arrow">→</span>
-
-<span>Execution</span>
-
-</div>
-
-
-<h4>A simplified compiler model</h4>
-
-<div class="flow">
-
-<span>Source Code</span>
-
-<span class="arrow">→</span>
-
-<span>Compiler</span>
-
-<span class="arrow">→</span>
-
-<span>Executable / Machine Code</span>
-
-<span class="arrow">→</span>
-
-<span>Run</span>
-
-</div>
-
-
-<h4>Example: Python</h4>
-
-<p>
-Suppose you create a file called <code>hello.py</code>:
-</p>
-
-<pre class="static-code">print("Hello")</pre>
-
-<p>
-You can run it using:
-</p>
-
-<pre class="static-code">python hello.py</pre>
-
-<p>
-The Python implementation processes the source code and executes it.
-</p>
-
-
-<h4>Example: C</h4>
-
-<p>
-A C program can be compiled before execution:
-</p>
-
-<pre class="static-code">C source code
-      ↓
+      <pre class="static-code">Source Code
+     ↓
 Compiler
-      ↓
-Executable program
-      ↓
-Run</pre>
+     ↓
+Translated Program
+     ↓
+Execution</pre>
+
+      <p>
+        A compiler translates source code into another form before the
+        resulting program is executed.
+      </p>
+
+    </div>
 
 
-<h4>Don't think of this as "Python has no compilation"</h4>
+    <div class="important">
 
-<div class="callout">
+      <strong>Important:</strong>
 
-<p>
-The interpreter-versus-compiler distinction is useful for beginners,
-but real language implementations can be more complicated.
-</p>
+      <p>
+        The interpreter-versus-compiler distinction is useful for
+        understanding the basic idea, but real programming-language
+        implementations can be more complicated than this simple diagram.
+      </p>
 
-<p>
-CPython first compiles Python source code into bytecode and then the
-Python runtime executes that bytecode.
-</p>
+      <p>
+        For now, focus on the fundamental difference:
+      </p>
 
-</div>
+      <p>
+        <strong>
+          Interpretation emphasizes processing code for execution;
+          compilation emphasizes translating code before execution.
+        </strong>
+      </p>
 
-
-<h4>You will be able to:</h4>
-
-<ul>
-<li>Explain the basic idea of an interpreter.</li>
-<li>Explain the basic idea of a compiler.</li>
-<li>Describe the simplified difference between interpreting and compiling.</li>
-<li>Understand that real programming-language implementations can combine these ideas.</li>
-</ul>
+    </div>
 
 
+    <div class="thinking">
 
-<!-- ============================================================
-     5. WHAT HAPPENS WHEN YOU RUN PYTHON?
-============================================================ -->
+      <div class="thinking-title">
+        Think About It
+      </div>
 
-<h3 id="python">5. What Happens When You Run Python?</h3>
+      <ul>
+        <li>
+          If a program has an error, when might that error be discovered?
+        </li>
 
-<p>
-Let's follow one small Python program from source code to output.
-</p>
+        <li>
+          Why might translating a program ahead of time be useful?
+        </li>
 
-<div class="code-example" data-code>
+        <li>
+          Why might processing code interactively be useful while learning?
+        </li>
+      </ul>
 
-<div class="code-title">Python — Follow the Execution</div>
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-title">
+        Important Idea
+      </div>
+
+      <ul>
+        <li>An interpreter processes source code for execution.</li>
+        <li>A compiler translates source code into another executable form.</li>
+        <li>The distinction is useful, but real language implementations can use multiple techniques.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         5. WHAT HAPPENS WHEN PYTHON RUNS
+    ======================================= -->
+
+    <h3>
+      5. What Happens When You Run Python?
+    </h3>
+
+    <p>
+      Let's make the previous ideas concrete.
+    </p>
+
+    <p>
+      Suppose you write:
+    </p>
+
+    <pre class="static-code">x = 10
+y = 20
+print(x + y)</pre>
+
+    <p>
+      What actually happens?
+    </p>
+
+    <div class="learning-target">
+
+      <strong>You will be able to</strong>
+
+      <ul>
+        <li>Describe the general stages involved when Python executes code.</li>
+        <li>Trace a simple Python program step by step.</li>
+        <li>Explain how Python turns source code into a result.</li>
+      </ul>
+
+    </div>
+
+
+    <div class="example">
+
+      <div class="example-title">
+        Step 1 — You Write Source Code
+      </div>
+
+      <pre class="static-code">x = 10
+y = 20
+print(x + y)</pre>
+
+    </div>
+
+
+    <div class="example">
+
+      <div class="example-title">
+        Step 2 — Python Processes the Program
+      </div>
+
+      <p>
+        Python reads and analyzes the source code.
+        It determines what the statements mean and prepares them for execution.
+      </p>
+
+    </div>
+
+
+    <div class="example">
+
+      <div class="example-title">
+        Step 3 — Python Executes the Instructions
+      </div>
+
+      <p>
+        The first instruction creates a name called <code>x</code>
+        and associates it with the value <code>10</code>.
+      </p>
+
+      <p>
+        The second instruction creates <code>y</code> and associates it
+        with <code>20</code>.
+      </p>
+
+      <p>
+        The third instruction calculates:
+      </p>
+
+      <pre class="static-code">10 + 20</pre>
+
+      <p>
+        The result is:
+      </p>
+
+      <pre class="static-code">30</pre>
+
+    </div>
+
+
+    <div class="example">
+
+      <div class="example-title">
+        Step 4 — The Result Is Displayed
+      </div>
+
+      <pre class="static-code">30</pre>
+
+    </div>
+
+
+    <div class="python-example">
+
+      <div class="python-header">
+
+        <div class="python-title">
+          Trace It Yourself
+        </div>
+
+        <div class="python-status">
+          Change the values and predict the output
+        </div>
+
+      </div>
+
+      <div class="editor-wrapper">
 
 <textarea class="code-editor">x = 10
 y = 20
 
-total = x + y
+result = x + y
 
-print(total)</textarea>
+print(result)</textarea>
 
-<div class="code-controls">
-<button class="run-btn">Run ▶</button>
-<button class="reset-btn">Reset</button>
-</div>
+      </div>
 
-<div class="output">Output will appear here.</div>
+      <div class="python-controls">
 
-</div>
+        <button class="run-btn" onclick="runPython(this)">
+          Run
+        </button>
 
+        <button class="reset-btn" onclick="resetPython(this)">
+          Reset
+        </button>
 
-<h4>Step 1 — You write source code</h4>
+      </div>
 
-<pre class="static-code">x = 10
-y = 20
+      <div class="output">
 
-total = x + y
+        <div class="output-label">
+          Output
+        </div>
 
-print(total)</pre>
+        <div class="output-box">
+          Click Run to execute the program.
+        </div>
 
+      </div>
 
-<h4>Step 2 — Python reads the program</h4>
+    </div>
 
-<p>
-Python processes the source code and determines whether the code can
-be understood according to Python's rules.
-</p>
 
+    <div class="thinking">
 
-<h4>Step 3 — Python compiles the source</h4>
+      <div class="thinking-title">
+        Predict Before You Run
+      </div>
 
-<p>
-In CPython, the source is compiled into Python bytecode.
-</p>
+      <p>
+        Change <code>x</code> to <code>100</code> and <code>y</code> to
+        <code>50</code>.
+      </p>
 
-<div class="flow">
+      <p>
+        Before clicking Run, predict the output.
+      </p>
 
-<span>Source</span>
+      <p>
+        Then run the program and compare your prediction with the result.
+      </p>
 
-<span class="arrow">→</span>
+    </div>
 
-<span>Bytecode</span>
 
-</div>
+    <div class="summary">
 
+      <div class="summary-title">
+        Important Idea
+      </div>
 
-<h4>Step 4 — Python executes the instructions</h4>
+      <ul>
+        <li>You write Python source code.</li>
+        <li>Python processes the source code.</li>
+        <li>Python executes the instructions.</li>
+        <li>The computer produces the requested result.</li>
+      </ul>
 
-<p>
-The Python runtime executes the resulting bytecode.
-</p>
+    </div>
 
 
-<h4>Step 5 — Values are created</h4>
+    <!-- ======================================
+         6. ALGORITHMS
+    ======================================= -->
 
-<p>
-When Python encounters:
-</p>
+    <h3>
+      6. Algorithms and Instructions
+    </h3>
 
-<pre class="static-code">x = 10</pre>
+    <p>
+      A program contains instructions, but before writing those instructions,
+      programmers often need to figure out <strong>what steps will solve the problem</strong>.
+    </p>
 
-<p>
-the name <code>x</code> becomes associated with the value
-<code>10</code>.
-</p>
+    <p>
+      An <strong>algorithm</strong> is a sequence of steps used to solve a problem.
+    </p>
 
-<p>
-Then:
-</p>
+    <div class="learning-target">
 
-<pre class="static-code">y = 20</pre>
+      <strong>You will be able to</strong>
 
-<p>
-associates <code>y</code> with <code>20</code>.
-</p>
+      <ul>
+        <li>Explain what an algorithm is.</li>
+        <li>Create simple step-by-step instructions.</li>
+        <li>Apply an algorithm to a simple problem.</li>
+      </ul>
 
+    </div>
 
-<h4>Step 6 — Python performs the calculation</h4>
 
-<pre class="static-code">total = x + y</pre>
+    <div class="example">
 
-<p>
-Python obtains the values associated with <code>x</code> and
-<code>y</code>, adds them, and associates the resulting value
-<code>30</code> with <code>total</code>.
-</p>
+      <div class="example-title">
+        Example — Making Toast
+      </div>
 
+      <ol>
+        <li>Get bread.</li>
+        <li>Put bread in toaster.</li>
+        <li>Start toaster.</li>
+        <li>Wait.</li>
+        <li>Remove toast.</li>
+      </ol>
 
-<h4>Step 7 — Python calls <code>print()</code></h4>
+    </div>
 
-<pre class="static-code">print(total)</pre>
 
-<p>
-Python obtains the value of <code>total</code> and sends it to the
-program's output.
-</p>
+    <div class="example">
 
-<div class="callout">
+      <div class="example-title">
+        Example — Finding the Largest Number
+      </div>
 
-<strong>The result is:</strong>
+      <p>
+        Suppose we have:
+      </p>
 
-<pre class="static-code">30</pre>
+      <pre class="static-code">5, 12, 7</pre>
 
-</div>
+      <p>
+        One possible algorithm is:
+      </p>
 
+      <ol>
+        <li>Start with 5 as the largest.</li>
+        <li>Compare 12 with 5.</li>
+        <li>12 is larger, so largest becomes 12.</li>
+        <li>Compare 7 with 12.</li>
+        <li>7 is not larger.</li>
+        <li>The answer is 12.</li>
+      </ol>
 
-<h4>The complete simplified picture</h4>
+    </div>
 
-<div class="flow">
 
-<span>You write Python</span>
+    <div class="thinking">
 
-<span class="arrow">→</span>
+      <div class="thinking-title">
+        Think Like a Programmer
+      </div>
 
-<span>Python processes it</span>
+      <ul>
+        <li>
+          What happens if an algorithm leaves out an important step?
+        </li>
 
-<span class="arrow">→</span>
+        <li>
+          Can two different algorithms solve the same problem?
+        </li>
 
-<span>Bytecode</span>
+        <li>
+          Which algorithm would be better if you had one million numbers?
+        </li>
+      </ul>
 
-<span class="arrow">→</span>
+    </div>
 
-<span>Python runtime executes it</span>
 
-<span class="arrow">→</span>
+    <div class="summary">
 
-<span>Output</span>
+      <div class="summary-title">
+        Important Idea
+      </div>
 
-</div>
+      <ul>
+        <li>An algorithm is a sequence of steps for solving a problem.</li>
+        <li>Algorithms exist before programming languages.</li>
+        <li>A good programmer thinks about the solution before worrying about syntax.</li>
+      </ul>
 
+    </div>
 
-<h4>Another example</h4>
 
-<div class="code-example" data-code>
+    <!-- ======================================
+         7. SYNTAX VS LOGIC
+    ======================================= -->
 
-<div class="code-title">Python — Names and Values</div>
+    <h3>
+      7. Syntax vs. Logic
+    </h3>
 
-<textarea class="code-editor">name = "Sajid"
-age = 25
+    <p>
+      Beginners often think that if Python accepts their code,
+      the program must be correct.
+    </p>
 
-print("Hello", name)
-print("You are", age, "years old.")</textarea>
+    <p>
+      That is not true.
+    </p>
 
-<div class="code-controls">
-<button class="run-btn">Run ▶</button>
-<button class="reset-btn">Reset</button>
-</div>
+    <p>
+      There are two different questions we need to ask:
+    </p>
 
-<div class="output">Output will appear here.</div>
+    <ul>
+      <li>
+        <strong>Syntax:</strong> Did I write the code correctly?
+      </li>
 
-</div>
+      <li>
+        <strong>Logic:</strong> Did I tell the computer to do the correct thing?
+      </li>
+    </ul>
 
+    <div class="learning-target">
 
-<h4>You will be able to:</h4>
+      <strong>You will be able to</strong>
 
-<ul>
-<li>Describe what generally happens when Python runs a program.</li>
-<li>Explain the role of the Python interpreter/runtime.</li>
-<li>Explain the basic idea of Python bytecode.</li>
-<li>Trace simple Python statements from source code to output.</li>
-</ul>
+      <ul>
+        <li>Distinguish syntax errors from logic errors.</li>
+        <li>Identify examples of each type of problem.</li>
+        <li>Explain why code can run and still be wrong.</li>
+      </ul>
 
+    </div>
 
 
-<!-- ============================================================
-     6. ALGORITHMS
-============================================================ -->
+    <div class="example">
 
-<h3 id="algorithms">6. Algorithms and Instructions</h3>
+      <div class="example-title">
+        Example — Syntax Error
+      </div>
 
-<div class="definition">
+      <pre class="static-code">print("Hello"</pre>
 
-<strong>An algorithm is a sequence of steps used to solve a problem.</strong>
+      <p>
+        The closing parenthesis is missing.
+        Python cannot correctly understand the statement.
+      </p>
 
-</div>
+    </div>
 
-<p>
-Algorithms are not unique to programming. You use algorithms every day.
-</p>
 
+    <div class="python-example">
 
-<h4>Example: Making Toast</h4>
+      <div class="python-header">
 
-<ol>
-<li>Get bread.</li>
-<li>Put bread in toaster.</li>
-<li>Start toaster.</li>
-<li>Wait.</li>
-<li>Remove toast.</li>
-</ol>
+        <div class="python-title">
+          Try the Syntax Error
+        </div>
 
+        <div class="python-status">
+          Run it, then fix it
+        </div>
 
-<h4>Example: Finding the Largest Number</h4>
+      </div>
 
-<p>
-Suppose we have:
-</p>
-
-<pre class="static-code">5, 12, 7</pre>
-
-<p>
-A possible algorithm is:
-</p>
-
-<ol>
-<li>Start with 5 as the largest.</li>
-<li>Compare 12 with 5.</li>
-<li>12 is larger, so make 12 the largest.</li>
-<li>Compare 7 with 12.</li>
-<li>7 is not larger.</li>
-<li>The answer is 12.</li>
-</ol>
-
-
-<h4>Let's turn the algorithm into Python</h4>
-
-<div class="code-example" data-code>
-
-<div class="code-title">Python — Find the Largest Number</div>
-
-<textarea class="code-editor">numbers = [5, 12, 7]
-
-largest = numbers[0]
-
-for number in numbers:
-    if number > largest:
-        largest = number
-
-print(largest)</textarea>
-
-<div class="code-controls">
-<button class="run-btn">Run ▶</button>
-<button class="reset-btn">Reset</button>
-</div>
-
-<div class="output">Output will appear here.</div>
-
-</div>
-
-
-<h4>You will be able to:</h4>
-
-<ul>
-<li>Explain what an algorithm is.</li>
-<li>Create simple step-by-step instructions.</li>
-<li>Apply an algorithm to a simple problem.</li>
-<li>Translate a simple algorithm into Python.</li>
-</ul>
-
-
-
-<!-- ============================================================
-     7. SYNTAX VS LOGIC
-============================================================ -->
-
-<h3>7. Syntax vs. Logic</h3>
-
-<p>
-This distinction is extremely important.
-</p>
-
-
-<div class="definition">
-
-<strong>Syntax</strong>
-
-<p>
-Syntax refers to the rules for writing code correctly.
-</p>
-
-</div>
-
-<div class="definition">
-
-<strong>Logic</strong>
-
-<p>
-Logic refers to whether the program performs the correct operation.
-</p>
-
-</div>
-
-
-<h4>Example: Syntax Error</h4>
-
-<p>
-Look carefully at this program:
-</p>
-
-<div class="code-example" data-code>
-
-<div class="code-title">Python — Syntax Error</div>
+      <div class="editor-wrapper">
 
 <textarea class="code-editor">print("Hello"</textarea>
 
-<div class="code-controls">
-<button class="run-btn">Run ▶</button>
-<button class="reset-btn">Reset</button>
-</div>
+      </div>
 
-<div class="output">Output will appear here.</div>
+      <div class="python-controls">
 
-</div>
+        <button class="run-btn" onclick="runPython(this)">
+          Run
+        </button>
 
-<p>
-The closing parenthesis is missing.
-</p>
+        <button class="reset-btn" onclick="resetPython(this)">
+          Reset
+        </button>
 
-<p>
-Python cannot correctly interpret the statement, so it reports a
-syntax error.
-</p>
+      </div>
 
+      <div class="output">
 
-<h4>Correct version</h4>
+        <div class="output-label">
+          Output
+        </div>
 
-<div class="code-example" data-code>
+        <div class="output-box">
+          Click Run to execute the program.
+        </div>
 
-<div class="code-title">Python — Correct Syntax</div>
+      </div>
 
-<textarea class="code-editor">print("Hello")</textarea>
-
-<div class="code-controls">
-<button class="run-btn">Run ▶</button>
-<button class="reset-btn">Reset</button>
-</div>
-
-<div class="output">Output will appear here.</div>
-
-</div>
+    </div>
 
 
-<h4>Example: Logic Error</h4>
+    <div class="example">
 
-<div class="code-example" data-code>
+      <div class="example-title">
+        Example — Logic Error
+      </div>
 
-<div class="code-title">Python — Logic Error</div>
+      <pre class="static-code">price = 100
+discount = 10
+
+final_price = price + discount
+
+print(final_price)</pre>
+
+      <p>
+        The program may run successfully.
+        But if the intention is to subtract the discount,
+        the logic is wrong.
+      </p>
+
+      <p>
+        The correct calculation is:
+      </p>
+
+      <pre class="static-code">final_price = price - discount</pre>
+
+    </div>
+
+
+    <div class="python-example">
+
+      <div class="python-header">
+
+        <div class="python-title">
+          Find the Logic Error
+        </div>
+
+        <div class="python-status">
+          The program runs — but is it correct?
+        </div>
+
+      </div>
+
+      <div class="editor-wrapper">
 
 <textarea class="code-editor">price = 100
 discount = 10
@@ -1395,607 +1578,507 @@ final_price = price + discount
 
 print(final_price)</textarea>
 
-<div class="code-controls">
-<button class="run-btn">Run ▶</button>
-<button class="reset-btn">Reset</button>
-</div>
+      </div>
 
-<div class="output">Output will appear here.</div>
+      <div class="python-controls">
 
-</div>
+        <button class="run-btn" onclick="runPython(this)">
+          Run
+        </button>
 
-<p>
-The program runs, but the calculation is wrong if the intention is to
-subtract the discount.
-</p>
+        <button class="reset-btn" onclick="resetPython(this)">
+          Reset
+        </button>
 
+      </div>
 
-<h4>Correct logic</h4>
+      <div class="output">
 
-<div class="code-example" data-code>
+        <div class="output-label">
+          Output
+        </div>
 
-<div class="code-title">Python — Correct Logic</div>
+        <div class="output-box">
+          Click Run to execute the program.
+        </div>
 
-<textarea class="code-editor">price = 100
-discount = 10
+      </div>
 
-final_price = price - discount
+    </div>
 
-print(final_price)</textarea>
 
-<div class="code-controls">
-<button class="run-btn">Run ▶</button>
-<button class="reset-btn">Reset</button>
-</div>
+    <div class="thinking">
 
-<div class="output">Output will appear here.</div>
+      <div class="thinking-title">
+        Critical Thinking
+      </div>
 
-</div>
+      <p>
+        If a program runs without producing an error message,
+        does that prove the program is correct?
+      </p>
 
+      <p>
+        Explain your answer.
+      </p>
 
-<div class="callout">
+    </div>
 
-<p>
-<strong>Remember:</strong>
-</p>
 
-<p>
-Syntax asks:
-<strong>"Is the code written correctly?"</strong>
-</p>
+    <div class="summary">
 
-<p>
-Logic asks:
-<strong>"Does the code do what we intended?"</strong>
-</p>
+      <div class="summary-title">
+        Important Idea
+      </div>
 
-</div>
+      <ul>
+        <li>Syntax determines whether code is written correctly.</li>
+        <li>Logic determines whether the program does what we intended.</li>
+        <li>A program can have correct syntax but incorrect logic.</li>
+      </ul>
 
+    </div>
 
-<h4>You will be able to:</h4>
 
-<ul>
-<li>Distinguish syntax errors from logic errors.</li>
-<li>Identify code that has invalid syntax.</li>
-<li>Identify code that runs but produces an incorrect result.</li>
-</ul>
+    <!-- ======================================
+         8. BUGS AND DEBUGGING
+    ======================================= -->
 
+    <h3>
+      8. Bugs and Debugging
+    </h3>
 
+    <p>
+      Programs rarely work perfectly the first time.
+    </p>
 
-<!-- ============================================================
-     8. BUGS AND DEBUGGING
-============================================================ -->
+    <p>
+      A <strong>bug</strong> is a problem in a program.
+    </p>
 
-<h3 id="bugs">8. Bugs and Debugging</h3>
+    <p>
+      <strong>Debugging</strong> is the process of finding and fixing
+      problems in a program.
+    </p>
 
-<div class="definition">
+    <div class="learning-target">
 
-<strong>A bug is a problem or error in a program.</strong>
+      <strong>You will be able to</strong>
 
-</div>
+      <ul>
+        <li>Identify a bug.</li>
+        <li>Explain why a bug happened.</li>
+        <li>Modify code to fix a bug.</li>
+        <li>Test the program again after making a change.</li>
+      </ul>
 
-<div class="definition">
+    </div>
 
-<strong>Debugging is the process of finding and fixing bugs.</strong>
 
-</div>
+    <div class="example">
 
-<p>
-Think of debugging like being a detective.
-</p>
+      <div class="example-title">
+        Example — Debugging a Condition
+      </div>
 
-<div class="flow">
+      <pre class="static-code">number = 10
 
-<span>Program doesn't work</span>
+if number > 10:
+    print("Number is 10 or greater")</pre>
 
-<span class="arrow">→</span>
+      <p>
+        The program runs, but nothing is displayed.
+      </p>
 
-<span>Find the problem</span>
+      <p>
+        Why?
+      </p>
 
-<span class="arrow">→</span>
+      <p>
+        The condition asks whether 10 is greater than 10.
+        It isn't.
+      </p>
 
-<span>Understand it</span>
+      <p>
+        If we want to include 10, we need:
+      </p>
 
-<span class="arrow">→</span>
+      <pre class="static-code">if number >= 10:
+    print("Number is 10 or greater")</pre>
 
-<span>Fix it</span>
+    </div>
 
-<span class="arrow">→</span>
 
-<span>Test again</span>
+    <div class="python-example">
 
-</div>
+      <div class="python-header">
 
+        <div class="python-title">
+          Debug It
+        </div>
 
-<h4>Example: Finding a Syntax Bug</h4>
+        <div class="python-status">
+          Make the program produce the intended result
+        </div>
 
-<div class="code-example" data-code>
+      </div>
 
-<div class="code-title">Python — Broken Program</div>
-
-<textarea class="code-editor">print("Hello"</textarea>
-
-<div class="code-controls">
-<button class="run-btn">Run ▶</button>
-<button class="reset-btn">Reset</button>
-</div>
-
-<div class="output">Output will appear here.</div>
-
-</div>
-
-<p>
-The error tells us that Python cannot parse the statement correctly.
-</p>
-
-<p>
-We fix it:
-</p>
-
-<div class="code-example" data-code>
-
-<div class="code-title">Python — Fixed Program</div>
-
-<textarea class="code-editor">print("Hello")</textarea>
-
-<div class="code-controls">
-<button class="run-btn">Run ▶</button>
-<button class="reset-btn">Reset</button>
-</div>
-
-<div class="output">Output will appear here.</div>
-
-</div>
-
-
-<h4>Example: Finding a Logic Bug</h4>
-
-<div class="code-example" data-code>
-
-<div class="code-title">Python — Logic Bug</div>
+      <div class="editor-wrapper">
 
 <textarea class="code-editor">number = 10
 
 if number > 10:
     print("Number is 10 or greater")</textarea>
 
-<div class="code-controls">
-<button class="run-btn">Run ▶</button>
-<button class="reset-btn">Reset</button>
-</div>
+      </div>
 
-<div class="output">Output will appear here.</div>
+      <div class="python-controls">
 
-</div>
+        <button class="run-btn" onclick="runPython(this)">
+          Run
+        </button>
 
-<p>
-The program runs without a syntax error.
-But nothing is printed.
-</p>
+        <button class="reset-btn" onclick="resetPython(this)">
+          Reset
+        </button>
 
-<p>
-Why?
-</p>
+      </div>
 
-<p>
-Because:
-</p>
+      <div class="output">
 
-<pre class="static-code">10 > 10</pre>
+        <div class="output-label">
+          Output
+        </div>
 
-<p>
-is false.
-</p>
+        <div class="output-box">
+          Click Run to execute the program.
+        </div>
 
-<p>
-If we intended to include 10, we need:
-</p>
+      </div>
 
-<div class="code-example" data-code>
-
-<div class="code-title">Python — Fixed Logic</div>
-
-<textarea class="code-editor">number = 10
-
-if number >= 10:
-    print("Number is 10 or greater")</textarea>
-
-<div class="code-controls">
-<button class="run-btn">Run ▶</button>
-<button class="reset-btn">Reset</button>
-</div>
-
-<div class="output">Output will appear here.</div>
-
-</div>
+    </div>
 
 
-<h4>A simple debugging process</h4>
+    <div class="thinking">
 
-<div class="steps">
+      <div class="thinking-title">
+        Think Like a Debugger
+      </div>
 
-<div class="step">
-<div class="step-number">1</div>
-<div>
-<strong>Observe</strong>
-<p>What happened?</p>
-</div>
-</div>
+      <ol>
+        <li>What did you expect the program to do?</li>
+        <li>What actually happened?</li>
+        <li>Where might the difference come from?</li>
+        <li>What change could fix it?</li>
+        <li>Does the program work after the change?</li>
+      </ol>
 
-<div class="step">
-<div class="step-number">2</div>
-<div>
-<strong>Locate</strong>
-<p>Where does the problem appear?</p>
-</div>
-</div>
-
-<div class="step">
-<div class="step-number">3</div>
-<div>
-<strong>Understand</strong>
-<p>Why did it happen?</p>
-</div>
-</div>
-
-<div class="step">
-<div class="step-number">4</div>
-<div>
-<strong>Fix</strong>
-<p>Change the program.</p>
-</div>
-</div>
-
-<div class="step">
-<div class="step-number">5</div>
-<div>
-<strong>Test</strong>
-<p>Run the program again.</p>
-</div>
-</div>
-
-</div>
+    </div>
 
 
-<h4>You will be able to:</h4>
+    <div class="summary">
 
-<ul>
-<li>Identify a bug.</li>
-<li>Explain why a bug happened.</li>
-<li>Modify code to fix a problem.</li>
-<li>Run the program again to verify the fix.</li>
-</ul>
+      <div class="summary-title">
+        Important Idea
+      </div>
 
-</section>
+      <ul>
+        <li>Bugs are normal parts of programming.</li>
+        <li>Debugging is a reasoning process, not just fixing typing mistakes.</li>
+        <li>Good programmers compare expected behavior with actual behavior.</li>
+      </ul>
+
+    </div>
 
 
-<!-- ============================================================
-     SUMMARY
-============================================================ -->
+    <!-- ======================================
+         EXIT TICKET
+    ======================================= -->
 
-<section>
+    <div class="exit-ticket">
 
-<h2>Foundations: The Big Picture</h2>
+      <h3>
+        Exit Ticket
+      </h3>
 
-<p>
-You have now seen the basic ideas behind programming.
-</p>
+      <p>
+        Before moving on, answer these questions without looking back
+        at the examples.
+      </p>
 
-<div class="flow">
+      <ol>
 
-<span>Problem</span>
+        <li>
+          In your own words, what is a computer program?
+        </li>
 
-<span class="arrow">→</span>
+        <li>
+          What is the difference between source code and machine code?
+        </li>
 
-<span>Algorithm</span>
+        <li>
+          What is the basic difference between an interpreter and a compiler?
+        </li>
 
-<span class="arrow">→</span>
+        <li>
+          Describe what generally happens when Python runs a program.
+        </li>
 
-<span>Source Code</span>
+        <li>
+          What is an algorithm?
+        </li>
 
-<span class="arrow">→</span>
+        <li>
+          What is the difference between a syntax error and a logic error?
+        </li>
 
-<span>Python</span>
+        <li>
+          A program runs successfully but produces the wrong answer.
+          Is that necessarily a syntax problem? Explain.
+        </li>
 
-<span class="arrow">→</span>
+        <li>
+          Why is debugging more than simply fixing spelling mistakes?
+        </li>
 
-<span>Execution</span>
+      </ol>
 
-<span class="arrow">→</span>
+    </div>
 
-<span>Output</span>
+  </section>
 
 </div>
 
-<p>
-When something goes wrong:
-</p>
-
-<div class="flow">
-
-<span>Bug</span>
-
-<span class="arrow">→</span>
-
-<span>Debug</span>
-
-<span class="arrow">→</span>
-
-<span>Fix</span>
-
-<span class="arrow">→</span>
-
-<span>Test Again</span>
-
-</div>
-
-<div class="callout">
-
-<strong>Core idea:</strong>
-
-<p>
-Programming is not simply typing Python code. Programming is the
-process of solving problems by designing precise instructions that a
-computer can execute.
-</p>
-
-</div>
-
-</section>
-
-
-</main>
-
-
-<footer>
-<div class="container">
-Foundations of Programming · Python Learning Materials
-</div>
-</footer>
-
-
-<!-- ============================================================
-     PYODIDE
-============================================================ -->
-
-<script src="https://cdn.jsdelivr.net/pyodide/v0.29.0/full/pyodide.js"></script>
 
 <script>
 
-let pyodide = null;
-let pyodideLoading = null;
+  /* =========================================
+     PYODIDE
+  ========================================== */
 
+  let pyodide = null;
 
-/*
-    Load Pyodide only once.
-*/
-async function loadPyodideRuntime() {
+  async function loadPyodideRuntime() {
 
     if (pyodide) {
-        return pyodide;
+      return pyodide;
     }
 
-    if (pyodideLoading) {
-        return pyodideLoading;
-    }
+    const statusElements =
+      document.querySelectorAll(".python-status");
 
-    pyodideLoading = (async () => {
-
-        pyodide = await loadPyodide();
-
-        return pyodide;
-
-    })();
-
-    return pyodideLoading;
-}
-
-
-/*
-    Automatically expand a textarea
-    based on its content.
-*/
-function autoResize(textarea) {
-
-    textarea.style.height = "auto";
-
-    textarea.style.height =
-        textarea.scrollHeight + "px";
-}
-
-
-/*
-    Prepare every Python code editor.
-*/
-document.querySelectorAll(".code-example").forEach(example => {
-
-    const editor =
-        example.querySelector(".code-editor");
-
-    const runButton =
-        example.querySelector(".run-btn");
-
-    const resetButton =
-        example.querySelector(".reset-btn");
-
-    const output =
-        example.querySelector(".output");
-
-
-    /*
-        Save the original code.
-    */
-    const originalCode =
-        editor.value;
-
-
-    /*
-        Initial resize.
-    */
-    autoResize(editor);
-
-
-    /*
-        Resize while typing.
-    */
-    editor.addEventListener("input", () => {
-
-        autoResize(editor);
-
+    statusElements.forEach(el => {
+      el.textContent = "Loading Python...";
     });
 
+    pyodide = await loadPyodide();
 
-    /*
-        Allow TAB inside editor.
-    */
-    editor.addEventListener("keydown", event => {
+    statusElements.forEach(el => {
+      el.textContent = "Python ready";
+    });
+
+    return pyodide;
+  }
+
+
+  /* =========================================
+     AUTO-EXPANDING CODE EDITOR
+  ========================================== */
+
+  function resizeEditor(editor) {
+
+    editor.style.height = "auto";
+
+    editor.style.height =
+      Math.max(editor.scrollHeight, 90) + "px";
+  }
+
+
+  function setupEditors() {
+
+    const editors =
+      document.querySelectorAll(".code-editor");
+
+    editors.forEach(editor => {
+
+      resizeEditor(editor);
+
+      editor.addEventListener("input", function () {
+        resizeEditor(this);
+      });
+
+      editor.addEventListener("keydown", function(event) {
+
+        /*
+          Make Tab insert spaces instead of moving
+          focus away from the editor.
+        */
 
         if (event.key === "Tab") {
 
-            event.preventDefault();
+          event.preventDefault();
 
-            const start =
-                editor.selectionStart;
+          const start = this.selectionStart;
+          const end = this.selectionEnd;
 
-            const end =
-                editor.selectionEnd;
+          this.value =
+            this.value.substring(0, start) +
+            "    " +
+            this.value.substring(end);
 
-            editor.value =
-                editor.value.substring(0, start)
-                + "    "
-                + editor.value.substring(end);
+          this.selectionStart =
+            this.selectionEnd =
+            start + 4;
 
-            editor.selectionStart =
-                editor.selectionEnd =
-                    start + 4;
-
-            autoResize(editor);
+          resizeEditor(this);
         }
+
+      });
 
     });
 
+  }
 
-    /*
-        Run Python.
-    */
-    runButton.addEventListener("click", async () => {
 
-        output.className = "output";
+  /* =========================================
+     RUN PYTHON
+  ========================================== */
+
+  async function runPython(button) {
+
+    const container =
+      button.closest(".python-example");
+
+    const editor =
+      container.querySelector(".code-editor");
+
+    const output =
+      container.querySelector(".output-box");
+
+    const status =
+      container.querySelector(".python-status");
+
+    const code =
+      editor.value;
+
+    output.classList.remove("error");
+
+    output.textContent =
+      "Running...";
+
+    status.textContent =
+      "Running Python...";
+
+    try {
+
+      const runtime =
+        await loadPyodide();
+
+      let capturedOutput = "";
+
+      runtime.setStdout({
+        batched: (text) => {
+          capturedOutput += text;
+        }
+      });
+
+      runtime.setStderr({
+        batched: (text) => {
+          capturedOutput += text;
+        }
+      });
+
+      await runtime.runPythonAsync(code);
+
+      if (capturedOutput.trim() === "") {
 
         output.textContent =
-            "Loading Python...";
+          "Program finished without producing output.";
 
-        runButton.disabled = true;
-
-        try {
-
-            const python =
-                await loadPyodideRuntime();
-
-
-            /*
-                Redirect Python stdout/stderr
-                into our output area.
-            */
-            let capturedOutput = "";
-
-            python.setStdout({
-
-                batched: message => {
-
-                    capturedOutput +=
-                        message + "\n";
-
-                }
-
-            });
-
-            python.setStderr({
-
-                batched: message => {
-
-                    capturedOutput +=
-                        message + "\n";
-
-                }
-
-            });
-
-
-            /*
-                Execute the student's code.
-            */
-            await python.runPythonAsync(
-                editor.value
-            );
-
-
-            if (capturedOutput.trim() === "") {
-
-                output.textContent =
-                    "Program finished successfully.\n\n(No output was produced.)";
-
-            } else {
-
-                output.textContent =
-                    capturedOutput.trimEnd();
-
-            }
-
-            output.classList.add("success");
-
-        }
-
-        catch (error) {
-
-            output.textContent =
-                error.toString();
-
-            output.classList.add("error");
-
-        }
-
-        finally {
-
-            runButton.disabled = false;
-
-        }
-
-    });
-
-
-    /*
-        Reset code.
-    */
-    resetButton.addEventListener("click", () => {
-
-        editor.value =
-            originalCode;
-
-        output.className =
-            "output";
+      } else {
 
         output.textContent =
-            "Output will appear here.";
+          capturedOutput;
 
-        autoResize(editor);
+      }
 
-    });
+      status.textContent =
+        "Python ready";
 
-});
+    } catch (error) {
+
+      output.classList.add("error");
+
+      output.textContent =
+        error.toString();
+
+      status.textContent =
+        "Error — debug your code";
+
+    }
+
+  }
 
 
-/*
-    Make all editors resize after fonts/layout
-    have finished loading.
-*/
-window.addEventListener("load", () => {
+  /* =========================================
+     RESET
+  ========================================== */
 
-    document
-        .querySelectorAll(".code-editor")
-        .forEach(autoResize);
+  function resetPython(button) {
 
-});
+    const container =
+      button.closest(".python-example");
+
+    const editor =
+      container.querySelector(".code-editor");
+
+    const output =
+      container.querySelector(".output-box");
+
+    const status =
+      container.querySelector(".python-status");
+
+    editor.value =
+      editor.defaultValue;
+
+    resizeEditor(editor);
+
+    output.classList.remove("error");
+
+    output.textContent =
+      "Click Run to execute the program.";
+
+    status.textContent =
+      "Python ready";
+
+  }
+
+
+  /* =========================================
+     INITIALIZE
+  ========================================== */
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    async function () {
+
+      setupEditors();
+
+      try {
+        await loadPyodideRuntime();
+      } catch (error) {
+
+        document
+          .querySelectorAll(".python-status")
+          .forEach(el => {
+            el.textContent =
+              "Python could not be loaded";
+          });
+
+      }
+
+    }
+  );
 
 </script>
 
