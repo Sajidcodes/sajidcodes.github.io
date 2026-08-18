@@ -1,208 +1,137 @@
-let pyodide = null;
+// pyodide-runner.js
+// Turns any <pre class="runnable"><code>...</code></pre> block into a
+// live, executable Python snippet using Pyodide (runs entirely client-side).
 
-const output = document.getElementById("output");
-const runButton = document.getElementById("run-button");
-const clearButton = document.getElementById("clear-button");
-const codeEditor = document.getElementById("code");
+(function () {
+  let pyodideReadyPromise = null;
+  const statusEl = () => document.getElementById('pyodide-status');
 
-
-/* =========================
-   LOAD PYODIDE
-========================= */
-
-async function loadPython() {
-
-  try {
-
-    output.textContent = "Loading Python...";
-
-    pyodide = await loadPyodide();
-
-    output.textContent =
-      "Python is ready. Click “Run Python” to execute your code.";
-
-    runButton.disabled = false;
-    runButton.textContent = "Run Python";
-
-  } catch (error) {
-
-    output.textContent =
-      "Could not load Python.\n\n" + error;
-
-    runButton.disabled = true;
-
+  function showStatus(text) {
+    let el = statusEl();
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'pyodide-status';
+      document.body.appendChild(el);
+    }
+    el.textContent = text;
+    el.classList.remove('hidden');
   }
 
-}
-
-
-/* =========================
-   RUN PYTHON
-========================= */
-
-async function runPython() {
-
-  if (!pyodide) {
-
-    output.textContent =
-      "Python is still loading. Please wait a moment.";
-
-    return;
-
+  function hideStatus() {
+    const el = statusEl();
+    if (el) el.classList.add('hidden');
   }
 
-  const code = codeEditor.value;
-
-  if (!code.trim()) {
-
-    output.textContent =
-      "Write some Python code first.";
-
-    return;
-
+  async function getPyodide() {
+    if (!pyodideReadyPromise) {
+      showStatus('Loading Python environment…');
+      pyodideReadyPromise = loadPyodide().then((pyodide) => {
+        hideStatus();
+        return pyodide;
+      });
+    }
+    return pyodideReadyPromise;
   }
 
+  // Pull the plain-text source out of a <pre><code>...</code></pre> block,
+  // stripping the syntax-highlighting <span> tags used elsewhere on the site.
+  function extractSource(codeEl) {
+    return codeEl.textContent;
+  }
 
-  runButton.disabled = true;
-  runButton.textContent = "Running...";
+  function buildRunnableUI(preEl) {
+    const codeEl = preEl.querySelector('code');
+    if (!codeEl) return;
 
-  output.textContent = "";
+    const originalSource = extractSource(codeEl);
+    const editable = preEl.dataset.editable === 'true';
 
+    const wrap = document.createElement('div');
+    wrap.className = 'runnable';
 
-  try {
+    // Move the original <pre> into the wrapper first
+    preEl.parentNode.insertBefore(wrap, preEl);
+    wrap.appendChild(preEl);
 
-    /*
-      Capture print() output
-    */
-
-    pyodide.setStdout({
-
-      batched: (text) => {
-
-        output.textContent += text;
-
-      }
-
-    });
-
-
-    /*
-      Capture Python errors / stderr
-    */
-
-    pyodide.setStderr({
-
-      batched: (text) => {
-
-        output.textContent += text;
-
-      }
-
-    });
-
-
-    /*
-      Execute the student's Python code
-    */
-
-    await pyodide.runPythonAsync(code);
-
-
-    /*
-      If the program produced no output
-    */
-
-    if (output.textContent.trim() === "") {
-
-      output.textContent =
-        "Code executed successfully.";
-
+    // If editable, replace the <pre><code> with a live textarea
+    let sourceGetter = () => extractSource(codeEl);
+    if (editable) {
+      const textarea = document.createElement('textarea');
+      textarea.className = 'code-editable';
+      textarea.spellcheck = false;
+      textarea.value = originalSource;
+      textarea.rows = Math.max(3, originalSource.split('\n').length);
+      preEl.replaceWith(textarea);
+      wrap.appendChild(textarea);
+      sourceGetter = () => textarea.value;
     }
 
-  } catch (error) {
+    // Run bar
+    const bar = document.createElement('div');
+    bar.className = 'run-bar';
 
-    output.textContent =
-      "Error:\n\n" + error;
+    const btn = document.createElement('button');
+    btn.className = 'run-btn';
+    btn.type = 'button';
+    btn.innerHTML = '&#9654; Run';
 
+    const status = document.createElement('span');
+    status.className = 'run-status';
+
+    bar.appendChild(btn);
+    bar.appendChild(status);
+    wrap.appendChild(bar);
+
+    // Output area
+    const outputWrap = document.createElement('div');
+    outputWrap.className = 'run-output-wrap';
+    const outputLabel = document.createElement('div');
+    outputLabel.className = 'run-output-label';
+    outputLabel.textContent = 'Output';
+    const output = document.createElement('pre');
+    output.className = 'run-output';
+    outputWrap.appendChild(outputLabel);
+    outputWrap.appendChild(output);
+    wrap.appendChild(outputWrap);
+
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      status.textContent = 'Running…';
+      outputWrap.classList.add('show');
+      output.classList.remove('is-error');
+      output.textContent = '';
+
+      try {
+        const pyodide = await getPyodide();
+
+        // Capture stdout/stderr into Python-side buffers, then read them back.
+        pyodide.setStdout({ batched: (s) => { output.textContent += s + '\n'; } });
+        pyodide.setStderr({ batched: (s) => { output.textContent += s + '\n'; } });
+
+        await pyodide.runPythonAsync(sourceGetter());
+
+        if (output.textContent.trim() === '') {
+          output.textContent = '(no output — try adding a print() statement)';
+        }
+        status.textContent = 'Done';
+      } catch (err) {
+        output.classList.add('is-error');
+        output.textContent += String(err);
+        status.textContent = 'Error';
+      } finally {
+        btn.disabled = false;
+        setTimeout(() => { status.textContent = ''; }, 2000);
+      }
+    });
   }
 
-
-  runButton.disabled = false;
-  runButton.textContent = "Run Python";
-
-}
-
-
-/* =========================
-   CLEAR OUTPUT
-========================= */
-
-clearButton.addEventListener("click", () => {
-
-  output.textContent = "";
-
-});
-
-
-/* =========================
-   TAB SUPPORT
-========================= */
-
-codeEditor.addEventListener("keydown", (event) => {
-
-  if (event.key === "Tab") {
-
-    event.preventDefault();
-
-    const start = codeEditor.selectionStart;
-    const end = codeEditor.selectionEnd;
-
-    codeEditor.value =
-      codeEditor.value.substring(0, start) +
-      "    " +
-      codeEditor.value.substring(end);
-
-    codeEditor.selectionStart =
-      codeEditor.selectionEnd =
-      start + 4;
-
+  function init() {
+    document.querySelectorAll('pre.runnable').forEach(buildRunnableUI);
   }
 
-});
-
-
-/* =========================
-   KEYBOARD SHORTCUT
-   Cmd + Enter / Ctrl + Enter
-========================= */
-
-codeEditor.addEventListener("keydown", (event) => {
-
-  if (
-    (event.ctrlKey || event.metaKey) &&
-    event.key === "Enter"
-  ) {
-
-    event.preventDefault();
-
-    runPython();
-
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
   }
-
-});
-
-
-/* =========================
-   RUN BUTTON
-========================= */
-
-runButton.addEventListener("click", runPython);
-
-
-/* =========================
-   START PYODIDE
-========================= */
-
-runButton.disabled = true;
-
-loadPython();
+})();
