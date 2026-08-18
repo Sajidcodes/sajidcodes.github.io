@@ -486,7 +486,10 @@ button, input, textarea, select { font: inherit; }
   object-fit: cover;
   display: block;
 }
-
+/* Third awards image (TE.jpeg) — a bit shorter than its sibling */
+.award-photos-secondary img:nth-child(2) {
+  height: 180px;
+}
 .featured-event-photo img {
   width: 100%;
   max-width: 400px;
