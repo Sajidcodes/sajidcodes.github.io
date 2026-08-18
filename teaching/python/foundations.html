@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Foundations — Getting Started with Python | CIS 108</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Crimson+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="module-page">
+<main>
+
+<nav class="page-nav">
+  <a href="index.html" class="home-link">← All Modules</a>
+  <a href="module-01-lists.html">Module 01: Lists →</a>
+</nav>
+
+<section id="foundations">
+<h2><span class="module-num">FOUNDATIONS</span>Getting Started with Python</h2>
+
+<p class="lead">Before lists, loops, or functions — you need to know what a program actually is, how Python runs one, and the handful of building blocks every single line of code is made from. This module is the ground floor. Take it slow. Every example below has a <strong>▶ Run</strong> button — click it and watch the real output appear, right in the page.</p>
+
+<!-- ============================================ -->
+<h3>0.1 · What is a program?</h3>
+<p>A program is a list of instructions, written in a language a computer can follow, executed <strong>one line at a time, top to bottom</strong> — unless something tells it to skip around (that's what if-statements and loops do, later on). Python is a language for writing those instructions in something close to plain English.</p>
+
+<div class="callout mental">
+  <span class="label">★ Mental model</span>
+  <p>Think of a recipe. It doesn't matter how well you understand cooking — the oven only does exactly what the recipe says, in order, one step at a time. Python is the same: it has zero common sense and zero ability to guess what you meant. It just executes the literal instructions, line by line.</p>
+</div>
+
+<!-- ============================================ -->
+<h3>0.2 · Where Python code actually runs</h3>
+<p>You'll usually meet Python in one of these places:</p>
+<table>
+<tr><th>Environment</th><th>What it's good for</th></tr>
+<tr><td>IDLE</td><td>Comes free with Python, simplest way to start</td></tr>
+<tr><td>VS Code</td><td>Full code editor with a built-in terminal, most common in industry</td></tr>
+<tr><td>Jupyter Notebook / Google Colab</td><td>Run code in small chunks ("cells"), great for data work and experimentation</td></tr>
+<tr><td>The terminal / command line</td><td>Type <code>python filename.py</code> to run a saved file directly</td></tr>
+</table>
+
+<div class="callout hint">
+  <span class="label">→ Two ways to run code</span>
+  <p><strong>Interactive mode</strong> (the <code>&gt;&gt;&gt;</code> prompt or a notebook cell): type one line, hit Enter, see the result immediately. Great for testing small things.<br>
+  <strong>Script mode</strong>: write many lines into a saved <code>.py</code> file, then run the whole file at once. This is how real programs are built.<br>
+  This page is a third option — a sandboxed Python running right in your browser. Perfect for experimenting, not for building real projects yet.</p>
+</div>
+
+<!-- ============================================ -->
+<h3>0.3 · Your first line: <code>print()</code></h3>
+<p><code>print()</code> displays something on the screen. It is how your program "talks" to you.</p>
+
+<pre class="runnable"><code><span class="fn">print</span>(<span class="str">"Hello, world!"</span>)</code></pre>
+
+<p>You can print multiple things at once, separated by commas — Python automatically puts a space between them:</p>
+<pre class="runnable"><code><span class="fn">print</span>(<span class="str">"The answer is"</span>, <span class="num">42</span>)</code></pre>
+
+<div class="callout pitfall">
+  <span class="label">⚠ Common first mistake</span>
+  <p>Text must be wrapped in quotes — <code>print(Hello)</code> (no quotes) raises <code>NameError</code>, because Python thinks <code>Hello</code> is a variable name that doesn't exist yet. <code>print("Hello")</code> is correct. Try the broken version below and watch the real error:</p>
+</div>
+
+<pre class="runnable" data-editable="true"><code>print(Hello)</code></pre>
+
+<!-- ============================================ -->
+<h3>0.4 · Comments — notes the computer ignores</h3>
+<p>Anything after a <code>#</code> on a line is a comment. Python skips it completely — comments exist purely for humans reading the code.</p>
+
+<pre class="runnable"><code><span class="com"># This whole line is ignored by Python</span>
+<span class="fn">print</span>(<span class="str">"This runs"</span>)  <span class="com"># this part is ignored too</span></code></pre>
+
+<div class="callout mental">
+  <span class="label">★ Mental model</span>
+  <p>Comments are sticky notes stuck to your code for future-you or a teammate. They explain <em>why</em> the code does something, not just <em>what</em> it does — the code itself already shows the "what."</p>
+</div>
+
+<!-- ============================================ -->
+<h3>0.5 · Variables — storing values with a name</h3>
+<p>A variable is a labeled box that holds a value. You create one with <code>=</code>, which means "store," not "equals" (that distinction becomes critical later in if-statements).</p>
+
+<pre class="runnable"><code>age = <span class="num">21</span>
+name = <span class="str">"Sara"</span>
+is_student = <span class="kw">True</span>
+
+<span class="fn">print</span>(name, <span class="str">"is"</span>, age)</code></pre>
+
+<h4>Naming rules</h4>
+<ul>
+  <li>Can contain letters, numbers, and underscores — but <strong>can't start with a number</strong>.</li>
+  <li>No spaces. Use underscores instead: <code>my_variable</code>, not <code>my variable</code>.</li>
+  <li>Case-sensitive: <code>age</code> and <code>Age</code> are two completely different variables.</li>
+  <li>Can't use Python's reserved words (<code>if</code>, <code>for</code>, <code>class</code>, <code>return</code>, etc.) as names.</li>
+</ul>
+
+<div class="callout pitfall">
+  <span class="label">⚠ Watch for…</span>
+  <p>Using a variable before you've assigned it raises <code>NameError: name 'x' is not defined</code>. Python doesn't guess — a name only exists after a line that creates it has actually run. Try it:</p>
+</div>
+
+<pre class="runnable" data-editable="true"><code>print(score)
+score = 10</code></pre>
+
+<h4>Reassigning a variable</h4>
+<pre class="runnable"><code>score = <span class="num">10</span>
+<span class="fn">print</span>(score)   <span class="com"># → 10</span>
+score = <span class="num">25</span>       <span class="com"># overwrites the old value completely</span>
+<span class="fn">print</span>(score)   <span class="com"># → 25</span></code></pre>
+
+<!-- ============================================ -->
+<h3>0.6 · The four basic data types</h3>
+<p>Every value has a type, and the type controls what you can do with it.</p>
+
+<table>
+<tr><th>Type</th><th>What it is</th><th>Examples</th></tr>
+<tr><td><code>int</code></td><td>whole number</td><td><code>0</code>, <code>17</code>, <code>-4</code></td></tr>
+<tr><td><code>float</code></td><td>number with a decimal point</td><td><code>3.14</code>, <code>0.0</code>, <code>-2.5</code></td></tr>
+<tr><td><code>str</code></td><td>text, wrapped in quotes</td><td><code>"hi"</code>, <code>'CIS 108'</code></td></tr>
+<tr><td><code>bool</code></td><td>only <code>True</code> or <code>False</code> — capitalized, no quotes</td><td><code>True</code>, <code>False</code></td></tr>
+</table>
+
+<pre class="runnable"><code><span class="fn">print</span>(<span class="fn">type</span>(<span class="num">7</span>))
+<span class="fn">print</span>(<span class="fn">type</span>(<span class="num">7.0</span>))
+<span class="fn">print</span>(<span class="fn">type</span>(<span class="str">"7"</span>))
+<span class="fn">print</span>(<span class="fn">type</span>(<span class="kw">True</span>))</code></pre>
+
+<div class="callout mental">
+  <span class="label">★ Mental model — the quotation-mark switch</span>
+  <p>Quotes turn anything into text. <code>7</code> is a number you can do math with. <code>"7"</code> is a string that just happens to look like a number — Python treats it completely differently, the same way "the word cat" isn't an actual cat.</p>
+</div>
+
+<!-- ============================================ -->
+<h3>0.7 · Getting input from the user</h3>
+<p><code>input()</code> pauses the program, waits for the user to type something and hit Enter, then hands back whatever they typed — <strong>always as a string</strong>, even if they typed a number.</p>
+
+<pre><code>name = <span class="fn">input</span>(<span class="str">"What's your name? "</span>)
+<span class="fn">print</span>(<span class="str">"Hello,"</span>, name)</code></pre>
+
+<div class="callout pitfall">
+  <span class="label">⚠ A note on this page</span>
+  <p><code>input()</code> needs a real terminal to pause and wait for typing, so it won't work in the in-browser Run button here — that's why the block above doesn't have one. It works perfectly in IDLE, VS Code, or a terminal. Below, we simulate what <code>input()</code> hands back, using a hardcoded string instead, so you can still see the type problem in action.</p>
+</div>
+
+<pre class="runnable"><code><span class="com"># Simulating: age = input("Age: ")  →  user types 25</span>
+age = <span class="str">"25"</span>       <span class="com"># input() always returns a string, even for numbers</span>
+<span class="fn">print</span>(age + <span class="num">1</span>)   <span class="com"># TypeError! Can't add int to str.</span></code></pre>
+
+<p>Fix it by converting with <code>int()</code> or <code>float()</code>:</p>
+<pre class="runnable"><code><span class="com"># Simulating: age = int(input("Age: "))</span>
+age = <span class="fn">int</span>(<span class="str">"25"</span>)   <span class="com"># now age is a real int</span>
+<span class="fn">print</span>(age + <span class="num">1</span>)      <span class="com"># works!</span></code></pre>
+
+<!-- ============================================ -->
+<h3>0.8 · Type conversion — moving between types on purpose</h3>
+<table>
+<tr><th>Function</th><th>Converts to</th><th>Example</th></tr>
+<tr><td><code>int(x)</code></td><td>whole number</td><td><code>int("42")</code> → <code>42</code></td></tr>
+<tr><td><code>float(x)</code></td><td>decimal number</td><td><code>float("3.5")</code> → <code>3.5</code></td></tr>
+<tr><td><code>str(x)</code></td><td>text</td><td><code>str(42)</code> → <code>"42"</code></td></tr>
+</table>
+
+<pre class="runnable" data-editable="true"><code>print(int("abc"))    # ValueError! Can't convert non-numeric text to a number.</code></pre>
+
+<pre class="runnable"><code><span class="fn">print</span>(<span class="fn">int</span>(<span class="num">3.9</span>))     <span class="com"># → 3   (chops off the decimal, doesn't round)</span></code></pre>
+
+<!-- ============================================ -->
+<h3>0.9 · Arithmetic operators</h3>
+<table>
+<tr><th>Operator</th><th>Does</th><th>Example</th><th>Result</th></tr>
+<tr><td><code>+</code></td><td>add</td><td><code>5 + 2</code></td><td><code>7</code></td></tr>
+<tr><td><code>-</code></td><td>subtract</td><td><code>5 - 2</code></td><td><code>3</code></td></tr>
+<tr><td><code>*</code></td><td>multiply</td><td><code>5 * 2</code></td><td><code>10</code></td></tr>
+<tr><td><code>/</code></td><td>divide (always gives a float)</td><td><code>5 / 2</code></td><td><code>2.5</code></td></tr>
+<tr><td><code>//</code></td><td>floor division (drops the remainder)</td><td><code>5 // 2</code></td><td><code>2</code></td></tr>
+<tr><td><code>%</code></td><td>modulo (the remainder itself)</td><td><code>5 % 2</code></td><td><code>1</code></td></tr>
+<tr><td><code>**</code></td><td>exponent (power)</td><td><code>5 ** 2</code></td><td><code>25</code></td></tr>
+</table>
+
+<pre class="runnable" data-editable="true"><code>print(5 + 2)
+print(5 - 2)
+print(5 * 2)
+print(5 / 2)
+print(5 // 2)
+print(5 % 2)
+print(5 ** 2)</code></pre>
+
+<div class="callout hint">
+  <span class="label">→ Where <code>%</code> shows up constantly</span>
+  <p><code>n % 2 == 0</code> is the classic way to check if <code>n</code> is even — the remainder after dividing by 2 is 0 only for even numbers. You'll see this pattern everywhere once you hit loops and if-statements.</p>
+</div>
+
+<h4>Order of operations</h4>
+<p>Python follows standard math order (PEMDAS): parentheses first, then exponents, then <code>*</code> <code>/</code> <code>//</code> <code>%</code> left to right, then <code>+</code> <code>-</code> left to right.</p>
+<pre class="runnable"><code><span class="fn">print</span>(<span class="num">2</span> + <span class="num">3</span> * <span class="num">4</span>)       <span class="com"># → 14   (multiplication happens first)</span>
+<span class="fn">print</span>((<span class="num">2</span> + <span class="num">3</span>) * <span class="num">4</span>)     <span class="com"># → 20   (parentheses force addition first)</span></code></pre>
+
+<!-- ============================================ -->
+<h3>0.10 · Comparison operators (a preview)</h3>
+<p>These compare two values and always produce a <code>bool</code> — you'll use these constantly starting with if-statements in the next module.</p>
+<table>
+<tr><th>Operator</th><th>Means</th><th>Example</th><th>Result</th></tr>
+<tr><td><code>==</code></td><td>equal to</td><td><code>5 == 5</code></td><td><code>True</code></td></tr>
+<tr><td><code>!=</code></td><td>not equal to</td><td><code>5 != 3</code></td><td><code>True</code></td></tr>
+<tr><td><code>&lt;</code> <code>&gt;</code></td><td>less / greater than</td><td><code>3 &lt; 5</code></td><td><code>True</code></td></tr>
+<tr><td><code>&lt;=</code> <code>&gt;=</code></td><td>less/greater or equal</td><td><code>5 &gt;= 5</code></td><td><code>True</code></td></tr>
+</table>
+
+<pre class="runnable" data-editable="true"><code>print(5 == 5)
+print(5 != 3)
+print(3 < 5)
+print(5 >= 5)</code></pre>
+
+<div class="callout pitfall">
+  <span class="label">⚠ Don't confuse these two</span>
+  <p><code>=</code> stores a value into a variable. <code>==</code> asks "are these equal?" and gives back True or False. Mixing them up is the single most common beginner typo — and outside of an if-statement, <code>x == 5</code> on its own line just computes a throwaway True/False and does nothing visible.</p>
+</div>
+
+<!-- ============================================ -->
+<h3>0.11 · Indentation — Python's grammar</h3>
+<p>You haven't written an indented block yet (that starts with if-statements and loops next module), but know this now: Python uses <strong>indentation</strong> — consistent spacing at the start of a line — instead of curly braces to show which lines belong together. Mixing tabs and spaces, or indenting inconsistently, causes an <code>IndentationError</code>. Most editors handle this for you automatically once you press Enter after a colon.</p>
+
+<!-- ============================================ -->
+<h3>0.12 · Two error categories to recognize on sight</h3>
+<table>
+<tr><th>Error type</th><th>When it happens</th><th>Example</th></tr>
+<tr><td><code>SyntaxError</code></td><td>The code isn't valid Python grammar — caught before anything runs</td><td>missing a colon, mismatched parentheses</td></tr>
+<tr><td>Runtime error<br>(<code>NameError</code>, <code>TypeError</code>, <code>ValueError</code>, etc.)</td><td>The grammar is fine, but something goes wrong while running</td><td>using an undefined variable, adding a string to a number</td></tr>
+</table>
+
+<div class="callout win">
+  <span class="label">✓ Read the last line of an error first</span>
+  <p>Python error messages look intimidating but the actual reason is almost always the very last line — e.g. <code>NameError: name 'x' is not defined</code>. Read that line first, then work upward if you need more context. Try breaking the code below on purpose:</p>
+</div>
+
+<pre class="runnable" data-editable="true"><code>print("Line 1 runs fine")
+print(undefined_variable)
+print("This line never runs")</code></pre>
+
+<!-- ============================================ -->
+<h3>Foundations — Bloom's ladder</h3>
+<div class="bloom-grid">
+  <div class="bloom-card l1"><div class="bloom-level">Remember</div><p class="bloom-q">What function displays text on the screen?</p></div>
+  <div class="bloom-card l2"><div class="bloom-level">Understand</div><p class="bloom-q">Why does <code>input()</code> always return a string, even if the user types numbers?</p></div>
+  <div class="bloom-card l3"><div class="bloom-level">Apply</div><p class="bloom-q">What is the type of the result of <code>7 / 2</code>? What about <code>7 // 2</code>?</p></div>
+  <div class="bloom-card l4"><div class="bloom-level">Analyze</div><p class="bloom-q">Why does <code>age = input("Age: "); print(age + 1)</code> raise a <code>TypeError</code>?</p></div>
+  <div class="bloom-card l5"><div class="bloom-level">Evaluate</div><p class="bloom-q">A classmate stores a phone number as an <code>int</code>. Why might that cause problems later (hint: leading zeros)?</p></div>
+  <div class="bloom-card l6"><div class="bloom-level">Create</div><p class="bloom-q">Write a short program that asks for someone's name and birth year, then prints a greeting using both.</p></div>
+</div>
+
+<!-- ============================================ -->
+<div class="quiz">
+<p class="quiz-title">Instant Quiz · Foundations</p>
+
+<details><summary>1. What does <code>print("Age:", 21)</code> output?</summary>
+<div class="answer"><strong>Age: 21</strong> — Python inserts a space between comma-separated items.</div></details>
+
+<details><summary>2. What is <code>type(4.0)</code>?</summary>
+<div class="answer"><strong><code>float</code></strong>. The decimal point makes it a float even though the value is whole.</div></details>
+
+<details><summary>3. What does <code>10 % 3</code> evaluate to?</summary>
+<div class="answer"><strong>1</strong>. 10 divided by 3 is 3 remainder 1 — modulo gives just the remainder.</div></details>
+
+<details><summary>4. What does <code>10 // 3</code> evaluate to?</summary>
+<div class="answer"><strong>3</strong>. Floor division drops the remainder entirely and keeps only the whole number part.</div></details>
+
+<details><summary>5. What happens when you run <code>print(Hello)</code> without quotes?</summary>
+<div class="answer"><strong><code>NameError</code></strong>. Without quotes, Python looks for a variable named <code>Hello</code>, which doesn't exist.</div></details>
+
+<details><summary>6. What does <code>int("7") + int("3")</code> return?</summary>
+<div class="answer"><strong>10</strong> — both strings are converted to real integers first, then added as numbers.</div></details>
+
+<details><summary>7. Why does <code>"7" + "3"</code> return <code>"73"</code> instead of <code>10</code>?</summary>
+<div class="answer">Both are strings, so <code>+</code> glues (concatenates) them together as text rather than adding them as numbers.</div></details>
+
+<details><summary>8. Is <code>5 = x</code> valid Python?</summary>
+<div class="answer"><strong>No — <code>SyntaxError</code>.</strong> The left side of <code>=</code> must be a variable name, not a value. You'd write <code>x = 5</code> instead.</div></details>
+</div>
+
+<!-- ============================================ -->
+<div class="quiz">
+<p class="quiz-title">🧪 Try it yourself</p>
+<p style="margin-top:0;">An empty scratchpad — edit the code and hit Run as many times as you like.</p>
+<pre class="runnable" data-editable="true"><code>name = "your name here"
+favorite_number = 7
+
+print("Hi, my name is", name)
+print("My favorite number is", favorite_number)
+print("Doubled, that's", favorite_number * 2)</code></pre>
+</div>
+
+</section>
+
+<div class="module-pager">
+  <a class="prev" href="index.html">Back to All Modules</a>
+  <a class="next" href="module-01-lists.html">Module 01: Lists</a>
+</div>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
+<script src="pyodide-runner.js"></script>
+</body>
+</html>
