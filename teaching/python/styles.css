@@ -1,0 +1,409 @@
+:root {
+  --bg: #fbfbf8;
+  --text: #171717;
+  --muted: #666;
+  --light: #e5e5df;
+  --accent: #1f5eff;
+  --dark: #171717;
+  --max: 1100px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Inter", sans-serif;
+  line-height: 1.6;
+}
+
+/* =========================
+   CONTAINER
+========================= */
+
+.container {
+  width: min(calc(100% - 40px), var(--max));
+  margin: 0 auto;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.site-header {
+  border-bottom: 1px solid var(--light);
+  background: var(--bg);
+}
+
+.nav {
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.brand {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+}
+
+nav a {
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+nav a:hover {
+  color: var(--accent);
+}
+
+
+/* =========================
+   SECTIONS
+========================= */
+
+.section {
+  padding: 80px 0;
+}
+
+.section-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 34px;
+}
+
+.section-heading span {
+  color: var(--accent);
+  font-family: "DM Mono", monospace;
+  font-size: 0.85rem;
+}
+
+.section-heading h2 {
+  margin: 0;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  line-height: 1.2;
+}
+
+
+/* =========================
+   PROJECT / INTRO
+========================= */
+
+.project {
+  border-top: 1px solid var(--light);
+  padding-top: 30px;
+}
+
+.project-meta {
+  margin-bottom: 14px;
+  color: var(--muted);
+  font-family: "DM Mono", monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.project h1 {
+  margin: 0 0 18px;
+  font-size: clamp(2rem, 5vw, 3.8rem);
+  line-height: 1.1;
+}
+
+.project h3 {
+  margin: 0 0 8px;
+  font-size: 1.25rem;
+}
+
+.project-lead {
+  max-width: 760px;
+  font-size: 1.12rem;
+}
+
+
+/* =========================
+   PYTHON TOPICS
+========================= */
+
+.topic-list {
+  border-top: 1px solid var(--light);
+}
+
+.topic {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 20px;
+
+  padding: 24px 0;
+
+  border-bottom: 1px solid var(--light);
+
+  color: var(--text);
+  text-decoration: none;
+
+  transition:
+    padding-left 0.15s ease,
+    color 0.15s ease;
+}
+
+.topic:hover {
+  padding-left: 8px;
+}
+
+.topic:hover h3 {
+  color: var(--accent);
+}
+
+.topic-number {
+  padding-top: 3px;
+
+  color: var(--accent);
+
+  font-family: "DM Mono", monospace;
+  font-size: 0.9rem;
+}
+
+.topic h3 {
+  margin: 0 0 5px;
+
+  font-size: 1.05rem;
+  line-height: 1.4;
+
+  transition: color 0.15s ease;
+}
+
+.topic p {
+  margin: 0;
+
+  color: var(--muted);
+
+  font-size: 0.95rem;
+}
+
+
+/* =========================
+   PYTHON EDITOR
+========================= */
+
+.python-editor {
+  margin-top: 30px;
+}
+
+
+/* Code editor */
+
+#code {
+  display: block;
+
+  width: 100%;
+  min-height: 320px;
+
+  padding: 20px;
+
+  resize: vertical;
+
+  border: 1px solid #292929;
+  border-radius: 6px;
+
+  background: var(--dark);
+  color: #f4f4f4;
+
+  font-family: "DM Mono", monospace;
+  font-size: 0.9rem;
+  line-height: 1.6;
+
+  outline: none;
+
+  tab-size: 4;
+}
+
+#code:focus {
+  border-color: var(--accent);
+}
+
+
+/* =========================
+   EDITOR BUTTONS
+========================= */
+
+.editor-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin: 14px 0 24px;
+}
+
+button {
+  border: 0;
+  border-radius: 4px;
+
+  padding: 11px 18px;
+
+  background: var(--accent);
+  color: white;
+
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+button:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+.secondary-button {
+  border: 1px solid var(--light);
+
+  background: transparent;
+  color: var(--text);
+}
+
+.secondary-button:hover {
+  background: #f1f1ed;
+}
+
+
+/* =========================
+   OUTPUT
+========================= */
+
+.output-label {
+  margin-bottom: 8px;
+
+  color: var(--muted);
+
+  font-family: "DM Mono", monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+#output {
+  min-height: 110px;
+
+  margin: 0;
+  padding: 18px;
+
+  overflow-x: auto;
+
+  border: 1px solid var(--light);
+
+  background: white;
+
+  color: var(--text);
+
+  font-family: "DM Mono", monospace;
+  font-size: 0.85rem;
+  line-height: 1.6;
+
+  white-space: pre-wrap;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+.site-footer {
+  border-top: 1px solid var(--light);
+
+  padding: 30px 0;
+
+  color: var(--muted);
+}
+
+.site-footer p {
+  margin: 0;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
+
+  .container {
+    width: min(calc(100% - 30px), var(--max));
+  }
+
+  .nav {
+    align-items: flex-start;
+    flex-direction: column;
+
+    padding: 20px 0;
+  }
+
+  nav {
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .section {
+    padding: 55px 0;
+  }
+
+  .section-heading {
+    margin-bottom: 26px;
+  }
+
+  .topic {
+    grid-template-columns: 42px 1fr;
+    gap: 12px;
+
+    padding: 20px 0;
+  }
+
+  .topic:hover {
+    padding-left: 0;
+  }
+
+  .topic h3 {
+    font-size: 1rem;
+  }
+
+  .topic p {
+    font-size: 0.9rem;
+  }
+
+  #code {
+    min-height: 260px;
+
+    padding: 16px;
+
+    font-size: 0.82rem;
+  }
+
+  .editor-actions {
+    flex-wrap: wrap;
+  }
+}
