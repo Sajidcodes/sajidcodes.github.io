@@ -235,7 +235,7 @@ button, input, textarea, select { font: inherit; }
 
 .text-link {
   display: inline-block;
-  margin-top: 26px;
+  margin-top: 10px;
   font-family: var(--mono);
   font-size: 12px;
 }
