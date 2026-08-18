@@ -1,0 +1,3737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>1. Python Foundations</title>
+
+  <!-- Pyodide -->
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.28.2/full/pyodide.js"></script>
+
+  <style>
+    :root {
+      --bg: #fbfbf8;
+      --surface: #ffffff;
+      --text: #171717;
+      --muted: #666;
+      --light: #e5e5df;
+      --accent: #1f5eff;
+      --accent-light: #eef3ff;
+      --success: #176b3a;
+      --success-bg: #edf8f1;
+      --warning: #8a5a00;
+      --warning-bg: #fff8e7;
+      --danger: #a11;
+      --danger-bg: #fff1f1;
+      --code-bg: #171717;
+      --code-text: #f5f5f5;
+      --max: 900px;
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+      line-height: 1.7;
+    }
+
+    .page {
+      width: min(var(--max), calc(100% - 40px));
+      margin: 0 auto;
+      padding: 70px 0 100px;
+    }
+
+    /* ================================
+       HERO
+    ================================= */
+
+    .hero {
+      margin-bottom: 75px;
+    }
+
+    .eyebrow {
+      font-size: 0.82rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 6vw, 4.5rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      margin: 0 0 22px;
+      font-weight: 700;
+    }
+
+    .hero p {
+      max-width: 750px;
+      color: var(--muted);
+      font-size: 1.15rem;
+      margin: 0;
+    }
+
+    /* ================================
+       SECTIONS
+    ================================= */
+
+    section {
+      margin-bottom: 90px;
+    }
+
+    .section-number {
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+
+    h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin: 0 0 22px;
+    }
+
+    h3 {
+      font-size: 1.55rem;
+      line-height: 1.25;
+      margin: 58px 0 18px;
+      letter-spacing: -0.02em;
+    }
+
+    h4 {
+      margin: 30px 0 12px;
+      font-size: 1.1rem;
+    }
+
+    p {
+      margin: 0 0 18px;
+    }
+
+    ul,
+    ol {
+      padding-left: 25px;
+      margin-bottom: 25px;
+    }
+
+    li {
+      margin-bottom: 7px;
+    }
+
+    /* ================================
+       LEARNING TARGET
+    ================================= */
+
+    .learning-target {
+      background: var(--accent-light);
+      border-left: 4px solid var(--accent);
+      padding: 20px 24px;
+      margin: 28px 0 36px;
+      border-radius: 0 var(--radius) var(--radius) 0;
+    }
+
+    .learning-target strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+    }
+
+    .learning-target ul {
+      margin-bottom: 0;
+    }
+
+    /* ================================
+       SUMMARY
+    ================================= */
+
+    .summary {
+      background: var(--surface);
+      border: 1px solid var(--light);
+      border-radius: var(--radius);
+      padding: 24px 26px;
+      margin: 38px 0 48px;
+    }
+
+    .summary-title {
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .summary ul {
+      margin-bottom: 0;
+    }
+
+    /* ================================
+       EXAMPLES
+    ================================= */
+
+    .example {
+      margin: 30px 0 38px;
+    }
+
+    .example-title {
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .analogy {
+      background: var(--warning-bg);
+      border-left: 4px solid #d49a00;
+      padding: 18px 22px;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      margin: 24px 0;
+    }
+
+    /* ================================
+       STATIC CODE
+    ================================= */
+
+    pre.static-code {
+      background: var(--code-bg);
+      color: var(--code-text);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      overflow-x: auto;
+      margin: 20px 0;
+      font-family:
+        "SFMono-Regular",
+        Consolas,
+        "Liberation Mono",
+        Menlo,
+        monospace;
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+
+    p code,
+    li code {
+      background: #eeeeeb;
+      padding: 2px 6px;
+      border-radius: 5px;
+      font-size: 0.9em;
+    }
+
+    /* ================================
+       PYTHON RUNNER
+    ================================= */
+
+    .python-example {
+      border: 1px solid var(--light);
+      border-radius: var(--radius);
+      background: var(--surface);
+      margin: 32px 0 45px;
+      overflow: hidden;
+    }
+
+    .python-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .python-title {
+      font-weight: 700;
+    }
+
+    .python-status {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .editor-wrapper {
+      background: var(--code-bg);
+      padding: 18px;
+    }
+
+    .code-editor {
+      display: block;
+      width: 100%;
+      min-height: 90px;
+      height: auto;
+      resize: none;
+      overflow-y: hidden;
+      border: none;
+      outline: none;
+      border-radius: 8px;
+      padding: 15px;
+      background: #111;
+      color: #f4f4f4;
+      font-family:
+        "SFMono-Regular",
+        Consolas,
+        "Liberation Mono",
+        Menlo,
+        monospace;
+      font-size: 0.92rem;
+      line-height: 1.55;
+      tab-size: 4;
+      white-space: pre;
+    }
+
+    .code-editor:focus {
+      box-shadow: 0 0 0 2px rgba(31, 94, 255, 0.7);
+    }
+
+    .python-controls {
+      padding: 15px 18px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--light);
+    }
+
+    button {
+      border: none;
+      border-radius: 7px;
+      padding: 9px 15px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: opacity 0.15s ease;
+    }
+
+    button:hover:not(:disabled) {
+      opacity: 0.88;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .run-btn {
+      background: var(--accent);
+      color: white;
+    }
+
+    .reset-btn {
+      background: #eeeeeb;
+      color: var(--text);
+    }
+
+    .output {
+      padding: 18px;
+    }
+
+    .output-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .output-box {
+      min-height: 48px;
+      background: #f5f5f2;
+      border-radius: 8px;
+      padding: 13px 15px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font-family:
+        "SFMono-Regular",
+        Consolas,
+        "Liberation Mono",
+        Menlo,
+        monospace;
+      font-size: 0.9rem;
+    }
+
+    .output-box.error {
+      color: var(--danger);
+      background: var(--danger-bg);
+    }
+
+    /* ================================
+       FOOD FOR THOUGHT
+    ================================= */
+
+    .thinking {
+      border: 1px solid var(--light);
+      border-radius: var(--radius);
+      padding: 22px 25px;
+      margin: 32px 0;
+      background: #fff;
+    }
+
+    .thinking-title {
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .thinking ul {
+      margin-bottom: 0;
+    }
+
+    /* ================================
+       IMPORTANT
+    ================================= */
+
+    .important {
+      background: var(--success-bg);
+      border-left: 4px solid var(--success);
+      padding: 20px 24px;
+      margin: 30px 0;
+      border-radius: 0 var(--radius) var(--radius) 0;
+    }
+
+    .important p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* ================================
+       EXIT TICKET
+    ================================= */
+
+    .exit-ticket {
+      background: var(--text);
+      color: white;
+      border-radius: var(--radius);
+      padding: 32px;
+      margin-top: 65px;
+    }
+
+    .exit-ticket h3 {
+      margin-top: 0;
+      color: white;
+    }
+
+    .exit-ticket ol {
+      margin-bottom: 0;
+    }
+
+    /* ================================
+       RESPONSIVE
+    ================================= */
+
+    @media (max-width: 650px) {
+
+      .page {
+        width: min(
+          var(--max),
+          calc(100% - 28px)
+        );
+
+        padding-top: 45px;
+      }
+
+      h3 {
+        margin-top: 45px;
+      }
+
+      .python-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .editor-wrapper {
+        padding: 12px;
+      }
+
+      .code-editor {
+        font-size: 0.86rem;
+      }
+
+      .exit-ticket {
+        padding: 24px;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="page">
+
+  <!-- =========================================
+       HERO
+  ========================================== -->
+
+  <header class="hero">
+
+    <div class="eyebrow">
+      1 · Python Foundations
+    </div>
+
+    <h1>
+      Getting Started with Python
+    </h1>
+
+    <p>
+      Learn how Python programs work, how to write and run Python code,
+      how programs store information, and how to build your first
+      interactive programs.
+    </p>
+
+  </header>
+
+
+  <!-- =========================================
+       1.1 GETTING STARTED
+  ========================================== -->
+
+  <section id="getting-started">
+
+    <div class="section-number">
+      1.1
+    </div>
+
+    <h2>
+      Getting Started
+    </h2>
+
+    <p>
+      Before we start building larger programs, we need to understand
+      the environment in which Python programs are written and executed.
+    </p>
+
+    <div class="learning-target">
+
+      <strong>You will be able to</strong>
+
+      <ul>
+        <li>Explain what Python is.</li>
+        <li>Describe the role of the Python interpreter.</li>
+        <li>Create and run a <code>.py</code> file.</li>
+        <li>Use the Python REPL for simple experiments.</li>
+        <li>Identify the basic parts of a Python development environment.</li>
+        <li>Use comments and indentation correctly.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         PYTHON
+    ======================================= -->
+
+    <h3>
+      1. What Is Python?
+    </h3>
+
+    <p>
+      <strong>Python</strong> is a programming language used to give
+      computers instructions.
+    </p>
+
+    <p>
+      Python is widely used for software development, data analysis,
+      automation, artificial intelligence, web development, scientific
+      computing, and many other areas.
+    </p>
+
+    <div class="analogy">
+
+      <strong>Think of Python as a language.</strong>
+
+      <p>
+        Just as people use languages to communicate with one another,
+        programmers use programming languages to communicate instructions
+        to computers.
+      </p>
+
+    </div>
+
+
+    <div class="example">
+
+      <div class="example-title">
+        Your First Python Instruction
+      </div>
+
+      <pre class="static-code">print("Hello, world!")</pre>
+
+      <p>
+        This tells Python to display the text:
+      </p>
+
+      <pre class="static-code">Hello, world!</pre>
+
+    </div>
+
+
+    <div class="python-example">
+
+      <div class="python-header">
+
+        <div class="python-title">
+          Try It — Your First Python Program
+        </div>
+
+        <div class="python-status">
+          Loading Python...
+        </div>
+
+      </div>
+
+      <div class="editor-wrapper">
+
+<textarea class="code-editor">print("Hello, world!")</textarea>
+
+      </div>
+
+      <div class="python-controls">
+
+        <button
+          class="run-btn"
+          onclick="runPython(this)"
+          disabled>
+          Loading Python...
+        </button>
+
+        <button
+          class="reset-btn"
+          onclick="resetPython(this)">
+          Reset
+        </button>
+
+      </div>
+
+      <div class="output">
+
+        <div class="output-label">
+          Output
+        </div>
+
+        <div class="output-box">
+          Python is loading...
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="thinking">
+
+      <div class="thinking-title">
+        Food for Thought
+      </div>
+
+      <ul>
+        <li>What do you think would happen if you changed the message inside the quotation marks?</li>
+        <li>Why do you think programming languages have rules for how instructions are written?</li>
+      </ul>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-title">
+        Important Idea
+      </div>
+
+      <ul>
+        <li>Python is a programming language.</li>
+        <li>Python allows us to write instructions that a computer can execute.</li>
+        <li>A Python program is made up of Python instructions.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         INTERPRETER
+    ======================================= -->
+
+    <h3>
+      2. The Python Interpreter
+    </h3>
+
+    <p>
+      The <strong>Python interpreter</strong> is the program that processes
+      Python code and executes it.
+    </p>
+
+    <p>
+      When you give Python an instruction such as:
+    </p>
+
+    <pre class="static-code">print("Hello!")</pre>
+
+    <p>
+      the interpreter processes that instruction and Python produces
+      the requested result.
+    </p>
+
+
+    <div class="example">
+
+      <div class="example-title">
+        The Basic Idea
+      </div>
+
+      <pre class="static-code">Your Python Code
+        ↓
+Python Interpreter
+        ↓
+Program Executes
+        ↓
+Result</pre>
+
+    </div>
+
+
+    <div class="important">
+
+      <strong>Remember:</strong>
+
+      <p>
+        You write Python code. The Python interpreter processes that code
+        so that it can be executed.
+      </p>
+
+    </div>
+
+
+    <div class="thinking">
+
+      <div class="thinking-title">
+        Food for Thought
+      </div>
+
+      <ul>
+        <li>Why do you think we need something to process the Python code?</li>
+        <li>What do you think would happen if Python could not understand an instruction?</li>
+      </ul>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-title">
+        Important Idea
+      </div>
+
+      <ul>
+        <li>The interpreter processes Python instructions.</li>
+        <li>The interpreter allows us to execute Python programs.</li>
+        <li>Errors can occur when Python cannot correctly process our code.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         PY FILES
+    ======================================= -->
+
+    <h3>
+      3. Python Files and <code>.py</code>
+    </h3>
+
+    <p>
+      Python programs are commonly saved in files ending with
+      <code>.py</code>.
+    </p>
+
+    <p>
+      For example:
+    </p>
+
+    <pre class="static-code">hello.py</pre>
+
+    <p>
+      The <code>.py</code> extension tells us that the file contains
+      Python source code.
+    </p>
+
+
+    <div class="example">
+
+      <div class="example-title">
+        Example — A Python File
+      </div>
+
+      <pre class="static-code"># my first Python program
+
+name = "Alex"
+
+print(name)</pre>
+
+      <p>
+        If this code is saved as:
+      </p>
+
+      <pre class="static-code">hello.py</pre>
+
+      <p>
+        it becomes a Python script that can be run.
+      </p>
+
+    </div>
+
+
+    <div class="thinking">
+
+      <div class="thinking-title">
+        Food for Thought
+      </div>
+
+      <ul>
+        <li>Why might saving a program in a file be useful instead of typing it again every time?</li>
+        <li>What do you think the <code>.py</code> extension tells your computer?</li>
+      </ul>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-title">
+        Important Idea
+      </div>
+
+      <ul>
+        <li>Python source code can be stored in files.</li>
+        <li>Python files normally use the <code>.py</code> extension.</li>
+        <li>A saved Python file can be run again whenever we need it.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         IDE
+    ======================================= -->
+
+    <h3>
+      4. VS Code and IDE Basics
+    </h3>
+
+    <p>
+      A programmer needs a place to write, save, organize, and run code.
+    </p>
+
+    <p>
+      An <strong>IDE</strong>, or Integrated Development Environment,
+      provides tools that make programming easier.
+    </p>
+
+    <p>
+      <strong>VS Code</strong> is a popular code editor that can be
+      configured for Python development.
+    </p>
+
+
+    <div class="example">
+
+      <div class="example-title">
+        Common Parts of a Coding Environment
+      </div>
+
+      <ul>
+        <li><strong>Editor:</strong> where you write code.</li>
+        <li><strong>File explorer:</strong> where you organize files.</li>
+        <li><strong>Terminal:</strong> where you can run commands.</li>
+        <li><strong>Output:</strong> where you can see program results.</li>
+      </ul>
+
+    </div>
+
+
+    <div class="analogy">
+
+      <strong>Think of your coding environment as a workshop.</strong>
+
+      <p>
+        The editor is your workbench, your files are your projects,
+        and the tools around you help you build and test your programs.
+      </p>
+
+    </div>
+
+
+    <div class="thinking">
+
+      <div class="thinking-title">
+        Food for Thought
+      </div>
+
+      <ul>
+        <li>Why might a programmer prefer a coding environment instead of a plain text editor?</li>
+        <li>Which tool would you use to write code? Which would you use to run commands?</li>
+      </ul>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-title">
+        Important Idea
+      </div>
+
+      <ul>
+        <li>A code editor provides a place to write programs.</li>
+        <li>An IDE provides programming tools in one environment.</li>
+        <li>VS Code can be used to write and work with Python programs.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         REPL
+    ======================================= -->
+
+    <h3>
+      5. Python REPL
+    </h3>
+
+    <p>
+      The <strong>Python REPL</strong> allows you to interact with Python
+      one instruction at a time.
+    </p>
+
+    <p>
+      REPL stands for:
+    </p>
+
+    <pre class="static-code">Read
+Evaluate
+Print
+Loop</pre>
+
+    <p>
+      It is especially useful when you want to experiment with a small
+      piece of Python code.
+    </p>
+
+
+    <div class="example">
+
+      <div class="example-title">
+        Example
+      </div>
+
+      <pre class="static-code">>>> 2 + 3
+5
+
+>>> "Hello"
+'Hello'</pre>
+
+      <p>
+        The REPL lets you immediately see what Python does with your
+        instruction.
+      </p>
+
+    </div>
+
+
+    <div class="thinking">
+
+      <div class="thinking-title">
+        Food for Thought
+      </div>
+
+      <ul>
+        <li>When would experimenting with one small instruction be easier than creating an entire program?</li>
+        <li>Why might a beginner find the REPL useful while learning Python?</li>
+      </ul>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-title">
+        Important Idea
+      </div>
+
+      <ul>
+        <li>The REPL lets you interact with Python one instruction at a time.</li>
+        <li>The REPL is useful for experimentation and quick tests.</li>
+        <li>A <code>.py</code> file is better suited for saving a complete program.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         COMMENTS
+    ======================================= -->
+
+    <h3>
+      6. Comments
+    </h3>
+
+    <p>
+      A <strong>comment</strong> is text written in a program for humans
+      to read.
+    </p>
+
+    <p>
+      Python ignores comments when executing the program.
+    </p>
+
+
+    <div class="example">
+
+      <div class="example-title">
+        Example
+      </div>
+
+      <pre class="static-code"># This is a comment
+
+print("Hello!")</pre>
+
+      <p>
+        The line beginning with <code>#</code> is a comment.
+        It does not produce output.
+      </p>
+
+    </div>
+
+
+    <div class="python-example">
+
+      <div class="python-header">
+
+        <div class="python-title">
+          Try It — Comments
+        </div>
+
+        <div class="python-status">
+          Loading Python...
+        </div>
+
+      </div>
+
+      <div class="editor-wrapper">
+
+<textarea class="code-editor"># Python will ignore this line
+
+print("Comments help humans understand code.")</textarea>
+
+      </div>
+
+      <div class="python-controls">
+
+        <button
+          class="run-btn"
+          onclick="runPython(this)"
+          disabled>
+          Loading Python...
+        </button>
+
+        <button
+          class="reset-btn"
+          onclick="resetPython(this)">
+          Reset
+        </button>
+
+      </div>
+
+      <div class="output">
+
+        <div class="output-label">
+          Output
+        </div>
+
+        <div class="output-box">
+          Python is loading...
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="thinking">
+
+      <div class="thinking-title">
+        Food for Thought
+      </div>
+
+      <ul>
+        <li>Why might comments become more useful as programs become larger?</li>
+        <li>What information would you want another programmer to know when reading your code?</li>
+      </ul>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-title">
+        Important Idea
+      </div>
+
+      <ul>
+        <li>Comments explain code to humans.</li>
+        <li>Python ignores comments when executing the program.</li>
+        <li>Comments can make code easier to understand and maintain.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         INDENTATION
+    ======================================= -->
+
+    <h3>
+      7. Indentation
+    </h3>
+
+    <p>
+      Python uses <strong>indentation</strong> to organize blocks of code.
+    </p>
+
+    <p>
+      For example:
+    </p>
+
+    <pre class="static-code">if True:
+    print("This code is indented.")</pre>
+
+    <p>
+      The indented line belongs to the <code>if</code> statement.
+    </p>
+
+
+    <div class="important">
+
+      <strong>Important:</strong>
+
+      <p>
+        In Python, indentation is not simply visual formatting.
+        It is part of the structure of the program.
+      </p>
+
+    </div>
+
+
+    <div class="python-example">
+
+      <div class="python-header">
+
+        <div class="python-title">
+          Try It — Indentation
+        </div>
+
+        <div class="python-status">
+          Loading Python...
+        </div>
+
+      </div>
+
+      <div class="editor-wrapper">
+
+<textarea class="code-editor">if True:
+    print("Python uses indentation.")</textarea>
+
+      </div>
+
+      <div class="python-controls">
+
+        <button
+          class="run-btn"
+          onclick="runPython(this)"
+          disabled>
+          Loading Python...
+        </button>
+
+        <button
+          class="reset-btn"
+          onclick="resetPython(this)">
+          Reset
+        </button>
+
+      </div>
+
+      <div class="output">
+
+        <div class="output-label">
+          Output
+        </div>
+
+        <div class="output-box">
+          Python is loading...
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="thinking">
+
+      <div class="thinking-title">
+        Food for Thought
+      </div>
+
+      <ul>
+        <li>Why do you think programming languages need a way to organize related instructions?</li>
+        <li>What might happen if Python could not tell which instructions belonged together?</li>
+      </ul>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-title">
+        Important Idea
+      </div>
+
+      <ul>
+        <li>Indentation organizes blocks of Python code.</li>
+        <li>Indentation is part of Python's syntax.</li>
+        <li>Consistent indentation makes code easier to read and understand.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         1.2 VARIABLES
+    ======================================= -->
+
+    <div class="section-number">
+      1.2
+    </div>
+
+    <h2>
+      Variables &amp; Assignment
+    </h2>
+
+    <p>
+      We now know how to write and run Python programs.
+      The next question is:
+    </p>
+
+    <div class="analogy">
+
+      <strong>How can a program remember information?</strong>
+
+      <p>
+        Variables give our programs a way to give names to values
+        so that we can use those values later.
+      </p>
+
+    </div>
+
+
+    <div class="learning-target">
+
+      <strong>You will be able to</strong>
+
+      <ul>
+        <li>Explain what a variable is.</li>
+        <li>Use assignment statements.</li>
+        <li>Create variables with meaningful names.</li>
+        <li>Follow basic Python naming conventions.</li>
+        <li>Reassign variables.</li>
+        <li>Use multiple assignment.</li>
+        <li>Recognize the purpose of constants.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         VARIABLE
+    ======================================= -->
+
+    <h3>
+      1. Variables
+    </h3>
+
+    <p>
+      A <strong>variable</strong> is a name that refers to a value.
+    </p>
+
+    <p>
+      For example:
+    </p>
+
+    <pre class="static-code">name = "Alex"
+age = 20</pre>
+
+    <p>
+      We have created two variables:
+    </p>
+
+    <ul>
+      <li><code>name</code></li>
+      <li><code>age</code></li>
+    </ul>
+
+
+    <div class="example">
+
+      <div class="example-title">
+        Using Variables
+      </div>
+
+      <pre class="static-code">name = "Alex"
+age = 20
+
+print(name)
+print(age)</pre>
+
+    </div>
+
+
+    <div class="python-example">
+
+      <div class="python-header">
+
+        <div class="python-title">
+          Try It — Variables
+        </div>
+
+        <div class="python-status">
+          Loading Python...
+        </div>
+
+      </div>
+
+      <div class="editor-wrapper">
+
+<textarea class="code-editor">name = "Alex"
+age = 20
+
+print(name)
+print(age)</textarea>
+
+      </div>
+
+      <div class="python-controls">
+
+        <button
+          class="run-btn"
+          onclick="runPython(this)"
+          disabled>
+          Loading Python...
+        </button>
+
+        <button
+          class="reset-btn"
+          onclick="resetPython(this)">
+          Reset
+        </button>
+
+      </div>
+
+      <div class="output">
+
+        <div class="output-label">
+          Output
+        </div>
+
+        <div class="output-box">
+          Python is loading...
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="thinking">
+
+      <div class="thinking-title">
+        Food for Thought
+      </div>
+
+      <ul>
+        <li>Why is <code>age</code> a better variable name than <code>x</code> in a student program?</li>
+        <li>What information might you want your program to remember?</li>
+      </ul>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-title">
+        Important Idea
+      </div>
+
+      <ul>
+        <li>Variables give names to values.</li>
+        <li>Variables allow programs to store and use information.</li>
+        <li>Meaningful variable names make programs easier to understand.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         ASSIGNMENT
+    ======================================= -->
+
+    <h3>
+      2. Assignment Statements
+    </h3>
+
+    <p>
+      The <code>=</code> symbol is called the
+      <strong>assignment operator</strong>.
+    </p>
+
+    <p>
+      It assigns the value on the right to the variable on the left.
+    </p>
+
+    <pre class="static-code">age = 20</pre>
+
+    <p>
+      Read this as:
+    </p>
+
+    <p>
+      <strong>
+        Assign the value 20 to the variable named age.
+      </strong>
+    </p>
+
+
+    <div class="important">
+
+      <strong>Important beginner idea:</strong>
+
+      <p>
+        The <code>=</code> sign does not mean "is equal to"
+        in the mathematical sense.
+      </p>
+
+      <p>
+        In Python, it means:
+        <strong>assign this value to this variable.</strong>
+      </p>
+
+    </div>
+
+
+    <div class="example">
+
+      <div class="example-title">
+        Example
+      </div>
+
+      <pre class="static-code">name = "Alex"
+age = 20
+city = "Newark"</pre>
+
+    </div>
+
+
+    <div class="thinking">
+
+      <div class="thinking-title">
+        Food for Thought
+      </div>
+
+      <ul>
+        <li>What value is being assigned to <code>age</code>?</li>
+        <li>Which side of the assignment contains the variable name?</li>
+      </ul>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-title">
+        Important Idea
+      </div>
+
+      <ul>
+        <li>Assignment stores a value in a variable.</li>
+        <li>The variable name appears on the left side.</li>
+        <li>The value or expression being assigned appears on the right side.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         NAMING
+    ======================================= -->
+
+    <h3>
+      3. Naming Conventions
+    </h3>
+
+    <p>
+      Good variable names help people understand what a program does.
+    </p>
+
+    <p>
+      Python variable names commonly use <strong>snake_case</strong>.
+    </p>
+
+    <pre class="static-code">first_name = "Alex"
+student_age = 20
+total_price = 49.99</pre>
+
+
+    <div class="example">
+
+      <div class="example-title">
+        Better Names
+      </div>
+
+      <pre class="static-code">name = "Alex"
+age = 20
+course_name = "Python"</pre>
+
+    </div>
+
+
+    <div class="example">
+
+      <div class="example-title">
+        Less Helpful Names
+      </div>
+
+      <pre class="static-code">x = "Alex"
+a = 20
+thing = "Python"</pre>
+
+      <p>
+        These names may work, but they do not communicate much
+        information to someone reading the program.
+      </p>
+
+    </div>
+
+
+    <div class="thinking">
+
+      <div class="thinking-title">
+        Food for Thought
+      </div>
+
+      <ul>
+        <li>Which name makes the purpose clearer: <code>student_age</code> or <code>x</code>?</li>
+        <li>How might good names help you debug a program later?</li>
+      </ul>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-title">
+        Important Idea
+      </div>
+
+      <ul>
+        <li>Variable names should communicate meaning.</li>
+        <li>Python commonly uses snake_case for variable names.</li>
+        <li>Good names make code easier to read.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         REASSIGNMENT
+    ======================================= -->
+
+    <h3>
+      4. Reassignment
+    </h3>
+
+    <p>
+      A variable can be assigned a new value.
+    </p>
+
+    <pre class="static-code">age = 20
+
+age = 21
+
+print(age)</pre>
+
+    <p>
+      The final value of <code>age</code> is:
+    </p>
+
+    <pre class="static-code">21</pre>
+
+
+    <div class="python-example">
+
+      <div class="python-header">
+
+        <div class="python-title">
+          Try It — Reassignment
+        </div>
+
+        <div class="python-status">
+          Loading Python...
+        </div>
+
+      </div>
+
+      <div class="editor-wrapper">
+
+<textarea class="code-editor">age = 20
+
+print(age)
+
+age = 21
+
+print(age)</textarea>
+
+      </div>
+
+      <div class="python-controls">
+
+        <button
+          class="run-btn"
+          onclick="runPython(this)"
+          disabled>
+          Loading Python...
+        </button>
+
+        <button
+          class="reset-btn"
+          onclick="resetPython(this)">
+          Reset
+        </button>
+
+      </div>
+
+      <div class="output">
+
+        <div class="output-label">
+          Output
+        </div>
+
+        <div class="output-box">
+          Python is loading...
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="thinking">
+
+      <div class="thinking-title">
+        Food for Thought
+      </div>
+
+      <ul>
+        <li>What happens to the old value when a variable is reassigned?</li>
+        <li>Where might reassignment be useful in a real program?</li>
+      </ul>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-title">
+        Important Idea
+      </div>
+
+      <ul>
+        <li>Variables can be reassigned.</li>
+        <li>A variable can refer to a different value later in a program.</li>
+        <li>The current value is the value most recently assigned.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         MULTIPLE ASSIGNMENT
+    ======================================= -->
+
+    <h3>
+      5. Multiple Assignment
+    </h3>
+
+    <p>
+      Python allows multiple variables to be assigned in one statement.
+    </p>
+
+    <pre class="static-code">first_name, last_name = "Alex", "Smith"</pre>
+
+    <p>
+      This assigns:
+    </p>
+
+    <pre class="static-code">first_name → "Alex"
+last_name  → "Smith"</pre>
+
+
+    <div class="python-example">
+
+      <div class="python-header">
+
+        <div class="python-title">
+          Try It — Multiple Assignment
+        </div>
+
+        <div class="python-status">
+          Loading Python...
+        </div>
+
+      </div>
+
+      <div class="editor-wrapper">
+
+<textarea class="code-editor">first_name, last_name = "Alex", "Smith"
+
+print(first_name)
+print(last_name)</textarea>
+
+      </div>
+
+      <div class="python-controls">
+
+        <button
+          class="run-btn"
+          onclick="runPython(this)"
+          disabled>
+          Loading Python...
+        </button>
+
+        <button
+          class="reset-btn"
+          onclick="resetPython(this)">
+          Reset
+        </button>
+
+      </div>
+
+      <div class="output">
+
+        <div class="output-label">
+          Output
+        </div>
+
+        <div class="output-box">
+          Python is loading...
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-title">
+        Important Idea
+      </div>
+
+      <ul>
+        <li>Python can assign multiple variables in one statement.</li>
+        <li>Each variable receives its corresponding value.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         CONSTANTS
+    ======================================= -->
+
+    <h3>
+      6. Constants
+    </h3>
+
+    <p>
+      A <strong>constant</strong> is a value that a programmer intends
+      to keep unchanged.
+    </p>
+
+    <p>
+      Python does not enforce constants in the same way some languages do.
+      Instead, programmers commonly use uppercase names to communicate
+      their intention.
+    </p>
+
+    <pre class="static-code">PI = 3.14159
+MAX_LOGIN_ATTEMPTS = 3</pre>
+
+    <div class="important">
+
+      <strong>Remember:</strong>
+
+      <p>
+        Uppercase naming communicates that a value is intended to be
+        treated as a constant. It does not make the variable impossible
+        to change.
+      </p>
+
+    </div>
+
+
+    <div class="thinking">
+
+      <div class="thinking-title">
+        Food for Thought
+      </div>
+
+      <ul>
+        <li>Why might a program need values that are intended to remain unchanged?</li>
+        <li>Why would <code>MAX_LOGIN_ATTEMPTS</code> be easier to understand than simply writing <code>3</code> everywhere?</li>
+      </ul>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-title">
+        Important Idea
+      </div>
+
+      <ul>
+        <li>Constants represent values that are intended to remain unchanged.</li>
+        <li>Python programmers commonly use uppercase names for constants.</li>
+        <li>The uppercase convention communicates programmer intent.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         1.3 DATA TYPES
+    ======================================= -->
+
+    <div class="section-number">
+      1.3
+    </div>
+
+    <h2>
+      Data Types
+    </h2>
+
+    <p>
+      We now know that variables allow programs to store information.
+    </p>
+
+    <p>
+      But not all information is the same.
+    </p>
+
+    <div class="analogy">
+
+      <strong>Think about different kinds of information.</strong>
+
+      <p>
+        A person's age, a person's name, the price of a product,
+        and whether someone is a student are all pieces of information,
+        but they are different kinds of values.
+      </p>
+
+    </div>
+
+
+    <div class="learning-target">
+
+      <strong>You will be able to</strong>
+
+      <ul>
+        <li>Identify common Python data types.</li>
+        <li>Use <code>int</code>, <code>float</code>, <code>str</code>, <code>bool</code>, and <code>None</code>.</li>
+        <li>Use <code>type()</code> to inspect a value's type.</li>
+        <li>Explain why different types represent different kinds of information.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         INT
+    ======================================= -->
+
+    <h3>
+      1. Integers — <code>int</code>
+    </h3>
+
+    <p>
+      An <strong>integer</strong> is a whole number without a decimal part.
+    </p>
+
+    <pre class="static-code">age = 20
+students = 25
+temperature = -5</pre>
+
+    <p>
+      These values are integers.
+    </p>
+
+
+    <div class="python-example">
+
+      <div class="python-header">
+
+        <div class="python-title">
+          Try It — Integers
+        </div>
+
+        <div class="python-status">
+          Loading Python...
+        </div>
+
+      </div>
+
+      <div class="editor-wrapper">
+
+<textarea class="code-editor">age = 20
+
+print(age)
+print(type(age))</textarea>
+
+      </div>
+
+      <div class="python-controls">
+
+        <button
+          class="run-btn"
+          onclick="runPython(this)"
+          disabled>
+          Loading Python...
+        </button>
+
+        <button
+          class="reset-btn"
+          onclick="resetPython(this)">
+          Reset
+        </button>
+
+      </div>
+
+      <div class="output">
+
+        <div class="output-label">
+          Output
+        </div>
+
+        <div class="output-box">
+          Python is loading...
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-title">
+        Important Idea
+      </div>
+
+      <ul>
+        <li><code>int</code> represents whole numbers.</li>
+        <li>Examples include <code>10</code>, <code>0</code>, and <code>-5</code>.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         FLOAT
+    ======================================= -->
+
+    <h3>
+      2. Floating-Point Numbers — <code>float</code>
+    </h3>
+
+    <p>
+      A <strong>float</strong> represents a number with a decimal component.
+    </p>
+
+    <pre class="static-code">price = 19.99
+temperature = 72.5
+gpa = 3.8</pre>
+
+
+    <div class="python-example">
+
+      <div class="python-header">
+
+        <div class="python-title">
+          Try It — Floats
+        </div>
+
+        <div class="python-status">
+          Loading Python...
+        </div>
+
+      </div>
+
+      <div class="editor-wrapper">
+
+<textarea class="code-editor">price = 19.99
+
+print(price)
+print(type(price))</textarea>
+
+      </div>
+
+      <div class="python-controls">
+
+        <button
+          class="run-btn"
+          onclick="runPython(this)"
+          disabled>
+          Loading Python...
+        </button>
+
+        <button
+          class="reset-btn"
+          onclick="resetPython(this)">
+          Reset
+        </button>
+
+      </div>
+
+      <div class="output">
+
+        <div class="output-label">
+          Output
+        </div>
+
+        <div class="output-box">
+          Python is loading...
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-title">
+        Important Idea
+      </div>
+
+      <ul>
+        <li><code>float</code> represents numbers with decimal values.</li>
+        <li>Examples include <code>3.14</code>, <code>19.99</code>, and <code>3.8</code>.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         STR
+    ======================================= -->
+
+    <h3>
+      3. Strings — <code>str</code>
+    </h3>
+
+    <p>
+      A <strong>string</strong> is a sequence of characters used to
+      represent text.
+    </p>
+
+    <pre class="static-code">name = "Alex"
+city = "Newark"
+course = "Python"</pre>
+
+    <p>
+      Strings are usually written inside quotation marks.
+    </p>
+
+
+    <div class="python-example">
+
+      <div class="python-header">
+
+        <div class="python-title">
+          Try It — Strings
+        </div>
+
+        <div class="python-status">
+          Loading Python...
+        </div>
+
+      </div>
+
+      <div class="editor-wrapper">
+
+<textarea class="code-editor">name = "Alex"
+
+print(name)
+print(type(name))</textarea>
+
+      </div>
+
+      <div class="python-controls">
+
+        <button
+          class="run-btn"
+          onclick="runPython(this)"
+          disabled>
+          Loading Python...
+        </button>
+
+        <button
+          class="reset-btn"
+          onclick="resetPython(this)">
+          Reset
+        </button>
+
+      </div>
+
+      <div class="output">
+
+        <div class="output-label">
+          Output
+        </div>
+
+        <div class="output-box">
+          Python is loading...
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="important">
+
+      <strong>Important:</strong>
+
+      <p>
+        These are different values:
+      </p>
+
+      <pre class="static-code">20
+"20"</pre>
+
+      <p>
+        The first is an integer.
+        The second is a string containing the characters <code>2</code>
+        and <code>0</code>.
+      </p>
+
+    </div>
+
+
+    <div class="thinking">
+
+      <div class="thinking-title">
+        Food for Thought
+      </div>
+
+      <ul>
+        <li>Why might a person's age be stored as an integer rather than a string?</li>
+        <li>When might the characters <code>"20"</code> be useful as text?</li>
+      </ul>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-title">
+        Important Idea
+      </div>
+
+      <ul>
+        <li><code>str</code> represents text.</li>
+        <li>Strings are written using quotation marks.</li>
+        <li><code>20</code> and <code>"20"</code> are different types of values.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         BOOL
+    ======================================= -->
+
+    <h3>
+      4. Boolean Values — <code>bool</code>
+    </h3>
+
+    <p>
+      A <strong>boolean</strong> represents one of two logical values:
+    </p>
+
+    <pre class="static-code">True
+False</pre>
+
+    <p>
+      Booleans are useful when a program needs to represent something
+      that can be yes/no, on/off, or true/false.
+    </p>
+
+
+    <div class="example">
+
+      <div class="example-title">
+        Example
+      </div>
+
+      <pre class="static-code">is_student = True
+has_license = False</pre>
+
+    </div>
+
+
+    <div class="python-example">
+
+      <div class="python-header">
+
+        <div class="python-title">
+          Try It — Booleans
+        </div>
+
+        <div class="python-status">
+          Loading Python...
+        </div>
+
+      </div>
+
+      <div class="editor-wrapper">
+
+<textarea class="code-editor">is_student = True
+
+print(is_student)
+print(type(is_student))</textarea>
+
+      </div>
+
+      <div class="python-controls">
+
+        <button
+          class="run-btn"
+          onclick="runPython(this)"
+          disabled>
+          Loading Python...
+        </button>
+
+        <button
+          class="reset-btn"
+          onclick="resetPython(this)">
+          Reset
+        </button>
+
+      </div>
+
+      <div class="output">
+
+        <div class="output-label">
+          Output
+        </div>
+
+        <div class="output-box">
+          Python is loading...
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-title">
+        Important Idea
+      </div>
+
+      <ul>
+        <li><code>bool</code> represents logical values.</li>
+        <li>There are two boolean values: <code>True</code> and <code>False</code>.</li>
+        <li>Booleans become especially important when programs make decisions.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         NONE
+    ======================================= -->
+
+    <h3>
+      5. None
+    </h3>
+
+    <p>
+      Python uses <code>None</code> to represent the absence of a value
+      or the idea that there is currently no meaningful value.
+    </p>
+
+    <pre class="static-code">result = None
+
+print(result)
+print(type(result))</pre>
+
+
+    <div class="important">
+
+      <strong>Important:</strong>
+
+      <p>
+        <code>None</code> is not the same thing as <code>0</code>,
+        <code>False</code>, or an empty string.
+      </p>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-title">
+        Important Idea
+      </div>
+
+      <ul>
+        <li><code>None</code> represents the absence of a value.</li>
+        <li><code>None</code> is its own special value in Python.</li>
+        <li>It is often used when a value does not yet exist or is not available.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         TYPE
+    ======================================= -->
+
+    <h3>
+      6. The <code>type()</code> Function
+    </h3>
+
+    <p>
+      The <code>type()</code> function tells us what type of value
+      we are working with.
+    </p>
+
+    <pre class="static-code">age = 20
+
+print(type(age))</pre>
+
+    <p>
+      Python reports:
+    </p>
+
+    <pre class="static-code">&lt;class 'int'&gt;</pre>
+
+
+    <div class="python-example">
+
+      <div class="python-header">
+
+        <div class="python-title">
+          Try It — Identify the Types
+        </div>
+
+        <div class="python-status">
+          Loading Python...
+        </div>
+
+      </div>
+
+      <div class="editor-wrapper">
+
+<textarea class="code-editor">age = 20
+price = 19.99
+name = "Alex"
+is_student = True
+result = None
+
+print(type(age))
+print(type(price))
+print(type(name))
+print(type(is_student))
+print(type(result))</textarea>
+
+      </div>
+
+      <div class="python-controls">
+
+        <button
+          class="run-btn"
+          onclick="runPython(this)"
+          disabled>
+          Loading Python...
+        </button>
+
+        <button
+          class="reset-btn"
+          onclick="resetPython(this)">
+          Reset
+        </button>
+
+      </div>
+
+      <div class="output">
+
+        <div class="output-label">
+          Output
+        </div>
+
+        <div class="output-box">
+          Python is loading...
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="thinking">
+
+      <div class="thinking-title">
+        Food for Thought
+      </div>
+
+      <ul>
+        <li>Why is knowing a value's type useful to a programmer?</li>
+        <li>What problems might occur if you assume a value is a number when it is actually text?</li>
+      </ul>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-title">
+        Important Idea
+      </div>
+
+      <ul>
+        <li>Python values have types.</li>
+        <li><code>type()</code> allows us to inspect a value's type.</li>
+        <li>Understanding types is essential for writing correct programs.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         1.4 INPUT OUTPUT
+    ======================================= -->
+
+    <div class="section-number">
+      1.4
+    </div>
+
+    <h2>
+      Input &amp; Output
+    </h2>
+
+    <p>
+      So far, we have written programs that use information we provide
+      directly in the code.
+    </p>
+
+    <p>
+      Real programs need to communicate with users.
+    </p>
+
+    <div class="analogy">
+
+      <strong>Think of a conversation.</strong>
+
+      <p>
+        A program can produce information for the user and ask the user
+        for information in return.
+      </p>
+
+    </div>
+
+
+    <div class="learning-target">
+
+      <strong>You will be able to</strong>
+
+      <ul>
+        <li>Use <code>print()</code> to display information.</li>
+        <li>Use <code>input()</code> to receive user input.</li>
+        <li>Explain why <code>input()</code> produces a string.</li>
+        <li>Convert strings into integers and floats.</li>
+        <li>Convert values to strings using <code>str()</code>.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         PRINT
+    ======================================= -->
+
+    <h3>
+      1. Output with <code>print()</code>
+    </h3>
+
+    <p>
+      The <code>print()</code> function displays information to the user.
+    </p>
+
+    <pre class="static-code">print("Hello!")
+print(25)
+print(3.14)</pre>
+
+
+    <div class="python-example">
+
+      <div class="python-header">
+
+        <div class="python-title">
+          Try It — print()
+        </div>
+
+        <div class="python-status">
+          Loading Python...
+        </div>
+
+      </div>
+
+      <div class="editor-wrapper">
+
+<textarea class="code-editor">print("Welcome to Python!")
+print(25)
+print(3.14)</textarea>
+
+      </div>
+
+      <div class="python-controls">
+
+        <button
+          class="run-btn"
+          onclick="runPython(this)"
+          disabled>
+          Loading Python...
+        </button>
+
+        <button
+          class="reset-btn"
+          onclick="resetPython(this)">
+          Reset
+        </button>
+
+      </div>
+
+      <div class="output">
+
+        <div class="output-label">
+          Output
+        </div>
+
+        <div class="output-box">
+          Python is loading...
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-title">
+        Important Idea
+      </div>
+
+      <ul>
+        <li><code>print()</code> displays information.</li>
+        <li>We can print strings, numbers, variables, and expressions.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         INPUT
+    ======================================= -->
+
+    <h3>
+      2. Input with <code>input()</code>
+    </h3>
+
+    <p>
+      The <code>input()</code> function allows a program to ask the
+      user for information.
+    </p>
+
+    <pre class="static-code">name = input("What is your name? ")
+
+print(name)</pre>
+
+    <p>
+      The program pauses and waits for the user to enter something.
+    </p>
+
+
+    <div class="python-example">
+
+      <div class="python-header">
+
+        <div class="python-title">
+          Try It — User Input
+        </div>
+
+        <div class="python-status">
+          Loading Python...
+        </div>
+
+      </div>
+
+      <div class="editor-wrapper">
+
+<textarea class="code-editor">name = input("What is your name? ")
+
+print("Hello,", name)</textarea>
+
+      </div>
+
+      <div class="python-controls">
+
+        <button
+          class="run-btn"
+          onclick="runPython(this)"
+          disabled>
+          Loading Python...
+        </button>
+
+        <button
+          class="reset-btn"
+          onclick="resetPython(this)">
+          Reset
+        </button>
+
+      </div>
+
+      <div class="output">
+
+        <div class="output-label">
+          Output
+        </div>
+
+        <div class="output-box">
+          Python is loading...
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ======================================
+         INPUT IS STRING
+    ======================================= -->
+
+    <h3>
+      3. Important: <code>input()</code> Returns a String
+    </h3>
+
+    <p>
+      This is one of the most important ideas in beginner Python.
+    </p>
+
+    <p>
+      Even if the user enters a number, <code>input()</code> gives
+      the program a <strong>string</strong>.
+    </p>
+
+    <pre class="static-code">age = input("How old are you? ")
+
+print(type(age))</pre>
+
+    <p>
+      If the user enters:
+    </p>
+
+    <pre class="static-code">20</pre>
+
+    <p>
+      the value stored in <code>age</code> is:
+    </p>
+
+    <pre class="static-code">"20"</pre>
+
+    <p>
+      It is text, not an integer.
+    </p>
+
+
+    <div class="python-example">
+
+      <div class="python-header">
+
+        <div class="python-title">
+          Try It — What Type Is Input?
+        </div>
+
+        <div class="python-status">
+          Loading Python...
+        </div>
+
+      </div>
+
+      <div class="editor-wrapper">
+
+<textarea class="code-editor">age = input("Enter your age: ")
+
+print("You entered:", age)
+print("The type is:", type(age))</textarea>
+
+      </div>
+
+      <div class="python-controls">
+
+        <button
+          class="run-btn"
+          onclick="runPython(this)"
+          disabled>
+          Loading Python...
+        </button>
+
+        <button
+          class="reset-btn"
+          onclick="resetPython(this)">
+          Reset
+        </button>
+
+      </div>
+
+      <div class="output">
+
+        <div class="output-label">
+          Output
+        </div>
+
+        <div class="output-box">
+          Python is loading...
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="important">
+
+      <strong>Remember this:</strong>
+
+      <p>
+        <code>input()</code> always gives you text.
+      </p>
+
+      <p>
+        If you need a number, you must convert the input.
+      </p>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-title">
+        Important Idea
+      </div>
+
+      <ul>
+        <li><code>input()</code> receives information from the user.</li>
+        <li>The result of <code>input()</code> is a string.</li>
+        <li>Numbers entered by users must be converted if you want to perform numerical operations.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         INT CONVERSION
+    ======================================= -->
+
+    <h3>
+      4. Converting Input with <code>int()</code>
+    </h3>
+
+    <p>
+      The <code>int()</code> function converts a suitable value into
+      an integer.
+    </p>
+
+    <pre class="static-code">age = int(input("How old are you? "))
+
+print(age)</pre>
+
+    <p>
+      Now the user's input is converted from text into an integer.
+    </p>
+
+
+    <div class="python-example">
+
+      <div class="python-header">
+
+        <div class="python-title">
+          Try It — Convert to Integer
+        </div>
+
+        <div class="python-status">
+          Loading Python...
+        </div>
+
+      </div>
+
+      <div class="editor-wrapper">
+
+<textarea class="code-editor">age = int(input("How old are you? "))
+
+print("Next year you will be", age + 1)</textarea>
+
+      </div>
+
+      <div class="python-controls">
+
+        <button
+          class="run-btn"
+          onclick="runPython(this)"
+          disabled>
+          Loading Python...
+        </button>
+
+        <button
+          class="reset-btn"
+          onclick="resetPython(this)">
+          Reset
+        </button>
+
+      </div>
+
+      <div class="output">
+
+        <div class="output-label">
+          Output
+        </div>
+
+        <div class="output-box">
+          Python is loading...
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-title">
+        Important Idea
+      </div>
+
+      <ul>
+        <li><code>int()</code> converts suitable values to integers.</li>
+        <li>It is commonly used when numerical input is expected.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         FLOAT CONVERSION
+    ======================================= -->
+
+    <h3>
+      5. Converting Input with <code>float()</code>
+    </h3>
+
+    <p>
+      The <code>float()</code> function converts a suitable value into
+      a floating-point number.
+    </p>
+
+    <pre class="static-code">price = float(input("Enter the price: "))
+
+print(price)</pre>
+
+
+    <div class="python-example">
+
+      <div class="python-header">
+
+        <div class="python-title">
+          Try It — Convert to Float
+        </div>
+
+        <div class="python-status">
+          Loading Python...
+        </div>
+
+      </div>
+
+      <div class="editor-wrapper">
+
+<textarea class="code-editor">price = float(input("Enter the price: "))
+
+tax = price * 0.07
+
+print("Tax:", tax)</textarea>
+
+      </div>
+
+      <div class="python-controls">
+
+        <button
+          class="run-btn"
+          onclick="runPython(this)"
+          disabled>
+          Loading Python...
+        </button>
+
+        <button
+          class="reset-btn"
+          onclick="resetPython(this)">
+          Reset
+        </button>
+
+      </div>
+
+      <div class="output">
+
+        <div class="output-label">
+          Output
+        </div>
+
+        <div class="output-box">
+          Python is loading...
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-title">
+        Important Idea
+      </div>
+
+      <ul>
+        <li><code>float()</code> converts suitable values to floating-point numbers.</li>
+        <li>It is useful when users enter values such as prices, measurements, or decimal numbers.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         STR CONVERSION
+    ======================================= -->
+
+    <h3>
+      6. Converting Values with <code>str()</code>
+    </h3>
+
+    <p>
+      The <code>str()</code> function converts a value into a string.
+    </p>
+
+    <pre class="static-code">age = 20
+
+age_text = str(age)
+
+print(age_text)
+print(type(age_text))</pre>
+
+
+    <div class="python-example">
+
+      <div class="python-header">
+
+        <div class="python-title">
+          Try It — Convert to String
+        </div>
+
+        <div class="python-status">
+          Loading Python...
+        </div>
+
+      </div>
+
+      <div class="editor-wrapper">
+
+<textarea class="code-editor">age = 20
+
+age_text = str(age)
+
+print(age_text)
+print(type(age_text))</textarea>
+
+      </div>
+
+      <div class="python-controls">
+
+        <button
+          class="run-btn"
+          onclick="runPython(this)"
+          disabled>
+          Loading Python...
+        </button>
+
+        <button
+          class="reset-btn"
+          onclick="resetPython(this)">
+          Reset
+        </button>
+
+      </div>
+
+      <div class="output">
+
+        <div class="output-label">
+          Output
+        </div>
+
+        <div class="output-box">
+          Python is loading...
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-title">
+        Important Idea
+      </div>
+
+      <ul>
+        <li><code>str()</code> converts a value into text.</li>
+        <li>Type conversion allows programs to work with values in different forms.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         COMPLETE PROGRAM
+    ======================================= -->
+
+    <h3>
+      7. Putting Everything Together
+    </h3>
+
+    <p>
+      We now have enough knowledge to build a small interactive program.
+    </p>
+
+    <p>
+      The program will:
+    </p>
+
+    <ol>
+      <li>Ask for the user's name.</li>
+      <li>Ask for the user's age.</li>
+      <li>Ask for the user's GPA.</li>
+      <li>Convert numerical input into the appropriate types.</li>
+      <li>Display the information.</li>
+    </ol>
+
+
+    <div class="python-example">
+
+      <div class="python-header">
+
+        <div class="python-title">
+          Mini Program — Student Profile
+        </div>
+
+        <div class="python-status">
+          Loading Python...
+        </div>
+
+      </div>
+
+      <div class="editor-wrapper">
+
+<textarea class="code-editor">name = input("What is your name? ")
+age = int(input("How old are you? "))
+gpa = float(input("What is your GPA? "))
+
+print()
+print("Student Profile")
+print("Name:", name)
+print("Age:", age)
+print("GPA:", gpa)</textarea>
+
+      </div>
+
+      <div class="python-controls">
+
+        <button
+          class="run-btn"
+          onclick="runPython(this)"
+          disabled>
+          Loading Python...
+        </button>
+
+        <button
+          class="reset-btn"
+          onclick="resetPython(this)">
+          Reset
+        </button>
+
+      </div>
+
+      <div class="output">
+
+        <div class="output-label">
+          Output
+        </div>
+
+        <div class="output-box">
+          Python is loading...
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="thinking">
+
+      <div class="thinking-title">
+        Food for Thought
+      </div>
+
+      <ul>
+        <li>Which variables store strings?</li>
+        <li>Which variables store numbers?</li>
+        <li>Why do we use <code>int()</code> for age?</li>
+        <li>Why do we use <code>float()</code> for GPA?</li>
+        <li>What would happen if we removed the conversions?</li>
+      </ul>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-title">
+        Important Idea
+      </div>
+
+      <ul>
+        <li>Programs can receive information using <code>input()</code>.</li>
+        <li>Input initially arrives as strings.</li>
+        <li>We can convert input using <code>int()</code> and <code>float()</code>.</li>
+        <li>Variables allow us to store and reuse the information.</li>
+        <li><code>print()</code> allows the program to communicate results.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         BIG PICTURE
+    ======================================= -->
+
+    <h3>
+      8. The Big Picture
+    </h3>
+
+    <p>
+      You have now learned the core building blocks needed to write
+      simple Python programs.
+    </p>
+
+    <pre class="static-code">Python Program
+      ↓
+Variables
+      ↓
+Values
+      ↓
+Data Types
+      ↓
+Input
+      ↓
+Processing
+      ↓
+Output</pre>
+
+
+    <div class="important">
+
+      <strong>Remember the progression:</strong>
+
+      <p>
+        First, you learned how to run Python.
+      </p>
+
+      <p>
+        Then, you learned how programs store information.
+      </p>
+
+      <p>
+        Then, you learned that different values have different types.
+      </p>
+
+      <p>
+        Finally, you learned how programs communicate with users.
+      </p>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-title">
+        What You Know Now
+      </div>
+
+      <ul>
+        <li>You can write and run Python code.</li>
+        <li>You understand Python files and the REPL.</li>
+        <li>You can use comments and indentation.</li>
+        <li>You can create and modify variables.</li>
+        <li>You understand basic Python data types.</li>
+        <li>You can inspect types with <code>type()</code>.</li>
+        <li>You can display information with <code>print()</code>.</li>
+        <li>You can receive information with <code>input()</code>.</li>
+        <li>You can convert user input into numbers.</li>
+        <li>You can build a simple interactive Python program.</li>
+      </ul>
+
+    </div>
+
+
+    <!-- ======================================
+         EXIT TICKET
+    ======================================= -->
+
+    <div class="exit-ticket">
+
+      <h3>
+        Exit Ticket
+      </h3>
+
+      <p>
+        Before moving to the next topic, answer these questions
+        without looking back at the examples.
+      </p>
+
+      <ol>
+
+        <li>
+          What is the purpose of the Python interpreter?
+        </li>
+
+        <li>
+          What is a <code>.py</code> file?
+        </li>
+
+        <li>
+          What is the difference between a Python file and the REPL?
+        </li>
+
+        <li>
+          What is a variable?
+        </li>
+
+        <li>
+          What does the <code>=</code> operator do in Python?
+        </li>
+
+        <li>
+          What is the difference between <code>20</code> and <code>"20"</code>?
+        </li>
+
+        <li>
+          What is the difference between an <code>int</code> and a
+          <code>float</code>?
+        </li>
+
+        <li>
+          What are the two possible boolean values?
+        </li>
+
+        <li>
+          What does <code>type()</code> do?
+        </li>
+
+        <li>
+          What does <code>print()</code> do?
+        </li>
+
+        <li>
+          What does <code>input()</code> return?
+        </li>
+
+        <li>
+          Why would you use <code>int(input(...))</code> instead of
+          simply <code>input(...)</code> when asking for an age?
+        </li>
+
+        <li>
+          Write a small Python program that asks for a user's name
+          and age and then displays both.
+        </li>
+
+      </ol>
+
+    </div>
+
+  </section>
+
+</div>
+
+
+<script>
+
+  /* =====================================================
+     PYODIDE
+     
+     Pyodide is loaded ONLY ONCE.
+     Every Python example reuses the same runtime.
+  ===================================================== */
+
+  let pyodide = null;
+  let pyodidePromise = null;
+
+
+  /* =====================================================
+     INITIALIZE PYTHON
+  ===================================================== */
+
+  async function initializePython() {
+
+    if (pyodide) {
+      return pyodide;
+    }
+
+    if (pyodidePromise) {
+      return pyodidePromise;
+    }
+
+    updatePythonStatus("Loading Python...");
+
+    pyodidePromise = loadPyodide();
+
+    try {
+
+      pyodide = await pyodidePromise;
+
+      updatePythonStatus("Python ready");
+
+      enableRunButtons();
+
+      return pyodide;
+
+    } catch (error) {
+
+      pyodidePromise = null;
+
+      updatePythonStatus(
+        "Python failed to load"
+      );
+
+      console.error(
+        "Pyodide failed:",
+        error
+      );
+
+      throw error;
+    }
+
+  }
+
+
+  /* =====================================================
+     STATUS
+  ===================================================== */
+
+  function updatePythonStatus(message) {
+
+    document
+      .querySelectorAll(".python-status")
+      .forEach(function(status) {
+
+        status.textContent = message;
+
+      });
+
+  }
+
+
+  /* =====================================================
+     ENABLE BUTTONS
+  ===================================================== */
+
+  function enableRunButtons() {
+
+    document
+      .querySelectorAll(".run-btn")
+      .forEach(function(button) {
+
+        button.disabled = false;
+
+        button.textContent = "Run";
+
+      });
+
+  }
+
+
+  /* =====================================================
+     RESIZE EDITORS
+  ===================================================== */
+
+  function resizeEditor(editor) {
+
+    editor.style.height = "auto";
+
+    editor.style.height =
+      Math.max(
+        editor.scrollHeight,
+        90
+      ) + "px";
+
+  }
+
+
+  function setupEditors() {
+
+    const editors =
+      document.querySelectorAll(
+        ".code-editor"
+      );
+
+    editors.forEach(function(editor) {
+
+      resizeEditor(editor);
+
+      editor.addEventListener(
+        "input",
+        function() {
+
+          resizeEditor(this);
+
+        }
+      );
+
+
+      /*
+       * Insert four spaces when Tab is pressed.
+       */
+
+      editor.addEventListener(
+        "keydown",
+        function(event) {
+
+          if (event.key === "Tab") {
+
+            event.preventDefault();
+
+            const start =
+              this.selectionStart;
+
+            const end =
+              this.selectionEnd;
+
+            this.value =
+              this.value.substring(
+                0,
+                start
+              ) +
+              "    " +
+              this.value.substring(
+                end
+              );
+
+            this.selectionStart =
+              this.selectionEnd =
+              start + 4;
+
+            resizeEditor(this);
+
+          }
+
+        }
+      );
+
+    });
+
+  }
+
+
+  /* =====================================================
+     RUN PYTHON
+  ===================================================== */
+
+  async function runPython(button) {
+
+    const container =
+      button.closest(
+        ".python-example"
+      );
+
+    const editor =
+      container.querySelector(
+        ".code-editor"
+      );
+
+    const output =
+      container.querySelector(
+        ".output-box"
+      );
+
+    const status =
+      container.querySelector(
+        ".python-status"
+      );
+
+    const runButton =
+      container.querySelector(
+        ".run-btn"
+      );
+
+    const code =
+      editor.value;
+
+
+    runButton.disabled = true;
+
+    runButton.textContent =
+      "Running...";
+
+    output.classList.remove(
+      "error"
+    );
+
+    output.textContent =
+      "Running...";
+
+    status.textContent =
+      "Running Python...";
+
+
+    try {
+
+      const python =
+        await initializePython();
+
+
+      let capturedOutput = "";
+
+
+      /*
+       * Capture printed output.
+       */
+
+      python.setStdout({
+
+        batched: function(text) {
+
+          capturedOutput += text;
+
+        }
+
+      });
+
+
+      python.setStderr({
+
+        batched: function(text) {
+
+          capturedOutput += text;
+
+        }
+
+      });
+
+
+      /*
+       * Provide browser-based input for
+       * programs using input().
+       */
+
+      python.setStdin({
+
+        stdin: function() {
+
+          const answer =
+            window.prompt(
+              "Python is asking for input:"
+            );
+
+          return answer === null
+            ? ""
+            : answer;
+
+        }
+
+      });
+
+
+      await python.runPythonAsync(
+        code
+      );
+
+
+      if (
+        capturedOutput.trim() === ""
+      ) {
+
+        output.textContent =
+          "Program finished without producing output.";
+
+      } else {
+
+        output.textContent =
+          capturedOutput;
+
+      }
+
+
+      status.textContent =
+        "Python ready";
+
+
+    } catch (error) {
+
+      output.classList.add(
+        "error"
+      );
+
+      output.textContent =
+        error.toString();
+
+      status.textContent =
+        "Error — debug your code";
+
+    } finally {
+
+      runButton.disabled = false;
+
+      runButton.textContent =
+        "Run";
+
+    }
+
+  }
+
+
+  /* =====================================================
+     RESET
+  ===================================================== */
+
+  function resetPython(button) {
+
+    const container =
+      button.closest(
+        ".python-example"
+      );
+
+    const editor =
+      container.querySelector(
+        ".code-editor"
+      );
+
+    const output =
+      container.querySelector(
+        ".output-box"
+      );
+
+    const status =
+      container.querySelector(
+        ".python-status"
+      );
+
+
+    editor.value =
+      editor.defaultValue;
+
+
+    resizeEditor(
+      editor
+    );
+
+
+    output.classList.remove(
+      "error"
+    );
+
+
+    output.textContent =
+      pyodide
+        ? "Click Run to execute the program."
+        : "Python is loading...";
+
+
+    status.textContent =
+      pyodide
+        ? "Python ready"
+        : "Loading Python...";
+
+  }
+
+
+  /* =====================================================
+     PAGE INITIALIZATION
+  ===================================================== */
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+      setupEditors();
+
+      /*
+       * Begin loading Python once in the background.
+       */
+
+      initializePython()
+        .catch(function(error) {
+
+          console.error(
+            "Unable to initialize Python:",
+            error
+          );
+
+        });
+
+    }
+  );
+
+</script>
+
+</body>
+</html>
