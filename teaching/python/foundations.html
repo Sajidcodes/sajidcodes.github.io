@@ -1,277 +1,1090 @@
-```html
-<!DOCTYPE html>
+from pathlib import Path
+
+html = r'''<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Foundations of Programming — Python</title>
 
-  <title>Python Foundations — Programming Fundamentals</title>
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.28.2/full/pyodide.js"></script>
 
   <style>
     :root {
       --bg: #fbfbf8;
       --surface: #ffffff;
       --text: #171717;
-      --muted: #666666;
-      --light: #e5e5df;
+      --muted: #666;
+      --border: #deded8;
       --accent: #1f5eff;
-      --accent-light: #eef3ff;
-      --max-width: 900px;
+      --code: #111827;
+      --code-text: #f5f7fa;
+      --success: #16794a;
+      --error: #b42318;
+      --max: 1050px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       background: var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-        Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       line-height: 1.7;
     }
 
-    .container {
-      width: min(100% - 40px, var(--max-width));
+    header {
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      padding: 56px 20px 42px;
+    }
+
+    .header-inner,
+    main {
+      max-width: var(--max);
       margin: 0 auto;
     }
 
-    header {
-      padding: 80px 0 50px;
-      border-bottom: 1px solid var(--light);
-    }
-
     .eyebrow {
-      margin: 0 0 12px;
       color: var(--accent);
       font-size: 0.85rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
+      font-weight: 700;
+      letter-spacing: .08em;
       text-transform: uppercase;
+      margin-bottom: 10px;
     }
 
     h1 {
-      margin: 0;
-      max-width: 760px;
-      font-size: clamp(2.4rem, 6vw, 4.5rem);
+      font-size: clamp(2.2rem, 5vw, 4rem);
       line-height: 1.05;
+      margin: 0 0 18px;
       letter-spacing: -0.04em;
-      font-weight: 700;
     }
 
-    .intro {
-      max-width: 680px;
-      margin: 24px 0 0;
+    .subtitle {
       color: var(--muted);
-      font-size: 1.15rem;
+      font-size: 1.12rem;
+      max-width: 750px;
+      margin: 0;
     }
 
     main {
-      padding: 55px 0 90px;
+      padding: 42px 20px 80px;
     }
 
-    .section {
-      margin-bottom: 60px;
-      padding-bottom: 50px;
-      border-bottom: 1px solid var(--light);
-    }
-
-    .section:last-child {
-      border-bottom: none;
-    }
-
-    .section-number {
-      color: var(--accent);
-      font-size: 0.9rem;
-      font-weight: 700;
-      margin-bottom: 5px;
+    section {
+      margin: 0 0 54px;
     }
 
     h2 {
-      margin: 0 0 18px;
       font-size: 2rem;
       line-height: 1.2;
+      margin: 0 0 28px;
       letter-spacing: -0.025em;
     }
 
-    .section-description {
-      margin: 0 0 28px;
-      padding: 18px 20px;
-      background: var(--accent-light);
-      border-left: 3px solid var(--accent);
-      color: #333;
+    h3 {
+      font-size: 1.45rem;
+      line-height: 1.3;
+      margin: 38px 0 14px;
     }
 
-    .topics {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      display: grid;
-      gap: 10px;
+    h4 {
+      font-size: 1.08rem;
+      margin: 26px 0 8px;
     }
 
-    .topics li {
-      position: relative;
-      padding: 13px 16px 13px 42px;
+    p { margin: 12px 0; }
+
+    ul, ol {
+      padding-left: 26px;
+    }
+
+    li { margin: 6px 0; }
+
+    .card {
       background: var(--surface);
-      border: 1px solid var(--light);
-      border-radius: 8px;
-      transition: transform 0.15s ease, border-color 0.15s ease;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      margin: 20px 0;
     }
 
-    .topics li::before {
-      content: "✓";
-      position: absolute;
-      left: 16px;
-      top: 13px;
-      color: var(--accent);
+    .goal {
+      border-left: 4px solid var(--accent);
+      background: #f4f7ff;
+      padding: 18px 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+
+    .key {
       font-weight: 700;
     }
 
-    .topics li:hover {
-      transform: translateX(3px);
-      border-color: #c8c8c0;
+    code {
+      background: #eeeeea;
+      padding: 2px 6px;
+      border-radius: 5px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .92em;
+    }
+
+    pre {
+      background: var(--code);
+      color: var(--code-text);
+      padding: 20px;
+      border-radius: 10px;
+      overflow-x: auto;
+      line-height: 1.55;
+      margin: 16px 0;
+    }
+
+    pre code {
+      background: transparent;
+      padding: 0;
+      color: inherit;
+    }
+
+    .diagram {
+      background: #f1f1ed;
+      border: 1px solid var(--border);
+      padding: 20px;
+      border-radius: 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
+
+    .run-box {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 20px 0;
+      background: var(--surface);
+    }
+
+    .run-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 700;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 150px;
+      resize: vertical;
+      border: 0;
+      outline: 0;
+      padding: 18px;
+      background: #111827;
+      color: #f5f7fa;
+      font: 14px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .run-controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 9px 15px;
+      background: var(--accent);
+      color: white;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    button:hover { opacity: .9; }
+
+    .status {
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .output {
+      white-space: pre-wrap;
+      padding: 16px;
+      min-height: 42px;
+      background: #f7f7f4;
+      border-top: 1px solid var(--border);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .callout {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin: 18px 0;
+    }
+
+    .callout strong {
+      display: block;
+      margin-bottom: 5px;
     }
 
     footer {
-      padding: 30px 0 50px;
-      border-top: 1px solid var(--light);
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 20px 50px;
       color: var(--muted);
-      font-size: 0.9rem;
+      font-size: .9rem;
     }
 
-    @media (max-width: 600px) {
-      header {
-        padding: 55px 0 40px;
-      }
-
-      main {
-        padding: 40px 0 60px;
-      }
-
-      .container {
-        width: min(100% - 28px, var(--max-width));
-      }
-
-      h2 {
-        font-size: 1.7rem;
-      }
-
-      .intro {
-        font-size: 1rem;
-      }
+    @media (max-width: 700px) {
+      header { padding: 40px 18px 32px; }
+      main { padding: 32px 18px 60px; }
+      h2 { font-size: 1.7rem; }
+      h3 { font-size: 1.3rem; }
+      .card { padding: 18px; }
     }
   </style>
 </head>
 
 <body>
 
-  <header>
-    <div class="container">
-      <p class="eyebrow">Python Foundations · 0</p>
+<header>
+  <div class="header-inner">
+    <div class="eyebrow">Python Programming</div>
+    <h1>0. Foundations of Programming</h1>
+    <p class="subtitle">
+      Before writing significant Python programs, learn what programming is,
+      how programs are developed, and how programmers solve problems.
+    </p>
+  </div>
+</header>
 
-      <h1>Programming Fundamentals</h1>
+<main>
 
-      <p class="intro">
-        Before writing significant Python code, students should understand
-        what programming is, how software is developed, and how programmers
-        think about problems.
-      </p>
+<section>
+  <h2>0.1 What Is Programming?</h2>
+
+  <h3>1. What Is a Computer Program?</h3>
+
+  <div class="goal">
+    <strong>Beginner idea:</strong>
+    A <span class="key">computer program</span> is a set of instructions that tells a computer what to do.
+  </div>
+
+  <p>Think of a program like a recipe.</p>
+
+  <ol>
+    <li>Get two eggs.</li>
+    <li>Crack the eggs.</li>
+    <li>Mix them.</li>
+    <li>Cook them.</li>
+  </ol>
+
+  <p>A computer program does something similar:</p>
+
+  <ol>
+    <li>Get some information.</li>
+    <li>Process the information.</li>
+    <li>Produce a result.</li>
+  </ol>
+
+  <h4>Example — Calculator</h4>
+  <div class="diagram">Get 10
+Get 5
+Add them
+Display 15</div>
+
+  <h4>Example — Login System</h4>
+  <div class="diagram">Ask for username
+Ask for password
+Check the information
+If correct → allow access
+If incorrect → show an error</div>
+
+  <div class="callout">
+    <strong>Students should be able to:</strong>
+    <ul>
+      <li>Define a computer program.</li>
+      <li>Explain why computers need instructions.</li>
+      <li>Identify programs they use every day.</li>
+    </ul>
+  </div>
+
+  <h3>2. Programming Languages</h3>
+
+  <div class="goal">
+    <strong>Beginner idea:</strong>
+    A <span class="key">programming language</span> is a language humans use to give instructions to computers.
+  </div>
+
+  <p>Programmers use languages such as:</p>
+
+  <ul>
+    <li>Python</li>
+    <li>Java</li>
+    <li>C++</li>
+    <li>JavaScript</li>
+    <li>C#</li>
+    <li>Go</li>
+  </ul>
+
+  <p>Different programming languages have different rules and purposes.</p>
+
+  <h4>Python</h4>
+  <pre><code>print("Hello, world!")</code></pre>
+
+  <p>This tells Python to display:</p>
+
+  <pre><code>Hello, world!</code></pre>
+
+  <h4>JavaScript</h4>
+  <pre><code>console.log("Hello, world!");</code></pre>
+
+  <p>Both programs accomplish a similar task, but they use different programming languages.</p>
+
+  <div class="callout">
+    <strong>Students should be able to:</strong>
+    <ul>
+      <li>Define a programming language.</li>
+      <li>Name several programming languages.</li>
+      <li>Recognize Python as a programming language.</li>
+    </ul>
+  </div>
+
+  <h3>3. Source Code vs. Machine Code</h3>
+
+  <div class="goal">
+    <strong>Beginner idea:</strong>
+    <span class="key">Source code</span> is the code programmers write.
+    <span class="key">Machine code</span> is low-level code that the processor can execute.
+  </div>
+
+  <div class="diagram">Human
+   ↓
+Python source code
+   ↓
+Python interpreter
+   ↓
+Machine-level instructions
+   ↓
+Computer</div>
+
+  <h4>Example</h4>
+  <pre><code>x = 10
+print(x)</code></pre>
+
+  <p>This is source code. Python processes it into instructions that can ultimately be executed by the computer.</p>
+
+  <h4>Another example</h4>
+  <pre><code>2 + 3</code></pre>
+
+  <p>You understand this as “add 2 and 3.” At the lowest level, the processor works with machine instructions represented as binary data.</p>
+
+  <div class="callout">
+    <strong>Key idea:</strong>
+    Source code is written by programmers, while machine code consists of instructions the computer's processor can execute.
+  </div>
+
+  <h3>4. Interpreters vs. Compilers</h3>
+
+  <div class="goal">
+    <strong>Beginner idea:</strong>
+    Both interpreters and compilers help translate programming languages into something the computer can execute.
+  </div>
+
+  <div class="diagram">Interpreter:
+Code → Process / execute
+
+Compiler:
+Code → Translate → Executable / program → Run</div>
+
+  <p>Python is commonly described as an interpreted language because Python programs are executed through the Python interpreter.</p>
+
+  <h4>Python</h4>
+  <pre><code>print("Hello")</code></pre>
+
+  <p>You can run the file with:</p>
+
+  <pre><code>python hello.py</code></pre>
+
+  <p>The Python interpreter processes the program.</p>
+
+  <h4>Compiled language</h4>
+  <div class="diagram">C source code
+      ↓
+Compiler
+      ↓
+Machine / executable code
+      ↓
+Run program</div>
+
+  <div class="callout">
+    <strong>Keep it simple for now:</strong>
+    Focus on the basic difference between interpreting and compiling. Do not memorize complicated implementation details yet.
+  </div>
+
+  <div class="callout">
+    <strong>Students should be able to:</strong>
+    <ul>
+      <li>Explain the basic difference between an interpreter and a compiler.</li>
+      <li>Identify the Python interpreter as the program that executes Python code.</li>
+    </ul>
+  </div>
+
+  <h3>5. What Happens When You Run Python?</h3>
+
+  <p>When you run:</p>
+
+  <pre><code>print("Hello")</code></pre>
+
+  <p>the simplified process is:</p>
+
+  <div class="diagram">You write Python code
+        ↓
+Python interpreter reads the code
+        ↓
+Python checks the code
+        ↓
+Python executes the instructions
+        ↓
+Computer displays:
+Hello</div>
+
+  <h4>Example</h4>
+  <pre><code>x = 10
+y = 20
+print(x + y)</code></pre>
+
+  <p>The program:</p>
+
+  <ol>
+    <li>Creates <code>x</code>.</li>
+    <li>Stores <code>10</code>.</li>
+    <li>Creates <code>y</code>.</li>
+    <li>Stores <code>20</code>.</li>
+    <li>Adds them.</li>
+    <li>Displays <code>30</code>.</li>
+  </ol>
+
+  <h4>Another example</h4>
+  <pre><code>name = "Sajid"
+print("Hello", name)</code></pre>
+
+  <p>Output:</p>
+  <pre><code>Hello Sajid</code></pre>
+
+  <div class="callout">
+    <strong>Students should be able to:</strong>
+    Describe what generally happens when a Python program runs.
+  </div>
+
+  <h3>6. Algorithms and Instructions</h3>
+
+  <div class="goal">
+    An <span class="key">algorithm</span> is a sequence of steps used to solve a problem.
+  </div>
+
+  <p>You already use algorithms in everyday life.</p>
+
+  <h4>Example — Making Toast</h4>
+  <ol>
+    <li>Get bread.</li>
+    <li>Put bread in toaster.</li>
+    <li>Start toaster.</li>
+    <li>Wait.</li>
+    <li>Remove toast.</li>
+  </ol>
+
+  <h4>Example — Finding the Largest Number</h4>
+  <p>Suppose we have:</p>
+  <pre><code>5, 12, 7</code></pre>
+
+  <ol>
+    <li>Start with 5 as the largest.</li>
+    <li>Compare 12 with 5.</li>
+    <li>12 is larger → largest = 12.</li>
+    <li>Compare 7 with 12.</li>
+    <li>7 is not larger.</li>
+    <li>Answer = 12.</li>
+  </ol>
+
+  <div class="callout">
+    <strong>Students should be able to:</strong>
+    <ul>
+      <li>Explain what an algorithm is.</li>
+      <li>Create simple step-by-step instructions.</li>
+      <li>Apply an algorithm to a simple problem.</li>
+    </ul>
+  </div>
+
+  <h3>7. Syntax vs. Logic</h3>
+
+  <p>This distinction is very important for beginners.</p>
+
+  <h4>Syntax</h4>
+  <p><span class="key">Syntax</span> means the rules for writing code correctly.</p>
+
+  <p>Correct:</p>
+  <pre><code>print("Hello")</code></pre>
+
+  <p>Incorrect:</p>
+  <pre><code>print("Hello"</code></pre>
+
+  <p>The closing <code>)</code> is missing.</p>
+
+  <h4>Logic</h4>
+  <p><span class="key">Logic</span> is whether your program does the correct thing.</p>
+
+  <pre><code>age = 20
+
+if age > 21:
+    print("Allowed")</code></pre>
+
+  <p>The code may be syntactically correct. But if the intended rule is “21 or older,” the logic is wrong.</p>
+
+  <p>Correct:</p>
+  <pre><code>if age >= 21:
+    print("Allowed")</code></pre>
+
+  <h4>Logic example</h4>
+  <pre><code>price = 100
+discount = 10
+final_price = price + discount</code></pre>
+
+  <p>The code may run, but the logic is wrong if the discount should be subtracted.</p>
+
+  <p>Correct:</p>
+  <pre><code>final_price = price - discount</code></pre>
+
+  <div class="callout">
+    <strong>Remember:</strong>
+    Syntax = Is the code written correctly?<br>
+    Logic = Does the code do what we intended?
+  </div>
+
+  <h3>8. Bugs and Debugging</h3>
+
+  <div class="goal">
+    A <span class="key">bug</span> is a problem or error in a program.
+    <span class="key">Debugging</span> is the process of finding and fixing bugs.
+  </div>
+
+  <div class="diagram">Program doesn't work
+        ↓
+Find the problem
+        ↓
+Understand the problem
+        ↓
+Fix the problem
+        ↓
+Test again</div>
+
+  <h4>Syntax bug</h4>
+  <pre><code>print("Hello"</code></pre>
+
+  <p>Fix:</p>
+  <pre><code>print("Hello")</code></pre>
+
+  <h4>Logic bug</h4>
+  <pre><code>number = 10
+
+if number > 10:
+    print("Number is 10 or greater")</code></pre>
+
+  <p>Nothing prints because <code>10</code> is not greater than <code>10</code>.</p>
+
+  <p>If the intended rule includes 10, fix it:</p>
+
+  <pre><code>if number >= 10:
+    print("Number is 10 or greater")</code></pre>
+
+  <div class="callout">
+    <strong>Students should be able to:</strong>
+    <ul>
+      <li>Identify a bug.</li>
+      <li>Explain why it happened.</li>
+      <li>Modify code to fix it.</li>
+      <li>Test the program again.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2>0.2 The Software Development Process</h2>
+
+  <p>Programming isn't simply:</p>
+
+  <div class="diagram">Open Python → Start typing</div>
+
+  <p>Professional programming follows a process.</p>
+
+  <div class="diagram">Problem
+   ↓
+Requirements
+   ↓
+Algorithm
+   ↓
+Pseudocode / Flowchart
+   ↓
+Implementation
+   ↓
+Testing
+   ↓
+Debugging
+   ↓
+Documentation
+   ↓
+Maintenance</div>
+
+  <h3>1. Problem Definition</h3>
+
+  <p>First, determine <span class="key">what problem you are trying to solve</span>.</p>
+
+  <p>Don't immediately write code.</p>
+
+  <h4>Example — Grade Calculator</h4>
+  <div class="card">
+    Students need a program that calculates their final grade.
+  </div>
+
+  <h4>Example — Temperature Converter</h4>
+  <div class="card">
+    Users need a program that converts Fahrenheit temperatures to Celsius.
+  </div>
+
+  <div class="callout">
+    <strong>Students should be able to:</strong>
+    State the problem clearly before programming.
+  </div>
+
+  <h3>2. Requirements</h3>
+
+  <p>Requirements describe <span class="key">what the program needs to do</span>.</p>
+
+  <h4>Grade calculator</h4>
+  <div class="card">
+    <strong>Input</strong>
+    <ul>
+      <li>Homework grade</li>
+      <li>Exam grade</li>
+    </ul>
+
+    <strong>Process</strong>
+    <ul>
+      <li>Calculate average</li>
+    </ul>
+
+    <strong>Output</strong>
+    <ul>
+      <li>Final grade</li>
+    </ul>
+  </div>
+
+  <h4>Shopping program</h4>
+  <div class="card">
+    <strong>Input</strong>
+    <ul>
+      <li>Product price</li>
+      <li>Quantity</li>
+    </ul>
+
+    <strong>Output</strong>
+    <ul>
+      <li>Total cost</li>
+    </ul>
+  </div>
+
+  <h4>Login program</h4>
+  <div class="card">
+    <strong>Input</strong>
+    <ul>
+      <li>Username</li>
+      <li>Password</li>
+    </ul>
+
+    <strong>Output</strong>
+    <ul>
+      <li>Login successful</li>
+      <li>OR Login failed</li>
+    </ul>
+  </div>
+
+  <div class="callout">
+    <strong>Students should be able to:</strong>
+    Identify the inputs and outputs required by a problem.
+  </div>
+
+  <h3>3. Algorithm Design</h3>
+
+  <p>Now determine the <span class="key">steps needed to solve the problem</span>.</p>
+
+  <h4>Example — Area of Rectangle</h4>
+  <ol>
+    <li>Get length.</li>
+    <li>Get width.</li>
+    <li>Multiply length × width.</li>
+    <li>Display area.</li>
+  </ol>
+
+  <h4>Example — Even or Odd</h4>
+  <ol>
+    <li>Get a number.</li>
+    <li>Divide the number by 2.</li>
+    <li>Check the remainder.</li>
+    <li>If remainder is 0 → even.</li>
+    <li>Otherwise → odd.</li>
+  </ol>
+
+  <div class="callout">
+    <strong>Students should be able to:</strong>
+    Create an algorithm for a simple problem.
+  </div>
+
+  <h3>4. Pseudocode</h3>
+
+  <div class="goal">
+    <span class="key">Pseudocode</span> describes a program using simple human language before writing actual code.
+  </div>
+
+  <h4>Example — Calculate Area</h4>
+  <pre><code>START
+GET length
+GET width
+SET area = length × width
+DISPLAY area
+END</code></pre>
+
+  <h4>Example — Check Age</h4>
+  <pre><code>START
+GET age
+
+IF age >= 18
+    DISPLAY "Adult"
+ELSE
+    DISPLAY "Minor"
+
+END</code></pre>
+
+  <div class="callout">
+    <strong>Students should be able to:</strong>
+    Convert a problem into simple pseudocode.
+  </div>
+
+  <h3>5. Flowcharts</h3>
+
+  <div class="goal">
+    A <span class="key">flowchart</span> is a visual representation of an algorithm.
+  </div>
+
+  <div class="card">
+    <p><strong>Common symbols:</strong></p>
+    <ul>
+      <li>Oval → Start / End</li>
+      <li>Rectangle → Process</li>
+      <li>Diamond → Decision</li>
+      <li>Arrow → Direction</li>
+    </ul>
+  </div>
+
+  <h4>Example — Even/Odd</h4>
+  <div class="diagram">Start
+  ↓
+Get number
+  ↓
+Is number divisible by 2?
+  ↙               ↘
+Yes                No
+ ↓                  ↓
+Even               Odd
+  ↘               ↙
+      End</div>
+
+  <h4>Example — Login</h4>
+  <div class="diagram">Start
+  ↓
+Enter password
+  ↓
+Password correct?
+  ↙             ↘
+Yes              No
+ ↓                ↓
+Login            Error
+successful
+ ↓
+End</div>
+
+  <div class="callout">
+    <strong>Students should be able to:</strong>
+    Read a flowchart and create a simple flowchart from an algorithm.
+  </div>
+
+  <h3>6. Implementation</h3>
+
+  <p><span class="key">Implementation</span> means turning your algorithm into actual code.</p>
+
+  <h4>Example — Rectangle Area</h4>
+
+  <p>Pseudocode:</p>
+  <pre><code>GET length
+GET width
+CALCULATE area
+DISPLAY area</code></pre>
+
+  <p>Python:</p>
+  <pre><code>length = 10
+width = 5
+area = length * width
+print(area)</code></pre>
+
+  <p>Output:</p>
+  <pre><code>50</code></pre>
+
+  <h4>Example — Greeting</h4>
+  <pre><code>name = "Maria"
+print("Hello", name)</code></pre>
+
+  <div class="callout">
+    <strong>Students should be able to:</strong>
+    Translate simple algorithms into Python code.
+  </div>
+
+  <h3>7. Testing</h3>
+
+  <p><span class="key">Testing</span> means checking whether the program works correctly.</p>
+
+  <p>Don't test only one example.</p>
+
+  <h4>Example — Addition</h4>
+  <pre><code>def add(a, b):
+    return a + b</code></pre>
+
+  <p>Test cases:</p>
+  <ul>
+    <li>2 + 3 = 5</li>
+    <li>10 + 20 = 30</li>
+    <li>0 + 5 = 5</li>
+  </ul>
+
+  <h4>Example — Age Checker</h4>
+  <ul>
+    <li>25 → Adult</li>
+    <li>18 → Adult</li>
+    <li>17 → Minor</li>
+    <li>0 → Minor</li>
+  </ul>
+
+  <div class="callout">
+    <strong>Students should be able to:</strong>
+    Create test cases and determine whether the output is correct.
+  </div>
+
+  <h3>8. Debugging</h3>
+
+  <p>Testing may reveal a problem. <span class="key">Debugging</span> is finding and fixing that problem.</p>
+
+  <h4>Example</h4>
+  <p>You expect:</p>
+  <pre><code>20</code></pre>
+
+  <p>but your program produces:</p>
+  <pre><code>15</code></pre>
+
+  <p>You investigate the calculation and find the error.</p>
+
+  <h4>Another example</h4>
+  <p>Your program crashes when the user enters:</p>
+  <pre><code>abc</code></pre>
+
+  <p>instead of a number. You investigate why the program cannot handle that input.</p>
+
+  <div class="callout">
+    <strong>Students should be able to:</strong>
+    <ol>
+      <li>Observe the problem.</li>
+      <li>Locate the likely cause.</li>
+      <li>Fix the code.</li>
+      <li>Test again.</li>
+    </ol>
+  </div>
+
+  <h3>9. Documentation</h3>
+
+  <p><span class="key">Documentation</span> explains how a program works and how other people should use or maintain it.</p>
+
+  <p>Documentation can include:</p>
+  <ul>
+    <li>Comments</li>
+    <li>Function descriptions</li>
+    <li>Instructions</li>
+    <li>README files</li>
+    <li>Examples</li>
+  </ul>
+
+  <h4>Example — Comment</h4>
+  <pre><code># Calculate the total price
+total = price * quantity</code></pre>
+
+  <h4>Example — Program instructions</h4>
+  <div class="card">
+    <strong>How to use the program:</strong>
+    <ol>
+      <li>Enter your name.</li>
+      <li>Enter your age.</li>
+      <li>Press Enter.</li>
+      <li>The program displays your category.</li>
+    </ol>
+  </div>
+
+  <div class="callout">
+    <strong>Students should be able to:</strong>
+    Add useful documentation to their programs.
+  </div>
+
+  <h3>10. Maintenance</h3>
+
+  <p>A program doesn't necessarily end when you finish writing it.</p>
+
+  <p><span class="key">Maintenance</span> means modifying and improving software after it has been created.</p>
+
+  <h4>Example — Grade Calculator</h4>
+  <p>You created a grade calculator. Later, the school changes the grading system. You update the program.</p>
+
+  <h4>Example — Calculator</h4>
+  <p>A calculator originally supports:</p>
+  <ul>
+    <li>Addition</li>
+    <li>Subtraction</li>
+  </ul>
+
+  <p>Later, users request:</p>
+  <ul>
+    <li>Multiplication</li>
+    <li>Division</li>
+  </ul>
+
+  <p>You modify the program to support the new features.</p>
+
+  <div class="callout">
+    <strong>Students should understand:</strong>
+    Software changes over time and often needs updates, fixes, and improvements.
+  </div>
+</section>
+
+<section>
+  <h2>Practice: Run Python in Your Browser</h2>
+
+  <p>
+    The editor below uses Pyodide to run Python directly in your browser.
+    No local Python installation is required for this activity.
+  </p>
+
+  <div class="run-box">
+    <div class="run-header">Python Playground</div>
+
+    <textarea id="python-code">name = "Student"
+print("Hello", name)
+
+x = 10
+y = 20
+print("Sum:", x + y)</textarea>
+
+    <div class="run-controls">
+      <button id="run-button" onclick="runPython()">Run Python</button>
+      <span class="status" id="status">Loading Python...</span>
     </div>
-  </header>
 
-  <main>
-    <div class="container">
+    <div class="output" id="output">Output will appear here.</div>
+  </div>
+</section>
 
-      <!-- 0.1 -->
-      <section class="section" id="what-is-programming">
+<section>
+  <h2>Quick Check</h2>
 
-        <div class="section-number">0.1</div>
+  <div class="card">
+    <h3>Think About It</h3>
+    <ol>
+      <li>What is a computer program?</li>
+      <li>What is a programming language?</li>
+      <li>What is the difference between source code and machine code?</li>
+      <li>What does the Python interpreter do?</li>
+      <li>What is an algorithm?</li>
+      <li>What is the difference between syntax and logic?</li>
+      <li>What is a bug?</li>
+      <li>What is debugging?</li>
+      <li>Why should programmers test their programs?</li>
+      <li>Why does software require maintenance?</li>
+    </ol>
+  </div>
+</section>
 
-        <h2>What Is Programming?</h2>
+</main>
 
-        <p class="section-description">
-          Learn what programming actually means and how instructions become
-          something a computer can execute.
-        </p>
+<footer>
+  Python Foundations · 0. Foundations of Programming
+</footer>
 
-        <ul class="topics">
-          <li>What is a computer program?</li>
-          <li>Programming languages</li>
-          <li>Source code vs machine code</li>
-          <li>Interpreters vs compilers</li>
-          <li>What happens when you run Python?</li>
-          <li>Algorithms and instructions</li>
-          <li>Syntax vs logic</li>
-          <li>Bugs and debugging</li>
-        </ul>
+<script>
+  let pyodide = null;
 
-      </section>
+  async function initializePyodide() {
+    const status = document.getElementById("status");
+    try {
+      pyodide = await loadPyodide();
+      status.textContent = "Python is ready.";
+    } catch (error) {
+      status.textContent = "Could not load Python.";
+      console.error(error);
+    }
+  }
 
-      <!-- 0.2 -->
-      <section class="section" id="software-development-process">
+  async function runPython() {
+    const button = document.getElementById("run-button");
+    const output = document.getElementById("output");
+    const status = document.getElementById("status");
+    const code = document.getElementById("python-code").value;
 
-        <div class="section-number">0.2</div>
+    if (!pyodide) {
+      status.textContent = "Python is still loading...";
+      return;
+    }
 
-        <h2>The Software Development Process</h2>
+    button.disabled = true;
+    output.textContent = "";
+    status.textContent = "Running...";
 
-        <p class="section-description">
-          Understand the process programmers use to transform a problem
-          into a working software solution.
-        </p>
+    try {
+      pyodide.runPython(`
+import sys
+from io import StringIO
+_stdout = StringIO()
+_stderr = StringIO()
+sys.stdout = _stdout
+sys.stderr = _stderr
+      `);
 
-        <ul class="topics">
-          <li>Problem definition</li>
-          <li>Requirements</li>
-          <li>Algorithm design</li>
-          <li>Pseudocode</li>
-          <li>Flowcharts</li>
-          <li>Implementation</li>
-          <li>Testing</li>
-          <li>Debugging</li>
-          <li>Documentation</li>
-          <li>Maintenance</li>
-        </ul>
+      await pyodide.runPythonAsync(code);
 
-      </section>
+      const stdout = pyodide.runPython("_stdout.getvalue()");
+      const stderr = pyodide.runPython("_stderr.getvalue()");
 
-      <!-- 0.3 -->
-      <section class="section" id="programming-thinking">
+      output.textContent = stdout || stderr || "Program finished with no output.";
+      status.textContent = "Finished.";
+    } catch (error) {
+      output.textContent = String(error);
+      status.textContent = "Program error.";
+    } finally {
+      button.disabled = false;
+    }
+  }
 
-        <div class="section-number">0.3</div>
-
-        <h2>Programming Thinking</h2>
-
-        <p class="section-description">
-          Develop the problem-solving mindset programmers use to break
-          complex problems into manageable steps.
-        </p>
-
-        <ul class="topics">
-          <li>Input → Process → Output</li>
-          <li>Breaking problems into smaller pieces</li>
-          <li>Pattern recognition</li>
-          <li>Step-by-step reasoning</li>
-          <li>Abstraction</li>
-          <li>Decomposition</li>
-        </ul>
-
-      </section>
-
-    </div>
-  </main>
-
-  <footer>
-    <div class="container">
-      Python Foundations · Programming Fundamentals
-    </div>
-  </footer>
+  initializePyodide();
+</script>
 
 </body>
 </html>
-```
+'''
+
+path = Path("/mnt/data/python_foundations.html")
+path.write_text(html, encoding="utf-8")
+print(f"Created: {path}")
