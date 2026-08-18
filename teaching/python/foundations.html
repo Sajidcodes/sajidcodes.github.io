@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Foundations of Programming | Python</title>
+  <title>0. Foundations of Programming</title>
 
   <!-- Pyodide -->
   <script src="https://cdn.jsdelivr.net/pyodide/v0.28.2/full/pyodide.js"></script>
@@ -15,13 +15,15 @@
       --surface: #ffffff;
       --text: #171717;
       --muted: #666;
-      --light: #e7e7e2;
+      --light: #e5e5df;
       --accent: #1f5eff;
       --accent-light: #eef3ff;
       --success: #176b3a;
       --success-bg: #edf8f1;
       --warning: #8a5a00;
       --warning-bg: #fff8e7;
+      --danger: #a11;
+      --danger-bg: #fff1f1;
       --code-bg: #171717;
       --code-text: #f5f5f5;
       --max: 900px;
@@ -57,12 +59,12 @@
       padding: 70px 0 100px;
     }
 
-    /* --------------------------------
-       HEADER
-    -------------------------------- */
+    /* ================================
+       HERO
+    ================================= */
 
     .hero {
-      margin-bottom: 70px;
+      margin-bottom: 75px;
     }
 
     .eyebrow {
@@ -77,23 +79,23 @@
       font-size: clamp(2.4rem, 6vw, 4.5rem);
       line-height: 1.05;
       letter-spacing: -0.04em;
-      margin: 0 0 20px;
+      margin: 0 0 22px;
       font-weight: 700;
     }
 
     .hero p {
-      max-width: 720px;
+      max-width: 750px;
       color: var(--muted);
       font-size: 1.15rem;
       margin: 0;
     }
 
-    /* --------------------------------
+    /* ================================
        SECTIONS
-    -------------------------------- */
+    ================================= */
 
     section {
-      margin-bottom: 85px;
+      margin-bottom: 90px;
     }
 
     .section-number {
@@ -107,13 +109,13 @@
       font-size: clamp(2rem, 4vw, 3rem);
       line-height: 1.15;
       letter-spacing: -0.03em;
-      margin: 0 0 20px;
+      margin: 0 0 22px;
     }
 
     h3 {
       font-size: 1.55rem;
       line-height: 1.25;
-      margin: 55px 0 18px;
+      margin: 58px 0 18px;
       letter-spacing: -0.02em;
     }
 
@@ -136,37 +138,41 @@
       margin-bottom: 7px;
     }
 
-    /* --------------------------------
+    /* ================================
        LEARNING TARGET
-    -------------------------------- */
+    ================================= */
 
     .learning-target {
       background: var(--accent-light);
       border-left: 4px solid var(--accent);
       padding: 20px 24px;
-      margin: 25px 0 35px;
+      margin: 28px 0 36px;
       border-radius: 0 var(--radius) var(--radius) 0;
     }
 
     .learning-target strong {
       display: block;
       margin-bottom: 8px;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
       color: var(--accent);
     }
 
-    /* --------------------------------
+    .learning-target ul {
+      margin-bottom: 0;
+    }
+
+    /* ================================
        SUMMARY
-    -------------------------------- */
+    ================================= */
 
     .summary {
       background: var(--surface);
       border: 1px solid var(--light);
       border-radius: var(--radius);
       padding: 24px 26px;
-      margin: 35px 0 45px;
+      margin: 38px 0 48px;
     }
 
     .summary-title {
@@ -178,9 +184,9 @@
       margin-bottom: 0;
     }
 
-    /* --------------------------------
+    /* ================================
        EXAMPLES
-    -------------------------------- */
+    ================================= */
 
     .example {
       margin: 30px 0 38px;
@@ -196,12 +202,12 @@
       border-left: 4px solid #d49a00;
       padding: 18px 22px;
       border-radius: 0 var(--radius) var(--radius) 0;
-      margin: 22px 0;
+      margin: 24px 0;
     }
 
-    /* --------------------------------
+    /* ================================
        STATIC CODE
-    -------------------------------- */
+    ================================= */
 
     pre.static-code {
       background: var(--code-bg);
@@ -220,15 +226,6 @@
       line-height: 1.55;
     }
 
-    code {
-      font-family:
-        "SFMono-Regular",
-        Consolas,
-        "Liberation Mono",
-        Menlo,
-        monospace;
-    }
-
     p code,
     li code {
       background: #eeeeeb;
@@ -237,15 +234,15 @@
       font-size: 0.9em;
     }
 
-    /* --------------------------------
+    /* ================================
        PYTHON RUNNER
-    -------------------------------- */
+    ================================= */
 
     .python-example {
       border: 1px solid var(--light);
       border-radius: var(--radius);
       background: var(--surface);
-      margin: 30px 0 42px;
+      margin: 32px 0 45px;
       overflow: hidden;
     }
 
@@ -277,6 +274,7 @@
       display: block;
       width: 100%;
       min-height: 90px;
+      height: auto;
       resize: none;
       overflow-y: hidden;
       border: none;
@@ -294,6 +292,11 @@
       font-size: 0.92rem;
       line-height: 1.55;
       tab-size: 4;
+      white-space: pre;
+    }
+
+    .code-editor:focus {
+      box-shadow: 0 0 0 2px rgba(31, 94, 255, 0.7);
     }
 
     .python-controls {
@@ -311,6 +314,16 @@
       cursor: pointer;
       font-weight: 600;
       font-size: 0.9rem;
+      transition: opacity 0.15s ease;
+    }
+
+    button:hover:not(:disabled) {
+      opacity: 0.88;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
     }
 
     .run-btn {
@@ -321,10 +334,6 @@
     .reset-btn {
       background: #eeeeeb;
       color: var(--text);
-    }
-
-    button:hover {
-      opacity: 0.88;
     }
 
     .output {
@@ -340,11 +349,12 @@
     }
 
     .output-box {
-      min-height: 45px;
+      min-height: 48px;
       background: #f5f5f2;
       border-radius: 8px;
       padding: 13px 15px;
       white-space: pre-wrap;
+      overflow-wrap: anywhere;
       font-family:
         "SFMono-Regular",
         Consolas,
@@ -354,20 +364,20 @@
       font-size: 0.9rem;
     }
 
-    .error {
-      color: #a11;
-      background: #fff1f1;
+    .output-box.error {
+      color: var(--danger);
+      background: var(--danger-bg);
     }
 
-    /* --------------------------------
-       THINKING QUESTIONS
-    -------------------------------- */
+    /* ================================
+       THINKING
+    ================================= */
 
     .thinking {
       border: 1px solid var(--light);
       border-radius: var(--radius);
       padding: 22px 25px;
-      margin: 30px 0;
+      margin: 32px 0;
       background: #fff;
     }
 
@@ -380,9 +390,9 @@
       margin-bottom: 0;
     }
 
-    /* --------------------------------
-       IMPORTANT IDEA
-    -------------------------------- */
+    /* ================================
+       IMPORTANT
+    ================================= */
 
     .important {
       background: var(--success-bg);
@@ -392,51 +402,68 @@
       border-radius: 0 var(--radius) var(--radius) 0;
     }
 
-    /* --------------------------------
+    .important p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* ================================
        EXIT TICKET
-    -------------------------------- */
+    ================================= */
 
     .exit-ticket {
       background: var(--text);
       color: white;
       border-radius: var(--radius);
-      padding: 30px;
-      margin-top: 60px;
+      padding: 32px;
+      margin-top: 65px;
     }
 
     .exit-ticket h3 {
       margin-top: 0;
+      color: white;
     }
 
     .exit-ticket ol {
       margin-bottom: 0;
     }
 
-    /* --------------------------------
-       DIVIDER
-    -------------------------------- */
-
-    .divider {
-      height: 1px;
-      background: var(--light);
-      margin: 70px 0;
-    }
+    /* ================================
+       RESPONSIVE
+    ================================= */
 
     @media (max-width: 650px) {
+
       .page {
-        width: min(var(--max), calc(100% - 28px));
+        width: min(
+          var(--max),
+          calc(100% - 28px)
+        );
+
         padding-top: 45px;
       }
 
       h3 {
-        margin-top: 42px;
+        margin-top: 45px;
       }
 
       .python-header {
         align-items: flex-start;
         flex-direction: column;
       }
+
+      .editor-wrapper {
+        padding: 12px;
+      }
+
+      .code-editor {
+        font-size: 0.86rem;
+      }
+
+      .exit-ticket {
+        padding: 24px;
+      }
     }
+
   </style>
 </head>
 
@@ -445,7 +472,7 @@
 <div class="page">
 
   <!-- =========================================
-       HEADER
+       HERO
   ========================================== -->
 
   <header class="hero">
@@ -587,7 +614,7 @@ Display 15</pre>
         </div>
 
         <div class="python-status">
-          Python runs in your browser
+          Loading Python...
         </div>
 
       </div>
@@ -605,11 +632,16 @@ print(result)</textarea>
 
       <div class="python-controls">
 
-        <button class="run-btn" onclick="runPython(this)">
-          Run
+        <button
+          class="run-btn"
+          onclick="runPython(this)"
+          disabled>
+          Loading Python...
         </button>
 
-        <button class="reset-btn" onclick="resetPython(this)">
+        <button
+          class="reset-btn"
+          onclick="resetPython(this)">
           Reset
         </button>
 
@@ -622,7 +654,7 @@ print(result)</textarea>
         </div>
 
         <div class="output-box">
-          Click Run to execute the program.
+          Python is loading. You will be able to run this example shortly.
         </div>
 
       </div>
@@ -637,6 +669,7 @@ print(result)</textarea>
       </div>
 
       <ul>
+
         <li>
           What would happen if the computer skipped the instruction
           that adds the two numbers?
@@ -650,6 +683,7 @@ print(result)</textarea>
         <li>
           What programs did you use today?
         </li>
+
       </ul>
 
     </div>
@@ -723,9 +757,10 @@ print(result)</textarea>
       <pre class="static-code">print("Hello, world!")</pre>
 
       <p>
-        Python interprets this instruction as a request to display
-        <code>Hello, world!</code>.
+        Python processes this instruction and produces:
       </p>
+
+      <pre class="static-code">Hello, world!</pre>
 
     </div>
 
@@ -739,7 +774,7 @@ print(result)</textarea>
         </div>
 
         <div class="python-status">
-          Edit the code
+          Loading Python...
         </div>
 
       </div>
@@ -752,11 +787,16 @@ print(result)</textarea>
 
       <div class="python-controls">
 
-        <button class="run-btn" onclick="runPython(this)">
-          Run
+        <button
+          class="run-btn"
+          onclick="runPython(this)"
+          disabled>
+          Loading Python...
         </button>
 
-        <button class="reset-btn" onclick="resetPython(this)">
+        <button
+          class="reset-btn"
+          onclick="resetPython(this)">
           Reset
         </button>
 
@@ -769,7 +809,7 @@ print(result)</textarea>
         </div>
 
         <div class="output-box">
-          Click Run to execute the program.
+          Python is loading...
         </div>
 
       </div>
@@ -799,6 +839,7 @@ print(result)</textarea>
       </div>
 
       <ul>
+
         <li>
           Why do you think there are many programming languages instead
           of only one?
@@ -813,6 +854,7 @@ print(result)</textarea>
           Is Python the computer's native language?
           Why or why not?
         </li>
+
       </ul>
 
     </div>
@@ -909,9 +951,9 @@ print(x)</pre>
 00001111 11010001</pre>
 
       <p>
-        The exact binary instructions depend on the processor architecture.
-        The important idea is that this is fundamentally different from
-        the human-readable Python source code above.
+        The exact machine instructions depend on the processor architecture.
+        The important idea is that machine code is fundamentally different
+        from human-readable Python source code.
       </p>
 
     </div>
@@ -922,8 +964,8 @@ print(x)</pre>
       <strong>Think of translation.</strong>
 
       <p>
-        Source code is like instructions written for humans.
-        Machine instructions are the much lower-level representation
+        Source code is written in a language designed to be practical
+        for humans. Machine instructions are a much lower-level form
         that the processor can execute.
       </p>
 
@@ -937,6 +979,7 @@ print(x)</pre>
       </div>
 
       <ul>
+
         <li>
           Which would be easier for you to read: Python or binary?
         </li>
@@ -950,6 +993,7 @@ print(x)</pre>
           What must happen between human-readable source code and
           processor-executable instructions?
         </li>
+
       </ul>
 
     </div>
@@ -964,14 +1008,14 @@ print(x)</pre>
       <ul>
         <li>Source code is written by programmers.</li>
         <li>Machine code consists of low-level instructions executed by a processor.</li>
-        <li>A system must translate or process source code so the computer can execute it.</li>
+        <li>A system must process or translate source code so the computer can execute it.</li>
       </ul>
 
     </div>
 
 
     <!-- ======================================
-         4. INTERPRETERS AND COMPILERS
+         4. INTERPRETERS VS COMPILERS
     ======================================= -->
 
     <h3>
@@ -1020,8 +1064,8 @@ Interpreter
 Execution</pre>
 
       <p>
-        An interpreter is a program that processes source code and helps
-        execute it.
+        An interpreter is a program that processes source code and
+        helps execute it.
       </p>
 
     </div>
@@ -1042,8 +1086,8 @@ Translated Program
 Execution</pre>
 
       <p>
-        A compiler translates source code into another form before the
-        resulting program is executed.
+        A compiler translates source code into another form before
+        the resulting program is executed.
       </p>
 
     </div>
@@ -1051,22 +1095,22 @@ Execution</pre>
 
     <div class="important">
 
-      <strong>Important:</strong>
+      <strong>Important beginner idea:</strong>
 
       <p>
         The interpreter-versus-compiler distinction is useful for
-        understanding the basic idea, but real programming-language
-        implementations can be more complicated than this simple diagram.
+        understanding the basic concept, but real programming-language
+        implementations can be more complicated than this simple model.
       </p>
 
       <p>
-        For now, focus on the fundamental difference:
+        For now, remember:
       </p>
 
       <p>
         <strong>
-          Interpretation emphasizes processing code for execution;
-          compilation emphasizes translating code before execution.
+          Interpretation emphasizes processing code for execution,
+          while compilation emphasizes translating code before execution.
         </strong>
       </p>
 
@@ -1080,17 +1124,20 @@ Execution</pre>
       </div>
 
       <ul>
-        <li>
-          If a program has an error, when might that error be discovered?
-        </li>
 
         <li>
           Why might translating a program ahead of time be useful?
         </li>
 
         <li>
-          Why might processing code interactively be useful while learning?
+          Why might processing code interactively be useful?
         </li>
+
+        <li>
+          When might you want to discover a problem before running
+          the final program?
+        </li>
+
       </ul>
 
     </div>
@@ -1104,8 +1151,8 @@ Execution</pre>
 
       <ul>
         <li>An interpreter processes source code for execution.</li>
-        <li>A compiler translates source code into another executable form.</li>
-        <li>The distinction is useful, but real language implementations can use multiple techniques.</li>
+        <li>A compiler translates source code into another form.</li>
+        <li>Real language implementations can combine multiple techniques.</li>
       </ul>
 
     </div>
@@ -1132,7 +1179,7 @@ y = 20
 print(x + y)</pre>
 
     <p>
-      What actually happens?
+      What happens after you run it?
     </p>
 
     <div class="learning-target">
@@ -1142,7 +1189,7 @@ print(x + y)</pre>
       <ul>
         <li>Describe the general stages involved when Python executes code.</li>
         <li>Trace a simple Python program step by step.</li>
-        <li>Explain how Python turns source code into a result.</li>
+        <li>Explain how Python processes source code to produce a result.</li>
       </ul>
 
     </div>
@@ -1169,7 +1216,8 @@ print(x + y)</pre>
 
       <p>
         Python reads and analyzes the source code.
-        It determines what the statements mean and prepares them for execution.
+        It determines what the statements mean and prepares them
+        for execution.
       </p>
 
     </div>
@@ -1222,11 +1270,11 @@ print(x + y)</pre>
       <div class="python-header">
 
         <div class="python-title">
-          Trace It Yourself
+          Try It — Trace the Program
         </div>
 
         <div class="python-status">
-          Change the values and predict the output
+          Loading Python...
         </div>
 
       </div>
@@ -1244,11 +1292,16 @@ print(result)</textarea>
 
       <div class="python-controls">
 
-        <button class="run-btn" onclick="runPython(this)">
-          Run
+        <button
+          class="run-btn"
+          onclick="runPython(this)"
+          disabled>
+          Loading Python...
         </button>
 
-        <button class="reset-btn" onclick="resetPython(this)">
+        <button
+          class="reset-btn"
+          onclick="resetPython(this)">
           Reset
         </button>
 
@@ -1261,7 +1314,7 @@ print(result)</textarea>
         </div>
 
         <div class="output-box">
-          Click Run to execute the program.
+          Python is loading...
         </div>
 
       </div>
@@ -1276,8 +1329,8 @@ print(result)</textarea>
       </div>
 
       <p>
-        Change <code>x</code> to <code>100</code> and <code>y</code> to
-        <code>50</code>.
+        Change <code>x</code> to <code>100</code> and <code>y</code>
+        to <code>50</code>.
       </p>
 
       <p>
@@ -1317,7 +1370,7 @@ print(result)</textarea>
 
     <p>
       A program contains instructions, but before writing those instructions,
-      programmers often need to figure out <strong>what steps will solve the problem</strong>.
+      programmers need to figure out <strong>what steps will solve the problem</strong>.
     </p>
 
     <p>
@@ -1382,6 +1435,66 @@ print(result)</textarea>
     </div>
 
 
+    <div class="python-example">
+
+      <div class="python-header">
+
+        <div class="python-title">
+          Try It — Algorithm in Python
+        </div>
+
+        <div class="python-status">
+          Loading Python...
+        </div>
+
+      </div>
+
+      <div class="editor-wrapper">
+
+<textarea class="code-editor">numbers = [5, 12, 7]
+
+largest = numbers[0]
+
+for number in numbers:
+    if number > largest:
+        largest = number
+
+print(largest)</textarea>
+
+      </div>
+
+      <div class="python-controls">
+
+        <button
+          class="run-btn"
+          onclick="runPython(this)"
+          disabled>
+          Loading Python...
+        </button>
+
+        <button
+          class="reset-btn"
+          onclick="resetPython(this)">
+          Reset
+        </button>
+
+      </div>
+
+      <div class="output">
+
+        <div class="output-label">
+          Output
+        </div>
+
+        <div class="output-box">
+          Python is loading...
+        </div>
+
+      </div>
+
+    </div>
+
+
     <div class="thinking">
 
       <div class="thinking-title">
@@ -1389,6 +1502,7 @@ print(result)</textarea>
       </div>
 
       <ul>
+
         <li>
           What happens if an algorithm leaves out an important step?
         </li>
@@ -1398,8 +1512,9 @@ print(result)</textarea>
         </li>
 
         <li>
-          Which algorithm would be better if you had one million numbers?
+          Which approach might be better if you had one million numbers?
         </li>
+
       </ul>
 
     </div>
@@ -1438,7 +1553,7 @@ print(result)</textarea>
     </p>
 
     <p>
-      There are two different questions we need to ask:
+      We need to ask two different questions:
     </p>
 
     <ul>
@@ -1489,7 +1604,7 @@ print(result)</textarea>
         </div>
 
         <div class="python-status">
-          Run it, then fix it
+          Loading Python...
         </div>
 
       </div>
@@ -1502,11 +1617,16 @@ print(result)</textarea>
 
       <div class="python-controls">
 
-        <button class="run-btn" onclick="runPython(this)">
-          Run
+        <button
+          class="run-btn"
+          onclick="runPython(this)"
+          disabled>
+          Loading Python...
         </button>
 
-        <button class="reset-btn" onclick="resetPython(this)">
+        <button
+          class="reset-btn"
+          onclick="resetPython(this)">
           Reset
         </button>
 
@@ -1519,7 +1639,7 @@ print(result)</textarea>
         </div>
 
         <div class="output-box">
-          Click Run to execute the program.
+          Python is loading...
         </div>
 
       </div>
@@ -1564,7 +1684,7 @@ print(final_price)</pre>
         </div>
 
         <div class="python-status">
-          The program runs — but is it correct?
+          Loading Python...
         </div>
 
       </div>
@@ -1582,11 +1702,16 @@ print(final_price)</textarea>
 
       <div class="python-controls">
 
-        <button class="run-btn" onclick="runPython(this)">
-          Run
+        <button
+          class="run-btn"
+          onclick="runPython(this)"
+          disabled>
+          Loading Python...
         </button>
 
-        <button class="reset-btn" onclick="resetPython(this)">
+        <button
+          class="reset-btn"
+          onclick="resetPython(this)">
           Reset
         </button>
 
@@ -1599,7 +1724,7 @@ print(final_price)</textarea>
         </div>
 
         <div class="output-box">
-          Click Run to execute the program.
+          Python is loading...
         </div>
 
       </div>
@@ -1718,7 +1843,7 @@ if number > 10:
         </div>
 
         <div class="python-status">
-          Make the program produce the intended result
+          Loading Python...
         </div>
 
       </div>
@@ -1734,11 +1859,16 @@ if number > 10:
 
       <div class="python-controls">
 
-        <button class="run-btn" onclick="runPython(this)">
-          Run
+        <button
+          class="run-btn"
+          onclick="runPython(this)"
+          disabled>
+          Loading Python...
         </button>
 
-        <button class="reset-btn" onclick="resetPython(this)">
+        <button
+          class="reset-btn"
+          onclick="resetPython(this)">
           Reset
         </button>
 
@@ -1751,7 +1881,7 @@ if number > 10:
         </div>
 
         <div class="output-box">
-          Click Run to execute the program.
+          Python is loading...
         </div>
 
       </div>
@@ -1766,11 +1896,27 @@ if number > 10:
       </div>
 
       <ol>
-        <li>What did you expect the program to do?</li>
-        <li>What actually happened?</li>
-        <li>Where might the difference come from?</li>
-        <li>What change could fix it?</li>
-        <li>Does the program work after the change?</li>
+
+        <li>
+          What did you expect the program to do?
+        </li>
+
+        <li>
+          What actually happened?
+        </li>
+
+        <li>
+          Where might the difference come from?
+        </li>
+
+        <li>
+          What change could fix it?
+        </li>
+
+        <li>
+          Does the program work after the change?
+        </li>
+
       </ol>
 
     </div>
@@ -1852,145 +1998,365 @@ if number > 10:
 
 <script>
 
-  /* =========================================
+  /* =====================================================
      PYODIDE
-  ========================================== */
+     
+     IMPORTANT:
+     Pyodide is loaded ONLY ONCE.
+     Every code cell reuses the same runtime.
+  ===================================================== */
 
   let pyodide = null;
+  let pyodidePromise = null;
 
-  async function loadPyodideRuntime() {
+
+  /*
+   * Load Python once.
+   */
+
+  async function initializePython() {
+
+    /*
+     * Already loaded.
+     */
 
     if (pyodide) {
       return pyodide;
     }
 
-    const statusElements =
-      document.querySelectorAll(".python-status");
 
-    statusElements.forEach(el => {
-      el.textContent = "Loading Python...";
-    });
+    /*
+     * Already loading.
+     * Return the existing promise rather than
+     * starting another download.
+     */
 
-    pyodide = await loadPyodide();
+    if (pyodidePromise) {
+      return pyodidePromise;
+    }
 
-    statusElements.forEach(el => {
-      el.textContent = "Python ready";
-    });
 
-    return pyodide;
+    updatePythonStatus(
+      "Loading Python..."
+    );
+
+
+    /*
+     * Start Pyodide exactly once.
+     */
+
+    pyodidePromise =
+      loadPyodide();
+
+
+    try {
+
+      pyodide =
+        await pyodidePromise;
+
+
+      /*
+       * Python is ready.
+       */
+
+      updatePythonStatus(
+        "Python ready"
+      );
+
+
+      enableRunButtons();
+
+
+      return pyodide;
+
+    } catch (error) {
+
+      /*
+       * Allow another attempt if loading fails.
+       */
+
+      pyodidePromise = null;
+
+      updatePythonStatus(
+        "Python failed to load"
+      );
+
+      console.error(
+        "Pyodide failed:",
+        error
+      );
+
+      throw error;
+    }
+
   }
 
 
-  /* =========================================
-     AUTO-EXPANDING CODE EDITOR
-  ========================================== */
+  /* =====================================================
+     UPDATE STATUS
+  ===================================================== */
+
+  function updatePythonStatus(message) {
+
+    document
+      .querySelectorAll(".python-status")
+      .forEach(function(status) {
+
+        status.textContent =
+          message;
+
+      });
+
+  }
+
+
+  /* =====================================================
+     ENABLE RUN BUTTONS
+  ===================================================== */
+
+  function enableRunButtons() {
+
+    document
+      .querySelectorAll(".run-btn")
+      .forEach(function(button) {
+
+        button.disabled = false;
+
+        button.textContent =
+          "Run";
+
+      });
+
+  }
+
+
+  /* =====================================================
+     AUTO-EXPANDING EDITORS
+  ===================================================== */
 
   function resizeEditor(editor) {
 
+    /*
+     * First reset height so the browser can
+     * calculate the actual content height.
+     */
+
     editor.style.height = "auto";
 
+
+    /*
+     * Expand to fit all lines.
+     */
+
     editor.style.height =
-      Math.max(editor.scrollHeight, 90) + "px";
+      Math.max(
+        editor.scrollHeight,
+        90
+      ) + "px";
+
   }
 
 
   function setupEditors() {
 
     const editors =
-      document.querySelectorAll(".code-editor");
+      document.querySelectorAll(
+        ".code-editor"
+      );
 
-    editors.forEach(editor => {
+
+    editors.forEach(function(editor) {
+
+      /*
+       * Initial height.
+       */
 
       resizeEditor(editor);
 
-      editor.addEventListener("input", function () {
-        resizeEditor(this);
-      });
 
-      editor.addEventListener("keydown", function(event) {
+      /*
+       * Expand whenever the student types.
+       */
 
-        /*
-          Make Tab insert spaces instead of moving
-          focus away from the editor.
-        */
-
-        if (event.key === "Tab") {
-
-          event.preventDefault();
-
-          const start = this.selectionStart;
-          const end = this.selectionEnd;
-
-          this.value =
-            this.value.substring(0, start) +
-            "    " +
-            this.value.substring(end);
-
-          this.selectionStart =
-            this.selectionEnd =
-            start + 4;
+      editor.addEventListener(
+        "input",
+        function() {
 
           resizeEditor(this);
-        }
 
-      });
+        }
+      );
+
+
+      /*
+       * Make Tab insert four spaces.
+       */
+
+      editor.addEventListener(
+        "keydown",
+        function(event) {
+
+          if (event.key === "Tab") {
+
+            event.preventDefault();
+
+
+            const start =
+              this.selectionStart;
+
+            const end =
+              this.selectionEnd;
+
+
+            this.value =
+              this.value.substring(
+                0,
+                start
+              ) +
+              "    " +
+              this.value.substring(
+                end
+              );
+
+
+            this.selectionStart =
+              this.selectionEnd =
+              start + 4;
+
+
+            resizeEditor(this);
+
+          }
+
+        }
+      );
 
     });
 
   }
 
 
-  /* =========================================
+  /* =====================================================
      RUN PYTHON
-  ========================================== */
+  ===================================================== */
 
   async function runPython(button) {
 
     const container =
-      button.closest(".python-example");
+      button.closest(
+        ".python-example"
+      );
+
 
     const editor =
-      container.querySelector(".code-editor");
+      container.querySelector(
+        ".code-editor"
+      );
+
 
     const output =
-      container.querySelector(".output-box");
+      container.querySelector(
+        ".output-box"
+      );
+
 
     const status =
-      container.querySelector(".python-status");
+      container.querySelector(
+        ".python-status"
+      );
+
+
+    const runButton =
+      container.querySelector(
+        ".run-btn"
+      );
+
 
     const code =
       editor.value;
 
-    output.classList.remove("error");
+
+    /*
+     * Disable Run while executing.
+     */
+
+    runButton.disabled = true;
+
+    runButton.textContent =
+      "Running...";
+
+
+    output.classList.remove(
+      "error"
+    );
+
 
     output.textContent =
       "Running...";
 
+
     status.textContent =
       "Running Python...";
 
+
     try {
 
-      const runtime =
-        await loadPyodide();
+      /*
+       * Reuse the existing runtime.
+       *
+       * If it is still loading, this waits for
+       * that SAME loading operation.
+       */
+
+      const python =
+        await initializePython();
+
+
+      /*
+       * Capture print() output.
+       */
 
       let capturedOutput = "";
 
-      runtime.setStdout({
-        batched: (text) => {
+
+      python.setStdout({
+
+        batched: function(text) {
+
           capturedOutput += text;
+
         }
+
       });
 
-      runtime.setStderr({
-        batched: (text) => {
+
+      python.setStderr({
+
+        batched: function(text) {
+
           capturedOutput += text;
+
         }
+
       });
 
-      await runtime.runPythonAsync(code);
 
-      if (capturedOutput.trim() === "") {
+      /*
+       * Run the student's code.
+       */
+
+      await python.runPythonAsync(
+        code
+      );
+
+
+      /*
+       * Display the result.
+       */
+
+      if (
+        capturedOutput.trim() === ""
+      ) {
 
         output.textContent =
           "Program finished without producing output.";
@@ -2002,80 +2368,147 @@ if number > 10:
 
       }
 
+
       status.textContent =
         "Python ready";
 
+
     } catch (error) {
 
-      output.classList.add("error");
+      /*
+       * Show Python errors directly
+       * so students can learn from them.
+       */
+
+      output.classList.add(
+        "error"
+      );
+
 
       output.textContent =
         error.toString();
 
+
       status.textContent =
         "Error — debug your code";
+
+    } finally {
+
+      /*
+       * Restore button.
+       */
+
+      runButton.disabled = false;
+
+      runButton.textContent =
+        "Run";
 
     }
 
   }
 
 
-  /* =========================================
+  /* =====================================================
      RESET
-  ========================================== */
+  ===================================================== */
 
   function resetPython(button) {
 
     const container =
-      button.closest(".python-example");
+      button.closest(
+        ".python-example"
+      );
+
 
     const editor =
-      container.querySelector(".code-editor");
+      container.querySelector(
+        ".code-editor"
+      );
+
 
     const output =
-      container.querySelector(".output-box");
+      container.querySelector(
+        ".output-box"
+      );
+
 
     const status =
-      container.querySelector(".python-status");
+      container.querySelector(
+        ".python-status"
+      );
+
+
+    /*
+     * Restore original code.
+     */
 
     editor.value =
       editor.defaultValue;
 
-    resizeEditor(editor);
 
-    output.classList.remove("error");
+    /*
+     * Resize editor.
+     */
+
+    resizeEditor(
+      editor
+    );
+
+
+    /*
+     * Clear output.
+     */
+
+    output.classList.remove(
+      "error"
+    );
+
 
     output.textContent =
-      "Click Run to execute the program.";
+      pyodide
+        ? "Click Run to execute the program."
+        : "Python is loading...";
+
 
     status.textContent =
-      "Python ready";
+      pyodide
+        ? "Python ready"
+        : "Loading Python...";
 
   }
 
 
-  /* =========================================
-     INITIALIZE
-  ========================================== */
+  /* =====================================================
+     PAGE INITIALIZATION
+  ===================================================== */
 
   document.addEventListener(
     "DOMContentLoaded",
-    async function () {
+    function() {
+
+      /*
+       * Set up all editors.
+       */
 
       setupEditors();
 
-      try {
-        await loadPyodideRuntime();
-      } catch (error) {
 
-        document
-          .querySelectorAll(".python-status")
-          .forEach(el => {
-            el.textContent =
-              "Python could not be loaded";
-          });
+      /*
+       * Begin loading Pyodide ONCE.
+       *
+       * It loads in the background while
+       * students can read the lesson.
+       */
 
-      }
+      initializePython()
+        .catch(function(error) {
+
+          console.error(
+            "Unable to initialize Python:",
+            error
+          );
+
+        });
 
     }
   );
