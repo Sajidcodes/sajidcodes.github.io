@@ -20,8 +20,8 @@
       --accent-light: #eef3ff;
       --code-bg: #111827;
       --code-text: #f5f7fa;
-      --success: #18794e;
-      --error: #b42318;
+      --output-bg: #f5f5f1;
+      --danger: #b42318;
       --max-width: 1050px;
     }
 
@@ -48,19 +48,17 @@
       line-height: 1.7;
     }
 
-    /* =========================
-       HEADER
-    ========================= */
-
     header {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
       padding: 64px 20px 52px;
     }
 
-    .header-inner {
+    .header-inner,
+    main,
+    footer {
       max-width: var(--max-width);
-      margin: auto;
+      margin: 0 auto;
     }
 
     .eyebrow {
@@ -86,13 +84,7 @@
       font-size: 1.12rem;
     }
 
-    /* =========================
-       MAIN
-    ========================= */
-
     main {
-      max-width: var(--max-width);
-      margin: auto;
       padding: 48px 20px 80px;
     }
 
@@ -131,10 +123,6 @@
       margin: 6px 0;
     }
 
-    /* =========================
-       CARDS
-    ========================= */
-
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -172,10 +160,6 @@
       border-radius: 8px;
     }
 
-    /* =========================
-       CODE
-    ========================= */
-
     code {
       background: #eeeeea;
       padding: 2px 6px;
@@ -207,10 +191,6 @@
       padding: 0;
     }
 
-    /* =========================
-       DIAGRAMS
-    ========================= */
-
     .diagram {
       margin: 20px 0;
       padding: 20px;
@@ -229,32 +209,33 @@
       line-height: 1.7;
     }
 
-    /* =========================
-       PYTHON PLAYGROUND
-    ========================= */
+    /* =====================================================
+       INTERACTIVE PYTHON EXAMPLES
+    ===================================================== */
 
-    .playground {
-      margin-top: 30px;
+    .python-example {
+      margin: 24px 0 30px;
       border: 1px solid var(--border);
       border-radius: 14px;
-      overflow: hidden;
       background: var(--surface);
+      overflow: hidden;
     }
 
-    .playground-header {
-      padding: 16px 20px;
+    .python-example-title {
+      padding: 15px 18px;
       border-bottom: 1px solid var(--border);
       font-weight: 700;
+      background: #fafaf7;
     }
 
-    .editor {
+    .python-editor {
       width: 100%;
-      min-height: 230px;
+      min-height: 150px;
       display: block;
       resize: vertical;
       border: 0;
       outline: none;
-      padding: 20px;
+      padding: 18px;
       background: var(--code-bg);
       color: var(--code-text);
       font-family:
@@ -266,50 +247,67 @@
         monospace;
       font-size: 14px;
       line-height: 1.6;
+      tab-size: 4;
     }
 
-    .controls {
+    .python-controls {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 14px 16px;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 12px 14px;
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
     }
 
-    button {
+    .run-button,
+    .reset-button {
       border: 0;
       border-radius: 8px;
-      padding: 10px 17px;
+      padding: 9px 15px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+
+    .run-button {
       background: var(--accent);
       color: white;
-      font-weight: 700;
-      cursor: pointer;
     }
 
-    button:hover {
-      opacity: 0.9;
+    .reset-button {
+      background: #e9e9e4;
+      color: var(--text);
     }
 
-    button:disabled {
+    .run-button:hover,
+    .reset-button:hover {
+      opacity: 0.88;
+    }
+
+    .run-button:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
 
-    .status {
+    .python-status {
+      margin-left: auto;
       color: var(--muted);
-      font-size: 0.9rem;
+      font-size: 0.82rem;
     }
 
     .output-label {
-      padding: 12px 16px 0;
+      padding: 11px 16px 5px;
+      font-size: 0.8rem;
       font-weight: 700;
-      font-size: 0.9rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
     }
 
-    .output {
-      min-height: 70px;
-      padding: 14px 16px 18px;
+    .python-output {
+      min-height: 58px;
+      padding: 10px 16px 18px;
       white-space: pre-wrap;
       font-family:
         ui-monospace,
@@ -318,25 +316,27 @@
         Monaco,
         Consolas,
         monospace;
-      background: #f7f7f4;
-      color: var(--text);
+      font-size: 0.88rem;
+      background: var(--output-bg);
     }
 
-    /* =========================
+    .python-output.error {
+      color: var(--danger);
+    }
+
+    .playground-intro {
+      margin-bottom: 22px;
+    }
+
+    /* =====================================================
        FOOTER
-    ========================= */
+    ===================================================== */
 
     footer {
-      max-width: var(--max-width);
-      margin: auto;
       padding: 0 20px 50px;
       color: var(--muted);
       font-size: 0.9rem;
     }
-
-    /* =========================
-       MOBILE
-    ========================= */
 
     @media (max-width: 700px) {
       header {
@@ -359,8 +359,13 @@
         padding: 18px;
       }
 
-      pre {
-        font-size: 0.84rem;
+      .python-status {
+        width: 100%;
+        margin-left: 0;
+      }
+
+      .python-editor {
+        font-size: 13px;
       }
     }
   </style>
@@ -368,204 +373,303 @@
 
 <body>
 
-  <!-- =========================
-       HEADER
-  ========================== -->
+<header>
+  <div class="header-inner">
 
-  <header>
-    <div class="header-inner">
-
-      <div class="eyebrow">
-        Python Programming
-      </div>
-
-      <h1>
-        0. Foundations of Programming
-      </h1>
-
-      <p class="subtitle">
-        Before writing significant Python programs, learn what programming is,
-        how programs work, and how programmers approach problems.
-      </p>
-
+    <div class="eyebrow">
+      Python Programming
     </div>
-  </header>
+
+    <h1>
+      0. Foundations of Programming
+    </h1>
+
+    <p class="subtitle">
+      Before writing significant Python programs, learn what programming is,
+      how programs work, and how programmers approach problems.
+    </p>
+
+  </div>
+</header>
 
 
-  <!-- =========================
-       MAIN CONTENT
-  ========================== -->
+<main>
 
-  <main>
+<!-- =====================================================
+     0.1 WHAT IS PROGRAMMING?
+====================================================== -->
 
-    <!-- =====================================================
-         0.1 WHAT IS PROGRAMMING?
-    ====================================================== -->
+<section>
 
-    <section>
-
-      <h2>
-        0.1 What Is Programming?
-      </h2>
+  <h2>
+    0.1 What Is Programming?
+  </h2>
 
 
-      <!-- 1 -->
-      <h3>
-        1. What Is a Computer Program?
-      </h3>
+  <!-- =================================================
+       1. COMPUTER PROGRAM
+  ================================================== -->
 
-      <div class="beginner">
-        <strong>Beginner idea:</strong>
-        A <strong>computer program</strong> is a set of instructions
-        that tells a computer what to do.
-      </div>
+  <h3>
+    1. What Is a Computer Program?
+  </h3>
 
-      <p>
-        Think of a program like a recipe.
-      </p>
+  <div class="beginner">
+    <strong>Beginner idea:</strong>
+    A <strong>computer program</strong> is a set of instructions
+    that tells a computer what to do.
+  </div>
 
-      <ol>
-        <li>Get two eggs.</li>
-        <li>Crack the eggs.</li>
-        <li>Mix them.</li>
-        <li>Cook them.</li>
-      </ol>
+  <p>
+    Think of a program like a recipe.
+  </p>
 
-      <p>
-        A computer program does something similar:
-      </p>
+  <ol>
+    <li>Get two eggs.</li>
+    <li>Crack the eggs.</li>
+    <li>Mix them.</li>
+    <li>Cook them.</li>
+  </ol>
 
-      <ol>
-        <li>Get some information.</li>
-        <li>Process the information.</li>
-        <li>Produce a result.</li>
-      </ol>
+  <p>
+    A computer program does something similar:
+  </p>
+
+  <ol>
+    <li>Get some information.</li>
+    <li>Process the information.</li>
+    <li>Produce a result.</li>
+  </ol>
 
 
-      <h4>
-        Example — Calculator
-      </h4>
+  <h4>
+    Example — Calculator
+  </h4>
 
-      <div class="diagram">Get 10
+  <div class="diagram">Get 10
 Get 5
 Add them
 Display 15</div>
 
 
-      <h4>
-        Example — Login System
-      </h4>
+  <p>
+    Here is what that idea looks like as Python:
+  </p>
 
-      <div class="diagram">Ask for username
+  <div class="python-example">
+
+    <div class="python-example-title">
+      Try It — Calculator
+    </div>
+
+    <textarea class="python-editor">x = 10
+y = 5
+
+result = x + y
+
+print(result)</textarea>
+
+    <div class="python-controls">
+
+      <button class="run-button">
+        ▶ Run Python
+      </button>
+
+      <button class="reset-button">
+        Reset
+      </button>
+
+      <span class="python-status">
+        Ready
+      </span>
+
+    </div>
+
+    <div class="output-label">
+      Output
+    </div>
+
+    <div class="python-output">
+      Click "Run Python".
+    </div>
+
+  </div>
+
+
+  <h4>
+    Example — Login System
+  </h4>
+
+  <div class="diagram">Ask for username
 Ask for password
 Check the information
 If correct → allow access
 If incorrect → show an error</div>
 
 
-      <div class="key-point">
+  <div class="python-example">
 
-        <strong>Students should be able to:</strong>
+    <div class="python-example-title">
+      Try It — Simple Login
+    </div>
 
-        <ul>
-          <li>Define a computer program.</li>
-          <li>Explain why computers need instructions.</li>
-          <li>Identify programs they use every day.</li>
-        </ul>
+    <textarea class="python-editor">username = "student"
+password = "python123"
 
-      </div>
+if username == "student" and password == "python123":
+    print("Login successful")
+else:
+    print("Login failed")</textarea>
 
+    <div class="python-controls">
 
-      <!-- 2 -->
-      <h3>
-        2. Programming Languages
-      </h3>
+      <button class="run-button">
+        ▶ Run Python
+      </button>
 
-      <div class="beginner">
+      <button class="reset-button">
+        Reset
+      </button>
 
-        <strong>Beginner idea:</strong>
+      <span class="python-status">
+        Ready
+      </span>
 
-        A <strong>programming language</strong> is a language
-        humans use to give instructions to computers.
+    </div>
 
-      </div>
+    <div class="output-label">
+      Output
+    </div>
 
-      <p>
-        Just as humans communicate using different languages,
-        programmers use programming languages such as:
-      </p>
+    <div class="python-output">
+      Click "Run Python".
+    </div>
 
-      <ul>
-        <li>Python</li>
-        <li>Java</li>
-        <li>C++</li>
-        <li>JavaScript</li>
-        <li>C#</li>
-        <li>Go</li>
-      </ul>
-
-      <p>
-        Different programming languages have different rules
-        and purposes.
-      </p>
+  </div>
 
 
-      <h4>
-        Example — Python
-      </h4>
+  <div class="key-point">
 
-      <pre><code>print("Hello, world!")</code></pre>
+    <strong>Students should be able to:</strong>
 
-      <p>
-        This tells Python to display:
-      </p>
+    <ul>
+      <li>Define a computer program.</li>
+      <li>Explain why computers need instructions.</li>
+      <li>Identify programs they use every day.</li>
+    </ul>
 
-      <pre><code>Hello, world!</code></pre>
-
-
-      <h4>
-        Example — JavaScript
-      </h4>
-
-      <pre><code>console.log("Hello, world!");</code></pre>
-
-      <p>
-        Both programs accomplish a similar task, but they use
-        different programming languages.
-      </p>
+  </div>
 
 
-      <div class="key-point">
+  <!-- =================================================
+       2. PROGRAMMING LANGUAGES
+  ================================================== -->
 
-        <strong>Students should be able to:</strong>
+  <h3>
+    2. Programming Languages
+  </h3>
 
-        <ul>
-          <li>Define a programming language.</li>
-          <li>Name several programming languages.</li>
-          <li>Recognize Python as a programming language.</li>
-        </ul>
+  <div class="beginner">
 
-      </div>
+    <strong>Beginner idea:</strong>
+
+    A <strong>programming language</strong> is a language
+    humans use to give instructions to computers.
+
+  </div>
+
+  <p>
+    Programmers use languages such as:
+  </p>
+
+  <ul>
+    <li>Python</li>
+    <li>Java</li>
+    <li>C++</li>
+    <li>JavaScript</li>
+    <li>C#</li>
+    <li>Go</li>
+  </ul>
+
+  <p>
+    Different programming languages have different rules
+    and purposes.
+  </p>
 
 
-      <!-- 3 -->
-      <h3>
-        3. Source Code vs. Machine Code
-      </h3>
+  <h4>
+    Example — Python
+  </h4>
 
-      <div class="beginner">
+  <div class="python-example">
 
-        <strong>Beginner idea:</strong>
+    <div class="python-example-title">
+      Try It — Your First Python Program
+    </div>
 
-        <strong>Source code</strong> is the code programmers write.
+    <textarea class="python-editor">print("Hello, world!")</textarea>
 
-        <strong>Machine code</strong> is low-level code that
-        the computer's processor can execute.
+    <div class="python-controls">
 
-      </div>
+      <button class="run-button">
+        ▶ Run Python
+      </button>
+
+      <button class="reset-button">
+        Reset
+      </button>
+
+      <span class="python-status">
+        Ready
+      </span>
+
+    </div>
+
+    <div class="output-label">
+      Output
+    </div>
+
+    <div class="python-output">
+      Click "Run Python".
+    </div>
+
+  </div>
 
 
-      <div class="diagram">Human
+  <div class="key-point">
+
+    <strong>Students should be able to:</strong>
+
+    <ul>
+      <li>Define a programming language.</li>
+      <li>Name several programming languages.</li>
+      <li>Recognize Python as a programming language.</li>
+    </ul>
+
+  </div>
+
+
+  <!-- =================================================
+       3. SOURCE CODE
+  ================================================== -->
+
+  <h3>
+    3. Source Code vs. Machine Code
+  </h3>
+
+  <div class="beginner">
+
+    <strong>Beginner idea:</strong>
+
+    <strong>Source code</strong> is the code programmers write.
+
+    <strong>Machine code</strong> is low-level code that
+    the computer's processor can execute.
+
+  </div>
+
+
+  <div class="diagram">Human
    ↓
 Python source code
    ↓
@@ -576,59 +680,118 @@ Machine-level instructions
 Computer</div>
 
 
-      <h4>
-        Example
-      </h4>
+  <h4>
+    Example
+  </h4>
 
-      <pre><code>x = 10
-print(x)</code></pre>
+  <div class="python-example">
 
-      <p>
-        This is source code. Python processes your code into
-        instructions that the computer can ultimately execute.
-      </p>
+    <div class="python-example-title">
+      Try It — Source Code
+    </div>
 
+    <textarea class="python-editor">x = 10
 
-      <h4>
-        Another Example
-      </h4>
+print(x)</textarea>
 
-      <pre><code>2 + 3</code></pre>
+    <div class="python-controls">
 
-      <p>
-        You understand this as "add 2 and 3."
-        At the lowest level, the processor works with machine
-        instructions represented as binary data.
-      </p>
+      <button class="run-button">
+        ▶ Run Python
+      </button>
 
+      <button class="reset-button">
+        Reset
+      </button>
 
-      <div class="important">
+      <span class="python-status">
+        Ready
+      </span>
 
-        <strong>Key idea:</strong>
+    </div>
 
-        Source code is written by programmers, while machine code
-        consists of instructions the computer's processor can execute.
+    <div class="output-label">
+      Output
+    </div>
 
-      </div>
+    <div class="python-output">
+      Click "Run Python".
+    </div>
 
-
-      <!-- 4 -->
-      <h3>
-        4. Interpreters vs. Compilers
-      </h3>
-
-      <div class="beginner">
-
-        <strong>Beginner idea:</strong>
-
-        Both <strong>interpreters</strong> and
-        <strong>compilers</strong> help translate programming
-        languages into something the computer can execute.
-
-      </div>
+  </div>
 
 
-      <div class="diagram">Interpreter:
+  <h4>
+    Another Example
+  </h4>
+
+  <div class="python-example">
+
+    <div class="python-example-title">
+      Try It — Expression
+    </div>
+
+    <textarea class="python-editor">result = 2 + 3
+
+print(result)</textarea>
+
+    <div class="python-controls">
+
+      <button class="run-button">
+        ▶ Run Python
+      </button>
+
+      <button class="reset-button">
+        Reset
+      </button>
+
+      <span class="python-status">
+        Ready
+      </span>
+
+    </div>
+
+    <div class="output-label">
+      Output
+    </div>
+
+    <div class="python-output">
+      Click "Run Python".
+    </div>
+
+  </div>
+
+
+  <div class="important">
+
+    <strong>Key idea:</strong>
+
+    Source code is written by programmers, while machine code
+    consists of instructions the computer's processor can execute.
+
+  </div>
+
+
+  <!-- =================================================
+       4. INTERPRETERS
+  ================================================== -->
+
+  <h3>
+    4. Interpreters vs. Compilers
+  </h3>
+
+  <div class="beginner">
+
+    <strong>Beginner idea:</strong>
+
+    Both <strong>interpreters</strong> and
+    <strong>compilers</strong> help translate programming
+    languages into something the computer can execute.
+
+  </div>
+
+
+  <div class="diagram">Interpreter:
 
 Code → Process / execute
 
@@ -638,86 +801,79 @@ Compiler:
 Code → Translate → Executable / program → Run</div>
 
 
-      <p>
-        Python is commonly described as an interpreted language
-        because Python programs are executed through the
-        Python interpreter.
-      </p>
+  <p>
+    Python is commonly described as an interpreted language
+    because Python programs are executed through the Python interpreter.
+  </p>
 
 
-      <h4>
-        Example — Python
-      </h4>
+  <h4>
+    Python Example
+  </h4>
 
-      <pre><code>print("Hello")</code></pre>
+  <div class="python-example">
 
-      <p>
-        You can run the file with:
-      </p>
+    <div class="python-example-title">
+      Try It — Python Interpreter
+    </div>
 
-      <pre><code>python hello.py</code></pre>
+    <textarea class="python-editor">message = "Hello"
 
+print(message)</textarea>
 
-      <h4>
-        Example — Compiled Language
-      </h4>
+    <div class="python-controls">
 
-      <div class="diagram">C source code
-      ↓
-Compiler
-      ↓
-Machine / executable code
-      ↓
-Run program</div>
+      <button class="run-button">
+        ▶ Run Python
+      </button>
 
+      <button class="reset-button">
+        Reset
+      </button>
 
-      <div class="important">
+      <span class="python-status">
+        Ready
+      </span>
 
-        <strong>Keep it simple for now:</strong>
+    </div>
 
-        Do not worry about complicated implementation details yet.
-        Focus on understanding the basic difference between
-        interpreting and compiling.
+    <div class="output-label">
+      Output
+    </div>
 
-      </div>
+    <div class="python-output">
+      Click "Run Python".
+    </div>
 
-
-      <div class="key-point">
-
-        <strong>Students should be able to:</strong>
-
-        <ul>
-          <li>
-            Explain the basic difference between an interpreter
-            and a compiler.
-          </li>
-
-          <li>
-            Identify the Python interpreter as the program
-            that executes Python code.
-          </li>
-        </ul>
-
-      </div>
+  </div>
 
 
-      <!-- 5 -->
-      <h3>
-        5. What Happens When You Run Python?
-      </h3>
+  <div class="important">
 
-      <p>
-        When you run:
-      </p>
+    <strong>Keep it simple for now:</strong>
 
-      <pre><code>print("Hello")</code></pre>
+    Focus on understanding the basic difference between
+    interpreting and compiling. You do not need to memorize
+    complicated implementation details yet.
+
+  </div>
 
 
-      <p>
-        a simplified process is:
-      </p>
+  <!-- =================================================
+       5. RUNNING PYTHON
+  ================================================== -->
 
-      <div class="diagram">You write Python code
+  <h3>
+    5. What Happens When You Run Python?
+  </h3>
+
+  <p>
+    When you run Python code, Python reads and processes
+    the instructions before executing them.
+  </p>
+
+
+  <div class="diagram">You write Python code
         ↓
 Python interpreter reads the code
         ↓
@@ -725,247 +881,541 @@ Python checks the code
         ↓
 Python executes the instructions
         ↓
-Computer displays:
-
-Hello</div>
+Computer displays the result</div>
 
 
-      <h4>
-        Example
-      </h4>
+  <h4>
+    Example
+  </h4>
 
-      <pre><code>x = 10
+  <div class="python-example">
+
+    <div class="python-example-title">
+      Try It — Variables and Output
+    </div>
+
+    <textarea class="python-editor">x = 10
 y = 20
-print(x + y)</code></pre>
+
+print(x + y)</textarea>
+
+    <div class="python-controls">
+
+      <button class="run-button">
+        ▶ Run Python
+      </button>
+
+      <button class="reset-button">
+        Reset
+      </button>
+
+      <span class="python-status">
+        Ready
+      </span>
+
+    </div>
+
+    <div class="output-label">
+      Output
+    </div>
+
+    <div class="python-output">
+      Click "Run Python".
+    </div>
+
+  </div>
 
 
-      <p>
-        The program:
-      </p>
+  <h4>
+    Another Example
+  </h4>
 
-      <ol>
-        <li>Creates <code>x</code>.</li>
-        <li>Stores <code>10</code>.</li>
-        <li>Creates <code>y</code>.</li>
-        <li>Stores <code>20</code>.</li>
-        <li>Adds them.</li>
-        <li>Displays <code>30</code>.</li>
-      </ol>
+  <div class="python-example">
 
+    <div class="python-example-title">
+      Try It — Variables and Strings
+    </div>
 
-      <h4>
-        Example
-      </h4>
+    <textarea class="python-editor">name = "Sajid"
 
-      <pre><code>name = "Sajid"
-print("Hello", name)</code></pre>
+print("Hello", name)</textarea>
 
+    <div class="python-controls">
 
-      <p>
-        Output:
-      </p>
+      <button class="run-button">
+        ▶ Run Python
+      </button>
 
-      <pre><code>Hello Sajid</code></pre>
+      <button class="reset-button">
+        Reset
+      </button>
 
+      <span class="python-status">
+        Ready
+      </span>
 
-      <div class="key-point">
+    </div>
 
-        <strong>Students should be able to:</strong>
+    <div class="output-label">
+      Output
+    </div>
 
-        Describe what generally happens when a Python program runs.
+    <div class="python-output">
+      Click "Run Python".
+    </div>
 
-      </div>
-
-
-      <!-- 6 -->
-      <h3>
-        6. Algorithms and Instructions
-      </h3>
-
-      <div class="beginner">
-
-        An <strong>algorithm</strong> is a sequence of steps
-        used to solve a problem.
-
-      </div>
+  </div>
 
 
-      <p>
-        You already use algorithms in everyday life.
-      </p>
+  <div class="key-point">
+
+    <strong>Students should be able to:</strong>
+
+    Describe what generally happens when a Python program runs.
+
+  </div>
 
 
-      <h4>
-        Example — Making Toast
-      </h4>
+  <!-- =================================================
+       6. ALGORITHMS
+  ================================================== -->
 
-      <ol>
-        <li>Get bread.</li>
-        <li>Put bread in toaster.</li>
-        <li>Start toaster.</li>
-        <li>Wait.</li>
-        <li>Remove toast.</li>
-      </ol>
+  <h3>
+    6. Algorithms and Instructions
+  </h3>
 
+  <div class="beginner">
 
-      <h4>
-        Example — Finding the Largest Number
-      </h4>
+    An <strong>algorithm</strong> is a sequence of steps
+    used to solve a problem.
 
-      <p>
-        Suppose we have:
-      </p>
-
-      <pre><code>5, 12, 7</code></pre>
+  </div>
 
 
-      <ol>
-        <li>Start with 5 as the largest.</li>
-        <li>Compare 12 with 5.</li>
-        <li>12 is larger → largest = 12.</li>
-        <li>Compare 7 with 12.</li>
-        <li>7 is not larger.</li>
-        <li>Answer = 12.</li>
-      </ol>
+  <p>
+    You already use algorithms in everyday life.
+  </p>
 
 
-      <div class="key-point">
+  <h4>
+    Example — Making Toast
+  </h4>
 
-        <strong>Students should be able to:</strong>
-
-        <ul>
-          <li>Explain what an algorithm is.</li>
-          <li>Create simple step-by-step instructions.</li>
-          <li>Apply an algorithm to a simple problem.</li>
-        </ul>
-
-      </div>
-
-
-      <!-- 7 -->
-      <h3>
-        7. Syntax vs. Logic
-      </h3>
-
-      <p>
-        This distinction is very important for beginners.
-      </p>
+  <ol>
+    <li>Get bread.</li>
+    <li>Put bread in toaster.</li>
+    <li>Start toaster.</li>
+    <li>Wait.</li>
+    <li>Remove toast.</li>
+  </ol>
 
 
-      <h4>
-        Syntax
-      </h4>
+  <h4>
+    Example — Finding the Largest Number
+  </h4>
 
-      <p>
-        <strong>Syntax</strong> means the rules for writing
-        code correctly.
-      </p>
+  <p>
+    Suppose we have:
+  </p>
 
-
-      <p>
-        Correct:
-      </p>
-
-      <pre><code>print("Hello")</code></pre>
+  <pre><code>5, 12, 7</code></pre>
 
 
-      <p>
-        Incorrect:
-      </p>
-
-      <pre><code>print("Hello"</code></pre>
-
-
-      <p>
-        The closing <code>)</code> is missing.
-      </p>
+  <ol>
+    <li>Start with 5 as the largest.</li>
+    <li>Compare 12 with 5.</li>
+    <li>12 is larger → largest = 12.</li>
+    <li>Compare 7 with 12.</li>
+    <li>7 is not larger.</li>
+    <li>Answer = 12.</li>
+  </ol>
 
 
-      <h4>
-        Logic
-      </h4>
-
-      <p>
-        <strong>Logic</strong> is whether your program does
-        the correct thing.
-      </p>
+  <p>
+    We can turn that algorithm into Python:
+  </p>
 
 
-      <pre><code>age = 20
+  <div class="python-example">
+
+    <div class="python-example-title">
+      Try It — Finding the Largest Number
+    </div>
+
+    <textarea class="python-editor">numbers = [5, 12, 7]
+
+largest = numbers[0]
+
+for number in numbers:
+    if number > largest:
+        largest = number
+
+print("Largest:", largest)</textarea>
+
+    <div class="python-controls">
+
+      <button class="run-button">
+        ▶ Run Python
+      </button>
+
+      <button class="reset-button">
+        Reset
+      </button>
+
+      <span class="python-status">
+        Ready
+      </span>
+
+    </div>
+
+    <div class="output-label">
+      Output
+    </div>
+
+    <div class="python-output">
+      Click "Run Python".
+    </div>
+
+  </div>
+
+
+  <div class="key-point">
+
+    <strong>Students should be able to:</strong>
+
+    <ul>
+      <li>Explain what an algorithm is.</li>
+      <li>Create simple step-by-step instructions.</li>
+      <li>Apply an algorithm to a simple problem.</li>
+    </ul>
+
+  </div>
+
+
+  <!-- =================================================
+       7. SYNTAX VS LOGIC
+  ================================================== -->
+
+  <h3>
+    7. Syntax vs. Logic
+  </h3>
+
+  <p>
+    This distinction is very important for beginners.
+  </p>
+
+
+  <h4>
+    Syntax
+  </h4>
+
+  <p>
+    <strong>Syntax</strong> means the rules for writing
+    code correctly.
+  </p>
+
+
+  <h4>
+    Correct Syntax
+  </h4>
+
+  <div class="python-example">
+
+    <div class="python-example-title">
+      Try It — Correct Syntax
+    </div>
+
+    <textarea class="python-editor">print("Hello")</textarea>
+
+    <div class="python-controls">
+
+      <button class="run-button">
+        ▶ Run Python
+      </button>
+
+      <button class="reset-button">
+        Reset
+      </button>
+
+      <span class="python-status">
+        Ready
+      </span>
+
+    </div>
+
+    <div class="output-label">
+      Output
+    </div>
+
+    <div class="python-output">
+      Click "Run Python".
+    </div>
+
+  </div>
+
+
+  <h4>
+    Syntax Error
+  </h4>
+
+  <div class="python-example">
+
+    <div class="python-example-title">
+      Try It — What Happens When Syntax Is Wrong?
+    </div>
+
+    <textarea class="python-editor">print("Hello"</textarea>
+
+    <div class="python-controls">
+
+      <button class="run-button">
+        ▶ Run Python
+      </button>
+
+      <button class="reset-button">
+        Reset
+      </button>
+
+      <span class="python-status">
+        Ready
+      </span>
+
+    </div>
+
+    <div class="output-label">
+      Output
+    </div>
+
+    <div class="python-output">
+      Click "Run Python".
+    </div>
+
+  </div>
+
+
+  <h4>
+    Logic
+  </h4>
+
+  <p>
+    <strong>Logic</strong> is whether your program does
+    the correct thing.
+  </p>
+
+
+  <h4>
+    Logic Error Example
+  </h4>
+
+  <div class="python-example">
+
+    <div class="python-example-title">
+      Try It — Logic Error
+    </div>
+
+    <textarea class="python-editor">age = 20
 
 if age > 21:
-    print("Allowed")</code></pre>
+    print("Allowed")
+else:
+    print("Not allowed")</textarea>
+
+    <div class="python-controls">
+
+      <button class="run-button">
+        ▶ Run Python
+      </button>
+
+      <button class="reset-button">
+        Reset
+      </button>
+
+      <span class="python-status">
+        Ready
+      </span>
+
+    </div>
+
+    <div class="output-label">
+      Output
+    </div>
+
+    <div class="python-output">
+      Click "Run Python".
+    </div>
+
+  </div>
 
 
-      <p>
-        The code may be syntactically correct.
-        But if your intended rule was "21 or older,"
-        the logic is wrong.
-      </p>
+  <p>
+    If the intended rule was "21 or older", the condition
+    should be:
+  </p>
 
 
-      <p>
-        Correct:
-      </p>
+  <div class="python-example">
 
-      <pre><code>if age >= 21:
-    print("Allowed")</code></pre>
+    <div class="python-example-title">
+      Try It — Correct Logic
+    </div>
+
+    <textarea class="python-editor">age = 20
+
+if age >= 21:
+    print("Allowed")
+else:
+    print("Not allowed")</textarea>
+
+    <div class="python-controls">
+
+      <button class="run-button">
+        ▶ Run Python
+      </button>
+
+      <button class="reset-button">
+        Reset
+      </button>
+
+      <span class="python-status">
+        Ready
+      </span>
+
+    </div>
+
+    <div class="output-label">
+      Output
+    </div>
+
+    <div class="python-output">
+      Click "Run Python".
+    </div>
+
+  </div>
 
 
-      <h4>
-        Logic Example
-      </h4>
+  <h4>
+    Another Logic Error
+  </h4>
 
-      <pre><code>price = 100
+  <div class="python-example">
+
+    <div class="python-example-title">
+      Try It — Incorrect Calculation
+    </div>
+
+    <textarea class="python-editor">price = 100
 discount = 10
 
-final_price = price + discount</code></pre>
+final_price = price + discount
+
+print(final_price)</textarea>
+
+    <div class="python-controls">
+
+      <button class="run-button">
+        ▶ Run Python
+      </button>
+
+      <button class="reset-button">
+        Reset
+      </button>
+
+      <span class="python-status">
+        Ready
+      </span>
+
+    </div>
+
+    <div class="output-label">
+      Output
+    </div>
+
+    <div class="python-output">
+      Click "Run Python".
+    </div>
+
+  </div>
 
 
-      <p>
-        The code may run, but the logic is wrong if the
-        discount should be subtracted.
-      </p>
+  <p>
+    Correct:
+  </p>
 
 
-      <p>
-        Correct:
-      </p>
+  <div class="python-example">
 
-      <pre><code>final_price = price - discount</code></pre>
+    <div class="python-example-title">
+      Try It — Correct Calculation
+    </div>
+
+    <textarea class="python-editor">price = 100
+discount = 10
+
+final_price = price - discount
+
+print(final_price)</textarea>
+
+    <div class="python-controls">
+
+      <button class="run-button">
+        ▶ Run Python
+      </button>
+
+      <button class="reset-button">
+        Reset
+      </button>
+
+      <span class="python-status">
+        Ready
+      </span>
+
+    </div>
+
+    <div class="output-label">
+      Output
+    </div>
+
+    <div class="python-output">
+      Click "Run Python".
+    </div>
+
+  </div>
 
 
-      <div class="important">
+  <div class="important">
 
-        <strong>Remember:</strong>
+    <strong>Remember:</strong>
 
-        <br><br>
+    <br><br>
 
-        Syntax = Is the code written correctly?
+    Syntax = Is the code written correctly?
 
-        <br>
+    <br>
 
-        Logic = Does the code do what we intended?
+    Logic = Does the code do what we intended?
 
-      </div>
-
-
-      <!-- 8 -->
-      <h3>
-        8. Bugs and Debugging
-      </h3>
-
-      <div class="beginner">
-
-        A <strong>bug</strong> is a problem or error in a program.
-
-        <strong>Debugging</strong> is the process of finding
-        and fixing bugs.
-
-      </div>
+  </div>
 
 
-      <div class="diagram">Program doesn't work
+  <!-- =================================================
+       8. BUGS
+  ================================================== -->
+
+  <h3>
+    8. Bugs and Debugging
+  </h3>
+
+  <div class="beginner">
+
+    A <strong>bug</strong> is a problem or error in a program.
+
+    <strong>Debugging</strong> is the process of finding
+    and fixing bugs.
+
+  </div>
+
+
+  <div class="diagram">Program doesn't work
         ↓
 Find the problem
         ↓
@@ -976,86 +1426,212 @@ Fix the problem
 Test again</div>
 
 
-      <h4>
-        Example — Syntax Bug
-      </h4>
+  <h4>
+    Syntax Bug
+  </h4>
 
-      <pre><code>print("Hello"</code></pre>
+  <div class="python-example">
+
+    <div class="python-example-title">
+      Debug It — Syntax Error
+    </div>
+
+    <textarea class="python-editor">print("Hello"</textarea>
+
+    <div class="python-controls">
+
+      <button class="run-button">
+        ▶ Run Python
+      </button>
+
+      <button class="reset-button">
+        Reset
+      </button>
+
+      <span class="python-status">
+        Ready
+      </span>
+
+    </div>
+
+    <div class="output-label">
+      Output
+    </div>
+
+    <div class="python-output">
+      Click "Run Python".
+    </div>
+
+  </div>
 
 
-      <p>
-        Fix:
-      </p>
-
-      <pre><code>print("Hello")</code></pre>
+  <p>
+    Fix the missing parenthesis:
+  </p>
 
 
-      <h4>
-        Example — Logic Bug
-      </h4>
+  <div class="python-example">
 
-      <pre><code>number = 10
+    <div class="python-example-title">
+      Debug It — Fixed Version
+    </div>
+
+    <textarea class="python-editor">print("Hello")</textarea>
+
+    <div class="python-controls">
+
+      <button class="run-button">
+        ▶ Run Python
+      </button>
+
+      <button class="reset-button">
+        Reset
+      </button>
+
+      <span class="python-status">
+        Ready
+      </span>
+
+    </div>
+
+    <div class="output-label">
+      Output
+    </div>
+
+    <div class="python-output">
+      Click "Run Python".
+    </div>
+
+  </div>
+
+
+  <h4>
+    Logic Bug
+  </h4>
+
+  <div class="python-example">
+
+    <div class="python-example-title">
+      Debug It — Logic Bug
+    </div>
+
+    <textarea class="python-editor">number = 10
 
 if number > 10:
-    print("Number is 10 or greater")</code></pre>
+    print("Number is 10 or greater")</textarea>
+
+    <div class="python-controls">
+
+      <button class="run-button">
+        ▶ Run Python
+      </button>
+
+      <button class="reset-button">
+        Reset
+      </button>
+
+      <span class="python-status">
+        Ready
+      </span>
+
+    </div>
+
+    <div class="output-label">
+      Output
+    </div>
+
+    <div class="python-output">
+      Click "Run Python".
+    </div>
+
+  </div>
 
 
-      <p>
-        Nothing prints because <code>10</code> is not greater
-        than <code>10</code>.
-      </p>
+  <p>
+    If the intended rule includes 10, fix it:
+  </p>
 
 
-      <p>
-        If the intended rule includes 10, fix it:
-      </p>
+  <div class="python-example">
 
-      <pre><code>if number >= 10:
-    print("Number is 10 or greater")</code></pre>
+    <div class="python-example-title">
+      Debug It — Fixed Logic
+    </div>
+
+    <textarea class="python-editor">number = 10
+
+if number >= 10:
+    print("Number is 10 or greater")</textarea>
+
+    <div class="python-controls">
+
+      <button class="run-button">
+        ▶ Run Python
+      </button>
+
+      <button class="reset-button">
+        Reset
+      </button>
+
+      <span class="python-status">
+        Ready
+      </span>
+
+    </div>
+
+    <div class="output-label">
+      Output
+    </div>
+
+    <div class="python-output">
+      Click "Run Python".
+    </div>
+
+  </div>
 
 
-      <div class="key-point">
+  <div class="key-point">
 
-        <strong>Students should be able to:</strong>
+    <strong>Students should be able to:</strong>
 
-        <ul>
-          <li>Identify a bug.</li>
-          <li>Explain why it happened.</li>
-          <li>Modify code to fix it.</li>
-          <li>Test the program again.</li>
-        </ul>
+    <ul>
+      <li>Identify a bug.</li>
+      <li>Explain why it happened.</li>
+      <li>Modify code to fix it.</li>
+      <li>Test the program again.</li>
+    </ul>
 
-      </div>
+  </div>
 
-    </section>
-
-
-    <!-- =====================================================
-         0.2 SOFTWARE DEVELOPMENT PROCESS
-    ====================================================== -->
-
-    <section>
-
-      <h2>
-        0.2 The Software Development Process
-      </h2>
+</section>
 
 
-      <p>
-        Programming isn't simply:
-      </p>
+<!-- =====================================================
+     0.2 SOFTWARE DEVELOPMENT PROCESS
+====================================================== -->
 
-      <div class="diagram">
+<section>
+
+  <h2>
+    0.2 The Software Development Process
+  </h2>
+
+
+  <p>
+    Programming isn't simply:
+  </p>
+
+  <div class="diagram">
 Open Python → Start typing
-      </div>
+  </div>
 
 
-      <p>
-        Professional programming follows a process.
-      </p>
+  <p>
+    Professional programming follows a process.
+  </p>
 
 
-      <div class="diagram">Problem
+  <div class="diagram">Problem
    ↓
 Requirements
    ↓
@@ -1074,216 +1650,311 @@ Documentation
 Maintenance</div>
 
 
-      <!-- 1 -->
-      <h3>
-        1. Problem Definition
-      </h3>
+  <!-- =================================================
+       1. PROBLEM DEFINITION
+  ================================================== -->
 
-      <p>
-        First, determine <strong>what problem you are trying
-        to solve</strong>.
-      </p>
+  <h3>
+    1. Problem Definition
+  </h3>
 
+  <p>
+    First, determine <strong>what problem you are trying
+    to solve</strong>.
+  </p>
 
-      <p>
-        Don't immediately write code.
-      </p>
+  <p>
+    Don't immediately write code.
+  </p>
 
 
-      <h4>
-        Example — Grade Calculator
-      </h4>
+  <h4>
+    Example — Grade Calculator
+  </h4>
 
-      <div class="card">
+  <div class="card">
 
-        Students need a program that calculates
-        their final grade.
+    Students need a program that calculates
+    their final grade.
 
-      </div>
+  </div>
 
 
-      <h4>
-        Example — Temperature Converter
-      </h4>
+  <h4>
+    Example — Temperature Converter
+  </h4>
 
-      <div class="card">
+  <div class="card">
 
-        Users need a program that converts Fahrenheit
-        temperatures to Celsius.
+    Users need a program that converts Fahrenheit
+    temperatures to Celsius.
 
-      </div>
+  </div>
 
 
-      <div class="key-point">
+  <div class="key-point">
 
-        <strong>Students should be able to:</strong>
+    <strong>Students should be able to:</strong>
 
-        State the problem clearly before programming.
+    State the problem clearly before programming.
 
-      </div>
+  </div>
 
 
-      <!-- 2 -->
-      <h3>
-        2. Requirements
-      </h3>
+  <!-- =================================================
+       2. REQUIREMENTS
+  ================================================== -->
 
-      <p>
-        Requirements describe <strong>what the program
-        needs to do</strong>.
-      </p>
+  <h3>
+    2. Requirements
+  </h3>
 
+  <p>
+    Requirements describe <strong>what the program
+    needs to do</strong>.
+  </p>
 
-      <h4>
-        Grade Calculator
-      </h4>
 
-      <div class="card">
+  <h4>
+    Grade Calculator
+  </h4>
 
-        <strong>Input</strong>
+  <div class="card">
 
-        <ul>
-          <li>Homework grade</li>
-          <li>Exam grade</li>
-        </ul>
+    <strong>Input</strong>
 
+    <ul>
+      <li>Homework grade</li>
+      <li>Exam grade</li>
+    </ul>
 
-        <strong>Process</strong>
 
-        <ul>
-          <li>Calculate average</li>
-        </ul>
+    <strong>Process</strong>
 
+    <ul>
+      <li>Calculate average</li>
+    </ul>
 
-        <strong>Output</strong>
 
-        <ul>
-          <li>Final grade</li>
-        </ul>
+    <strong>Output</strong>
 
-      </div>
+    <ul>
+      <li>Final grade</li>
+    </ul>
 
+  </div>
 
-      <h4>
-        Shopping Program
-      </h4>
 
-      <div class="card">
+  <h4>
+    Shopping Program
+  </h4>
 
-        <strong>Input</strong>
+  <div class="card">
 
-        <ul>
-          <li>Product price</li>
-          <li>Quantity</li>
-        </ul>
+    <strong>Input</strong>
 
+    <ul>
+      <li>Product price</li>
+      <li>Quantity</li>
+    </ul>
 
-        <strong>Output</strong>
 
-        <ul>
-          <li>Total cost</li>
-        </ul>
+    <strong>Output</strong>
 
-      </div>
+    <ul>
+      <li>Total cost</li>
+    </ul>
 
+  </div>
 
-      <h4>
-        Login Program
-      </h4>
 
-      <div class="card">
+  <h4>
+    Login Program
+  </h4>
 
-        <strong>Input</strong>
+  <div class="card">
 
-        <ul>
-          <li>Username</li>
-          <li>Password</li>
-        </ul>
+    <strong>Input</strong>
 
+    <ul>
+      <li>Username</li>
+      <li>Password</li>
+    </ul>
 
-        <strong>Output</strong>
 
-        <ul>
-          <li>Login successful</li>
-          <li>OR Login failed</li>
-        </ul>
+    <strong>Output</strong>
 
-      </div>
+    <ul>
+      <li>Login successful</li>
+      <li>OR Login failed</li>
+    </ul>
 
+  </div>
 
-      <div class="key-point">
 
-        <strong>Students should be able to:</strong>
+  <div class="key-point">
 
-        Identify the inputs and outputs required by a problem.
+    <strong>Students should be able to:</strong>
 
-      </div>
+    Identify the inputs and outputs required by a problem.
 
+  </div>
 
-      <!-- 3 -->
-      <h3>
-        3. Algorithm Design
-      </h3>
 
-      <p>
-        Now determine the <strong>steps needed to solve
-        the problem</strong>.
-      </p>
+  <!-- =================================================
+       3. ALGORITHM DESIGN
+  ================================================== -->
 
+  <h3>
+    3. Algorithm Design
+  </h3>
 
-      <h4>
-        Example — Area of Rectangle
-      </h4>
+  <p>
+    Now determine the <strong>steps needed to solve
+    the problem</strong>.
+  </p>
 
-      <ol>
-        <li>Get length.</li>
-        <li>Get width.</li>
-        <li>Multiply length × width.</li>
-        <li>Display area.</li>
-      </ol>
 
+  <h4>
+    Example — Area of Rectangle
+  </h4>
 
-      <h4>
-        Example — Even or Odd
-      </h4>
+  <ol>
+    <li>Get length.</li>
+    <li>Get width.</li>
+    <li>Multiply length × width.</li>
+    <li>Display area.</li>
+  </ol>
 
-      <ol>
-        <li>Get a number.</li>
-        <li>Divide the number by 2.</li>
-        <li>Check the remainder.</li>
-        <li>If remainder is 0 → even.</li>
-        <li>Otherwise → odd.</li>
-      </ol>
 
+  <p>
+    Now turn the algorithm into Python:
+  </p>
 
-      <div class="key-point">
 
-        <strong>Students should be able to:</strong>
+  <div class="python-example">
 
-        Create an algorithm for a simple problem.
+    <div class="python-example-title">
+      Try It — Rectangle Area
+    </div>
 
-      </div>
+    <textarea class="python-editor">length = 10
+width = 5
 
+area = length * width
 
-      <!-- 4 -->
-      <h3>
-        4. Pseudocode
-      </h3>
+print("Area:", area)</textarea>
 
-      <div class="beginner">
+    <div class="python-controls">
 
-        <strong>Pseudocode</strong> is a way of describing
-        a program using simple human language before writing
-        actual code.
+      <button class="run-button">
+        ▶ Run Python
+      </button>
 
-      </div>
+      <button class="reset-button">
+        Reset
+      </button>
 
+      <span class="python-status">
+        Ready
+      </span>
 
-      <h4>
-        Example — Calculate Area
-      </h4>
+    </div>
 
-      <pre><code>START
+    <div class="output-label">
+      Output
+    </div>
+
+    <div class="python-output">
+      Click "Run Python".
+    </div>
+
+  </div>
+
+
+  <h4>
+    Example — Even or Odd
+  </h4>
+
+  <ol>
+    <li>Get a number.</li>
+    <li>Divide the number by 2.</li>
+    <li>Check the remainder.</li>
+    <li>If remainder is 0 → even.</li>
+    <li>Otherwise → odd.</li>
+  </ol>
+
+
+  <div class="python-example">
+
+    <div class="python-example-title">
+      Try It — Even or Odd
+    </div>
+
+    <textarea class="python-editor">number = 7
+
+if number % 2 == 0:
+    print("Even")
+else:
+    print("Odd")</textarea>
+
+    <div class="python-controls">
+
+      <button class="run-button">
+        ▶ Run Python
+      </button>
+
+      <button class="reset-button">
+        Reset
+      </button>
+
+      <span class="python-status">
+        Ready
+      </span>
+
+    </div>
+
+    <div class="output-label">
+      Output
+    </div>
+
+    <div class="python-output">
+      Click "Run Python".
+    </div>
+
+  </div>
+
+
+  <div class="key-point">
+
+    <strong>Students should be able to:</strong>
+
+    Create an algorithm for a simple problem.
+
+  </div>
+
+
+  <!-- =================================================
+       4. PSEUDOCODE
+  ================================================== -->
+
+  <h3>
+    4. Pseudocode
+  </h3>
+
+  <div class="beginner">
+
+    <strong>Pseudocode</strong> describes a program using
+    simple human language before writing actual code.
+
+  </div>
+
+
+  <h4>
+    Example — Calculate Area
+  </h4>
+
+  <pre><code>START
 GET length
 GET width
 SET area = length × width
@@ -1291,11 +1962,56 @@ DISPLAY area
 END</code></pre>
 
 
-      <h4>
-        Example — Check Age
-      </h4>
+  <p>
+    Notice how the pseudocode can now become Python:
+  </p>
 
-      <pre><code>START
+
+  <div class="python-example">
+
+    <div class="python-example-title">
+      Try It — From Pseudocode to Python
+    </div>
+
+    <textarea class="python-editor">length = 10
+width = 5
+
+area = length * width
+
+print(area)</textarea>
+
+    <div class="python-controls">
+
+      <button class="run-button">
+        ▶ Run Python
+      </button>
+
+      <button class="reset-button">
+        Reset
+      </button>
+
+      <span class="python-status">
+        Ready
+      </span>
+
+    </div>
+
+    <div class="output-label">
+      Output
+    </div>
+
+    <div class="python-output">
+      Click "Run Python".
+    </div>
+
+  </div>
+
+
+  <h4>
+    Example — Check Age
+  </h4>
+
+  <pre><code>START
 GET age
 
 IF age >= 18
@@ -1306,47 +2022,90 @@ ELSE
 END</code></pre>
 
 
-      <div class="key-point">
+  <div class="python-example">
 
-        <strong>Students should be able to:</strong>
+    <div class="python-example-title">
+      Try It — Check Age
+    </div>
 
-        Convert a problem into simple pseudocode.
+    <textarea class="python-editor">age = 18
 
-      </div>
+if age >= 18:
+    print("Adult")
+else:
+    print("Minor")</textarea>
+
+    <div class="python-controls">
+
+      <button class="run-button">
+        ▶ Run Python
+      </button>
+
+      <button class="reset-button">
+        Reset
+      </button>
+
+      <span class="python-status">
+        Ready
+      </span>
+
+    </div>
+
+    <div class="output-label">
+      Output
+    </div>
+
+    <div class="python-output">
+      Click "Run Python".
+    </div>
+
+  </div>
 
 
-      <!-- 5 -->
-      <h3>
-        5. Flowcharts
-      </h3>
+  <div class="key-point">
 
-      <div class="beginner">
+    <strong>Students should be able to:</strong>
 
-        A <strong>flowchart</strong> is a visual representation
-        of an algorithm.
+    Convert a problem into simple pseudocode.
 
-      </div>
+  </div>
 
 
-      <div class="card">
+  <!-- =================================================
+       5. FLOWCHARTS
+  ================================================== -->
 
-        <strong>Common symbols:</strong>
+  <h3>
+    5. Flowcharts
+  </h3>
 
-        <ul>
-          <li>Oval → Start / End</li>
-          <li>Rectangle → Process</li>
-          <li>Diamond → Decision</li>
-          <li>Arrow → Direction</li>
-        </ul>
+  <div class="beginner">
 
-      </div>
+    A <strong>flowchart</strong> is a visual representation
+    of an algorithm.
+
+  </div>
 
 
-      <h4>
-        Example — Even / Odd
-      </h4>
+  <div class="card">
 
-      <div class="diagram">Start
+    <strong>Common symbols:</strong>
+
+    <ul>
+      <li>Oval → Start / End</li>
+      <li>Rectangle → Process</li>
+      <li>Diamond → Decision</li>
+      <li>Arrow → Direction</li>
+    </ul>
+
+  </div>
+
+
+  <h4>
+    Example — Even / Odd
+  </h4>
+
+  <div class="diagram">Start
   ↓
 Get number
   ↓
@@ -1359,11 +2118,56 @@ Even               Odd
       End</div>
 
 
-      <h4>
-        Example — Login
-      </h4>
+  <p>
+    The flowchart can be represented in Python:
+  </p>
 
-      <div class="diagram">Start
+
+  <div class="python-example">
+
+    <div class="python-example-title">
+      Try It — Flowchart to Python
+    </div>
+
+    <textarea class="python-editor">number = 12
+
+if number % 2 == 0:
+    print("Even")
+else:
+    print("Odd")</textarea>
+
+    <div class="python-controls">
+
+      <button class="run-button">
+        ▶ Run Python
+      </button>
+
+      <button class="reset-button">
+        Reset
+      </button>
+
+      <span class="python-status">
+        Ready
+      </span>
+
+    </div>
+
+    <div class="output-label">
+      Output
+    </div>
+
+    <div class="python-output">
+      Click "Run Python".
+    </div>
+
+  </div>
+
+
+  <h4>
+    Example — Login
+  </h4>
+
+  <div class="diagram">Start
   ↓
 Enter password
   ↓
@@ -1377,657 +2181,1146 @@ successful
 End</div>
 
 
-      <div class="key-point">
+  <div class="python-example">
 
-        <strong>Students should be able to:</strong>
+    <div class="python-example-title">
+      Try It — Login Flowchart to Python
+    </div>
 
-        Read a flowchart and create a simple flowchart
-        from an algorithm.
+    <textarea class="python-editor">password = "python123"
 
-      </div>
+if password == "python123":
+    print("Login successful")
+else:
+    print("Error")</textarea>
+
+    <div class="python-controls">
+
+      <button class="run-button">
+        ▶ Run Python
+      </button>
+
+      <button class="reset-button">
+        Reset
+      </button>
+
+      <span class="python-status">
+        Ready
+      </span>
+
+    </div>
+
+    <div class="output-label">
+      Output
+    </div>
+
+    <div class="python-output">
+      Click "Run Python".
+    </div>
+
+  </div>
 
 
-      <!-- 6 -->
-      <h3>
-        6. Implementation
-      </h3>
+  <div class="key-point">
 
-      <p>
-        <strong>Implementation</strong> means turning your
-        algorithm into actual code.
-      </p>
+    <strong>Students should be able to:</strong>
+
+    Read a flowchart and create a simple flowchart
+    from an algorithm.
+
+  </div>
 
 
-      <h4>
-        Example — Rectangle Area
-      </h4>
+  <!-- =================================================
+       6. IMPLEMENTATION
+  ================================================== -->
 
-      <p>
-        Pseudocode:
-      </p>
+  <h3>
+    6. Implementation
+  </h3>
 
-      <pre><code>GET length
+  <p>
+    <strong>Implementation</strong> means turning your
+    algorithm into actual code.
+  </p>
+
+
+  <h4>
+    Example — Rectangle Area
+  </h4>
+
+  <p>
+    Pseudocode:
+  </p>
+
+  <pre><code>GET length
 GET width
 CALCULATE area
 DISPLAY area</code></pre>
 
 
-      <p>
-        Python:
-      </p>
+  <p>
+    Python:
+  </p>
 
-      <pre><code>length = 10
+
+  <div class="python-example">
+
+    <div class="python-example-title">
+      Run the Implementation
+    </div>
+
+    <textarea class="python-editor">length = 10
 width = 5
 
 area = length * width
 
-print(area)</code></pre>
+print(area)</textarea>
 
+    <div class="python-controls">
 
-      <p>
-        Output:
-      </p>
+      <button class="run-button">
+        ▶ Run Python
+      </button>
 
-      <pre><code>50</code></pre>
+      <button class="reset-button">
+        Reset
+      </button>
 
+      <span class="python-status">
+        Ready
+      </span>
 
-      <h4>
-        Example — Greeting
-      </h4>
+    </div>
 
-      <pre><code>name = "Maria"
+    <div class="output-label">
+      Output
+    </div>
 
-print("Hello", name)</code></pre>
+    <div class="python-output">
+      Click "Run Python".
+    </div>
 
+  </div>
 
-      <div class="key-point">
 
-        <strong>Students should be able to:</strong>
+  <h4>
+    Example — Greeting
+  </h4>
 
-        Translate simple algorithms into Python code.
 
-      </div>
+  <div class="python-example">
 
+    <div class="python-example-title">
+      Try It — Greeting
+    </div>
 
-      <!-- 7 -->
-      <h3>
-        7. Testing
-      </h3>
+    <textarea class="python-editor">name = "Maria"
 
-      <p>
-        <strong>Testing</strong> means checking whether
-        the program works correctly.
-      </p>
+print("Hello", name)</textarea>
 
+    <div class="python-controls">
 
-      <p>
-        Don't test only one example.
-      </p>
+      <button class="run-button">
+        ▶ Run Python
+      </button>
 
+      <button class="reset-button">
+        Reset
+      </button>
 
-      <h4>
-        Example — Addition
-      </h4>
+      <span class="python-status">
+        Ready
+      </span>
 
-      <pre><code>def add(a, b):
-    return a + b</code></pre>
+    </div>
 
+    <div class="output-label">
+      Output
+    </div>
 
-      <p>
-        Test cases:
-      </p>
+    <div class="python-output">
+      Click "Run Python".
+    </div>
 
-      <ul>
-        <li>2 + 3 = 5</li>
-        <li>10 + 20 = 30</li>
-        <li>0 + 5 = 5</li>
-      </ul>
+  </div>
 
 
-      <h4>
-        Example — Age Checker
-      </h4>
+  <div class="key-point">
 
-      <ul>
-        <li>25 → Adult</li>
-        <li>18 → Adult</li>
-        <li>17 → Minor</li>
-        <li>0 → Minor</li>
-      </ul>
+    <strong>Students should be able to:</strong>
 
+    Translate simple algorithms into Python code.
 
-      <div class="key-point">
+  </div>
 
-        <strong>Students should be able to:</strong>
 
-        Create test cases and determine whether the output
-        is correct.
+  <!-- =================================================
+       7. TESTING
+  ================================================== -->
 
-      </div>
+  <h3>
+    7. Testing
+  </h3>
 
+  <p>
+    <strong>Testing</strong> means checking whether
+    the program works correctly.
+  </p>
 
-      <!-- 8 -->
-      <h3>
-        8. Debugging
-      </h3>
+  <p>
+    Don't test only one example.
+  </p>
 
-      <p>
-        Testing may reveal a problem.
-        <strong>Debugging</strong> is finding and fixing
-        that problem.
-      </p>
 
+  <h4>
+    Example — Addition
+  </h4>
 
-      <h4>
-        Example
-      </h4>
 
-      <p>
-        You expect:
-      </p>
+  <div class="python-example">
 
-      <pre><code>20</code></pre>
+    <div class="python-example-title">
+      Try It — Test an Addition Function
+    </div>
 
+    <textarea class="python-editor">def add(a, b):
+    return a + b
 
-      <p>
-        but your program produces:
-      </p>
 
-      <pre><code>15</code></pre>
+print(add(2, 3))
+print(add(10, 20))
+print(add(0, 5))</textarea>
 
+    <div class="python-controls">
 
-      <p>
-        You investigate the calculation and find the error.
-      </p>
+      <button class="run-button">
+        ▶ Run Python
+      </button>
 
+      <button class="reset-button">
+        Reset
+      </button>
 
-      <h4>
-        Another Example
-      </h4>
+      <span class="python-status">
+        Ready
+      </span>
 
-      <p>
-        Your program crashes when the user enters:
-      </p>
+    </div>
 
-      <pre><code>abc</code></pre>
+    <div class="output-label">
+      Output
+    </div>
 
+    <div class="python-output">
+      Click "Run Python".
+    </div>
 
-      <p>
-        instead of a number.
-      </p>
+  </div>
 
 
-      <p>
-        You investigate why the program cannot handle
-        that input.
-      </p>
+  <h4>
+    Example — Age Checker
+  </h4>
 
 
-      <div class="key-point">
+  <div class="python-example">
 
-        <strong>Students should be able to:</strong>
+    <div class="python-example-title">
+      Try It — Test Multiple Inputs
+    </div>
 
-        <ol>
-          <li>Observe the problem.</li>
-          <li>Locate the likely cause.</li>
-          <li>Fix the code.</li>
-          <li>Test again.</li>
-        </ol>
+    <textarea class="python-editor">ages = [25, 18, 17, 0]
 
-      </div>
+for age in ages:
 
+    if age >= 18:
+        result = "Adult"
+    else:
+        result = "Minor"
 
-      <!-- 9 -->
-      <h3>
-        9. Documentation
-      </h3>
+    print(age, "→", result)</textarea>
 
-      <p>
-        <strong>Documentation</strong> explains how a program
-        works and how other people should use or maintain it.
-      </p>
+    <div class="python-controls">
 
+      <button class="run-button">
+        ▶ Run Python
+      </button>
 
-      <p>
-        Documentation can include:
-      </p>
+      <button class="reset-button">
+        Reset
+      </button>
 
-      <ul>
-        <li>Comments</li>
-        <li>Function descriptions</li>
-        <li>Instructions</li>
-        <li>README files</li>
-        <li>Examples</li>
-      </ul>
+      <span class="python-status">
+        Ready
+      </span>
 
+    </div>
 
-      <h4>
-        Example — Comment
-      </h4>
+    <div class="output-label">
+      Output
+    </div>
 
-      <pre><code># Calculate the total price
+    <div class="python-output">
+      Click "Run Python".
+    </div>
 
-total = price * quantity</code></pre>
+  </div>
 
 
-      <h4>
-        Example — Program Instructions
-      </h4>
+  <div class="key-point">
 
-      <div class="card">
+    <strong>Students should be able to:</strong>
 
-        <strong>How to use the program:</strong>
+    Create test cases and determine whether the output
+    is correct.
 
-        <ol>
-          <li>Enter your name.</li>
-          <li>Enter your age.</li>
-          <li>Press Enter.</li>
-          <li>The program displays your category.</li>
-        </ol>
+  </div>
 
-      </div>
 
+  <!-- =================================================
+       8. DEBUGGING
+  ================================================== -->
 
-      <div class="key-point">
+  <h3>
+    8. Debugging
+  </h3>
 
-        <strong>Students should be able to:</strong>
+  <p>
+    Testing may reveal a problem.
+    <strong>Debugging</strong> is finding and fixing
+    that problem.
+  </p>
 
-        Add useful documentation to their programs.
 
-      </div>
+  <h4>
+    Example — Incorrect Calculation
+  </h4>
 
 
-      <!-- 10 -->
-      <h3>
-        10. Maintenance
-      </h3>
+  <div class="python-example">
 
-      <p>
-        A program doesn't necessarily end when you finish
-        writing it.
-      </p>
+    <div class="python-example-title">
+      Debug It — Find the Problem
+    </div>
 
+    <textarea class="python-editor">price = 100
+discount = 20
 
-      <p>
-        <strong>Maintenance</strong> means modifying and
-        improving software after it has been created.
-      </p>
+final_price = price + discount
 
+print("Expected: 80")
+print("Actual:", final_price)</textarea>
 
-      <h4>
-        Example — Grade Calculator
-      </h4>
+    <div class="python-controls">
 
-      <p>
-        You created a grade calculator.
-        Later, your school changes the grading system.
-        You update the program.
-      </p>
+      <button class="run-button">
+        ▶ Run Python
+      </button>
 
+      <button class="reset-button">
+        Reset
+      </button>
 
-      <h4>
-        Example — Calculator
-      </h4>
+      <span class="python-status">
+        Ready
+      </span>
 
-      <p>
-        A calculator originally supports:
-      </p>
+    </div>
 
-      <ul>
-        <li>Addition</li>
-        <li>Subtraction</li>
-      </ul>
+    <div class="output-label">
+      Output
+    </div>
 
+    <div class="python-output">
+      Click "Run Python".
+    </div>
 
-      <p>
-        Later, users request:
-      </p>
+  </div>
 
-      <ul>
-        <li>Multiplication</li>
-        <li>Division</li>
-      </ul>
 
+  <h4>
+    Fixed Version
+  </h4>
 
-      <p>
-        You modify the program to support the new features.
-      </p>
 
+  <div class="python-example">
 
-      <div class="key-point">
+    <div class="python-example-title">
+      Debug It — Fix the Problem
+    </div>
 
-        <strong>Students should understand:</strong>
+    <textarea class="python-editor">price = 100
+discount = 20
 
-        Software changes over time and often needs updates,
-        fixes, and improvements.
+final_price = price - discount
 
-      </div>
+print("Expected: 80")
+print("Actual:", final_price)</textarea>
 
-    </section>
+    <div class="python-controls">
 
+      <button class="run-button">
+        ▶ Run Python
+      </button>
 
-    <!-- =====================================================
-         PYTHON PLAYGROUND
-    ====================================================== -->
+      <button class="reset-button">
+        Reset
+      </button>
 
-    <section>
+      <span class="python-status">
+        Ready
+      </span>
 
-      <h2>
-        Practice: Run Python in Your Browser
-      </h2>
+    </div>
 
-      <p>
-        The editor below uses <strong>Pyodide</strong> to run
-        Python directly in your browser. Students can experiment
-        with Python without installing Python on their computer.
-      </p>
+    <div class="output-label">
+      Output
+    </div>
 
+    <div class="python-output">
+      Click "Run Python".
+    </div>
 
-      <div class="playground">
+  </div>
 
-        <div class="playground-header">
-          Python Playground
-        </div>
 
+  <h4>
+    Handling Unexpected Input
+  </h4>
 
-        <textarea
-          id="python-code"
-          class="editor"
-          spellcheck="false"
-        >name = "Student"
 
-print("Hello", name)
+  <div class="python-example">
 
-x = 10
-y = 20
+    <div class="python-example-title">
+      Debug It — What Happens With Bad Input?
+    </div>
 
-print("Sum:", x + y)</textarea>
+    <textarea class="python-editor">age = int("abc")
 
+print(age)</textarea>
 
-        <div class="controls">
+    <div class="python-controls">
 
-          <button
-            id="run-button"
-            onclick="runPython()"
-            disabled
-          >
-            Run Python
-          </button>
+      <button class="run-button">
+        ▶ Run Python
+      </button>
 
-          <span
-            id="status"
-            class="status"
-          >
-            Loading Python...
-          </span>
+      <button class="reset-button">
+        Reset
+      </button>
 
-        </div>
+      <span class="python-status">
+        Ready
+      </span>
 
+    </div>
 
-        <div class="output-label">
-          Output
-        </div>
+    <div class="output-label">
+      Output
+    </div>
 
-        <div
-          id="output"
-          class="output"
-        >
-          Python is loading...
-        </div>
+    <div class="python-output">
+      Click "Run Python".
+    </div>
 
-      </div>
+  </div>
 
-    </section>
 
+  <h4>
+    Improved Version
+  </h4>
 
-    <!-- =====================================================
-         QUICK CHECK
-    ====================================================== -->
 
-    <section>
+  <div class="python-example">
 
-      <h2>
-        Quick Check
-      </h2>
+    <div class="python-example-title">
+      Debug It — Handle the Error
+    </div>
 
+    <textarea class="python-editor">value = "abc"
 
-      <div class="card">
+try:
+    age = int(value)
+    print("Age:", age)
 
-        <h3>
-          Think About It
-        </h3>
+except ValueError:
+    print("Please enter a valid number.")</textarea>
 
-        <ol>
+    <div class="python-controls">
 
-          <li>
-            What is a computer program?
-          </li>
+      <button class="run-button">
+        ▶ Run Python
+      </button>
 
-          <li>
-            What is a programming language?
-          </li>
+      <button class="reset-button">
+        Reset
+      </button>
 
-          <li>
-            What is the difference between source code
-            and machine code?
-          </li>
+      <span class="python-status">
+        Ready
+      </span>
 
-          <li>
-            What does the Python interpreter do?
-          </li>
+    </div>
 
-          <li>
-            What is an algorithm?
-          </li>
+    <div class="output-label">
+      Output
+    </div>
 
-          <li>
-            What is the difference between syntax and logic?
-          </li>
+    <div class="python-output">
+      Click "Run Python".
+    </div>
 
-          <li>
-            What is a bug?
-          </li>
+  </div>
 
-          <li>
-            What is debugging?
-          </li>
 
-          <li>
-            Why should programmers test their programs?
-          </li>
+  <div class="key-point">
 
-          <li>
-            Why does software require maintenance?
-          </li>
+    <strong>Students should be able to:</strong>
 
-        </ol>
+    <ol>
+      <li>Observe the problem.</li>
+      <li>Locate the likely cause.</li>
+      <li>Fix the code.</li>
+      <li>Test again.</li>
+    </ol>
 
-      </div>
+  </div>
 
-    </section>
 
-  </main>
+  <!-- =================================================
+       9. DOCUMENTATION
+  ================================================== -->
 
+  <h3>
+    9. Documentation
+  </h3>
 
-  <!-- =========================
-       FOOTER
-  ========================== -->
+  <p>
+    <strong>Documentation</strong> explains how a program
+    works and how other people should use or maintain it.
+  </p>
 
-  <footer>
 
-    Python Foundations · 0. Foundations of Programming
+  <p>
+    Documentation can include:
+  </p>
 
-  </footer>
+  <ul>
+    <li>Comments</li>
+    <li>Function descriptions</li>
+    <li>Instructions</li>
+    <li>README files</li>
+    <li>Examples</li>
+  </ul>
 
 
-  <!-- =====================================================
-       PYODIDE
-  ====================================================== -->
+  <h4>
+    Example — Comment
+  </h4>
 
-  <script>
 
-    let pyodide = null;
+  <div class="python-example">
 
+    <div class="python-example-title">
+      Try It — Code Comments
+    </div>
 
-    async function initializePython() {
+    <textarea class="python-editor"># Calculate the total price
 
-      const status =
-        document.getElementById("status");
+price = 10
+quantity = 3
 
-      const button =
-        document.getElementById("run-button");
+total = price * quantity
 
-      const output =
-        document.getElementById("output");
+print(total)</textarea>
 
+    <div class="python-controls">
 
-      try {
+      <button class="run-button">
+        ▶ Run Python
+      </button>
 
-        pyodide = await loadPyodide();
+      <button class="reset-button">
+        Reset
+      </button>
 
+      <span class="python-status">
+        Ready
+      </span>
 
-        button.disabled = false;
+    </div>
 
-        status.textContent =
-          "Python is ready.";
+    <div class="output-label">
+      Output
+    </div>
 
-        output.textContent =
-          'Try changing the code and click "Run Python".';
+    <div class="python-output">
+      Click "Run Python".
+    </div>
 
+  </div>
+
+
+  <h4>
+    Example — Program Instructions
+  </h4>
+
+  <div class="card">
+
+    <strong>How to use the program:</strong>
+
+    <ol>
+      <li>Enter your name.</li>
+      <li>Enter your age.</li>
+      <li>Press Enter.</li>
+      <li>The program displays your category.</li>
+    </ol>
+
+  </div>
+
+
+  <div class="key-point">
+
+    <strong>Students should be able to:</strong>
+
+    Add useful documentation to their programs.
+
+  </div>
+
+
+  <!-- =================================================
+       10. MAINTENANCE
+  ================================================== -->
+
+  <h3>
+    10. Maintenance
+  </h3>
+
+  <p>
+    A program doesn't necessarily end when you finish
+    writing it.
+  </p>
+
+
+  <p>
+    <strong>Maintenance</strong> means modifying and
+    improving software after it has been created.
+  </p>
+
+
+  <h4>
+    Example — Grade Calculator
+  </h4>
+
+  <p>
+    You created a grade calculator.
+    Later, your school changes the grading system.
+    You update the program.
+  </p>
+
+
+  <h4>
+    Example — Calculator
+  </h4>
+
+  <p>
+    A calculator originally supports:
+  </p>
+
+  <ul>
+    <li>Addition</li>
+    <li>Subtraction</li>
+  </ul>
+
+
+  <p>
+    Later, users request:
+  </p>
+
+  <ul>
+    <li>Multiplication</li>
+    <li>Division</li>
+  </ul>
+
+
+  <p>
+    You modify the program to support the new features.
+  </p>
+
+
+  <div class="python-example">
+
+    <div class="python-example-title">
+      Try It — Adding a New Feature
+    </div>
+
+    <textarea class="python-editor">a = 10
+b = 5
+
+print("Addition:", a + b)
+print("Subtraction:", a - b)
+print("Multiplication:", a * b)
+print("Division:", a / b)</textarea>
+
+    <div class="python-controls">
+
+      <button class="run-button">
+        ▶ Run Python
+      </button>
+
+      <button class="reset-button">
+        Reset
+      </button>
+
+      <span class="python-status">
+        Ready
+      </span>
+
+    </div>
+
+    <div class="output-label">
+      Output
+    </div>
+
+    <div class="python-output">
+      Click "Run Python".
+    </div>
+
+  </div>
+
+
+  <div class="key-point">
+
+    <strong>Students should understand:</strong>
+
+    Software changes over time and often needs updates,
+    fixes, and improvements.
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     FINAL PLAYGROUND
+====================================================== -->
+
+<section>
+
+  <h2>
+    Final Practice — Build Your Own Program
+  </h2>
+
+  <p>
+    Now combine what you learned. Modify the program,
+    run it, observe the output, and experiment.
+  </p>
+
+
+  <div class="python-example">
+
+    <div class="python-example-title">
+      Your Turn
+    </div>
+
+    <textarea class="python-editor">name = "Student"
+age = 20
+
+print("Name:", name)
+print("Age:", age)
+
+if age >= 18:
+    print("Category: Adult")
+else:
+    print("Category: Minor")</textarea>
+
+    <div class="python-controls">
+
+      <button class="run-button">
+        ▶ Run Python
+      </button>
+
+      <button class="reset-button">
+        Reset
+      </button>
+
+      <span class="python-status">
+        Ready
+      </span>
+
+    </div>
+
+    <div class="output-label">
+      Output
+    </div>
+
+    <div class="python-output">
+      Click "Run Python".
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     QUICK CHECK
+====================================================== -->
+
+<section>
+
+  <h2>
+    Quick Check
+  </h2>
+
+
+  <div class="card">
+
+    <h3>
+      Think About It
+    </h3>
+
+    <ol>
+
+      <li>
+        What is a computer program?
+      </li>
+
+      <li>
+        What is a programming language?
+      </li>
+
+      <li>
+        What is the difference between source code
+        and machine code?
+      </li>
+
+      <li>
+        What does the Python interpreter do?
+      </li>
+
+      <li>
+        What is an algorithm?
+      </li>
+
+      <li>
+        What is the difference between syntax and logic?
+      </li>
+
+      <li>
+        What is a bug?
+      </li>
+
+      <li>
+        What is debugging?
+      </li>
+
+      <li>
+        Why should programmers test their programs?
+      </li>
+
+      <li>
+        Why does software require maintenance?
+      </li>
+
+    </ol>
+
+  </div>
+
+</section>
+
+</main>
+
+
+<footer>
+
+  Python Foundations · 0. Foundations of Programming
+
+</footer>
+
+
+<!-- =====================================================
+     PYODIDE ENGINE
+====================================================== -->
+
+<script>
+
+  let pyodide = null;
+
+
+  /*
+   * Load Pyodide once.
+   *
+   * Every interactive example on the page
+   * uses this same Python runtime.
+   */
+
+  async function initializePyodide() {
+
+    const statusElements =
+      document.querySelectorAll(".python-status");
+
+    statusElements.forEach(
+      element => {
+        element.textContent =
+          "Loading Python...";
       }
+    );
 
-      catch (error) {
 
-        status.textContent =
-          "Could not load Python.";
+    try {
 
-        output.textContent =
-          error.toString();
+      pyodide =
+        await loadPyodide();
 
-        console.error(error);
 
-      }
+      statusElements.forEach(
+        element => {
+          element.textContent =
+            "Python ready";
+        }
+      );
+
+
+    } catch (error) {
+
+      statusElements.forEach(
+        element => {
+          element.textContent =
+            "Python failed to load";
+        }
+      );
+
+      console.error(error);
+
+    }
+
+  }
+
+
+  /*
+   * Run one individual Python example.
+   */
+
+  async function runExample(example) {
+
+    const editor =
+      example.querySelector(".python-editor");
+
+    const output =
+      example.querySelector(".python-output");
+
+    const status =
+      example.querySelector(".python-status");
+
+    const runButton =
+      example.querySelector(".run-button");
+
+
+    if (!pyodide) {
+
+      output.textContent =
+        "Python is still loading. Please try again.";
+
+      return;
 
     }
 
 
-    async function runPython() {
+    runButton.disabled = true;
 
-      const button =
-        document.getElementById("run-button");
+    status.textContent =
+      "Running...";
 
-      const status =
-        document.getElementById("status");
+    output.classList.remove("error");
 
-      const output =
-        document.getElementById("output");
-
-      const code =
-        document.getElementById("python-code").value;
+    output.textContent =
+      "";
 
 
-      if (!pyodide) {
+    try {
 
-        status.textContent =
-          "Python is still loading.";
+      /*
+       * Create a fresh stdout/stderr stream
+       * for this execution.
+       */
 
-        return;
-
-      }
-
-
-      button.disabled = true;
-
-      status.textContent =
-        "Running...";
-
-      output.textContent =
-        "";
-
-
-      try {
-
-        /*
-          Redirect stdout and stderr so that
-          print() output appears in our webpage.
-        */
-
-        pyodide.runPython(`
+      pyodide.runPython(`
 import sys
 from io import StringIO
 
-_stdout = StringIO()
-_stderr = StringIO()
+__page_stdout = StringIO()
+__page_stderr = StringIO()
 
-sys.stdout = _stdout
-sys.stderr = _stderr
-        `);
-
-
-        await pyodide.runPythonAsync(code);
+sys.stdout = __page_stdout
+sys.stderr = __page_stderr
+      `);
 
 
-        const stdout =
-          pyodide.runPython(
-            "_stdout.getvalue()"
-          );
+      /*
+       * Run the student's code.
+       */
+
+      await pyodide.runPythonAsync(
+        editor.value
+      );
 
 
-        const stderr =
-          pyodide.runPython(
-            "_stderr.getvalue()"
-          );
+      /*
+       * Retrieve output.
+       */
+
+      const stdout =
+        pyodide.runPython(
+          "__page_stdout.getvalue()"
+        );
+
+      const stderr =
+        pyodide.runPython(
+          "__page_stderr.getvalue()"
+        );
 
 
-        if (stderr) {
-
-          output.textContent =
-            stderr;
-
-        }
-
-        else if (stdout) {
-
-          output.textContent =
-            stdout;
-
-        }
-
-        else {
-
-          output.textContent =
-            "Program finished with no output.";
-
-        }
-
-
-        status.textContent =
-          "Finished.";
-
-      }
-
-      catch (error) {
+      if (stderr) {
 
         output.textContent =
-          error.toString();
+          stderr;
 
-        status.textContent =
-          "Program error.";
+        output.classList.add("error");
+
+      } else if (stdout) {
+
+        output.textContent =
+          stdout;
+
+      } else {
+
+        output.textContent =
+          "Program finished with no output.";
 
       }
 
-      finally {
 
-        button.disabled = false;
+      status.textContent =
+        "Finished";
 
-      }
+
+    } catch (error) {
+
+      output.textContent =
+        error.toString();
+
+      output.classList.add("error");
+
+      status.textContent =
+        "Error";
 
     }
 
 
-    initializePython();
+    runButton.disabled = false;
 
-  </script>
+  }
+
+
+  /*
+   * Reset an individual example
+   * to its original code.
+   */
+
+  function resetExample(example) {
+
+    const editor =
+      example.querySelector(".python-editor");
+
+    const output =
+      example.querySelector(".python-output");
+
+    const status =
+      example.querySelector(".python-status");
+
+
+    editor.value =
+      editor.dataset.original;
+
+
+    output.textContent =
+      'Click "Run Python".';
+
+    output.classList.remove("error");
+
+    status.textContent =
+      pyodide
+        ? "Python ready"
+        : "Loading Python...";
+
+  }
+
+
+  /*
+   * Initialize every Python example.
+   */
+
+  function initializeExamples() {
+
+    const examples =
+      document.querySelectorAll(".python-example");
+
+
+    examples.forEach(example => {
+
+      const editor =
+        example.querySelector(".python-editor");
+
+      const runButton =
+        example.querySelector(".run-button");
+
+      const resetButton =
+        example.querySelector(".reset-button");
+
+
+      /*
+       * Save original code.
+       */
+
+      editor.dataset.original =
+        editor.value;
+
+
+      /*
+       * Run button.
+       */
+
+      runButton.addEventListener(
+        "click",
+        () => runExample(example)
+      );
+
+
+      /*
+       * Reset button.
+       */
+
+      resetButton.addEventListener(
+        "click",
+        () => resetExample(example)
+      );
+
+    });
+
+  }
+
+
+  /*
+   * Start the page.
+   */
+
+  initializeExamples();
+
+  initializePyodide();
+
+</script>
 
 </body>
 </html>
