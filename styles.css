@@ -480,9 +480,9 @@ button, input, textarea, select { font: inherit; }
 }
 
 .community-image img {
-  width: 100%;
-  max-width: 320px;
-  height: 220px;
+  width: auto;
+  /* max-width: 320px; */
+  height: 260px;
   object-fit: cover;
   display: block;
 }
