@@ -407,3 +407,96 @@ button:disabled {
     flex-wrap: wrap;
   }
 }
+/* === Pyodide runnable code blocks === */
+.runnable {
+  position: relative;
+  margin: 0.75rem 0;
+}
+.run-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: -0.5rem;
+  margin-bottom: 0.5rem;
+}
+.run-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--paper);
+  background: var(--teal);
+  border: none;
+  border-radius: 4px;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.run-btn:hover:not(:disabled) { background: var(--brick); }
+.run-btn:disabled { opacity: 0.5; cursor: wait; }
+.run-status {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+}
+.run-output-wrap {
+  display: none;
+  margin: 0.4rem 0 1rem 0;
+}
+.run-output-wrap.show { display: block; }
+.run-output-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 0.3rem;
+}
+.run-output {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  background: var(--ink);
+  color: #E8E2D0;
+  border-radius: 4px;
+  padding: 0.85rem 1rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+}
+.run-output.is-error { color: #E8998D; }
+
+/* editable code cells */
+.runnable textarea.code-editable {
+  width: 100%;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-left: 3px solid var(--teal);
+  border-radius: 4px;
+  padding: 1rem 1.1rem;
+  color: var(--ink);
+  resize: vertical;
+  min-height: 3.5rem;
+}
+
+/* global pyodide-loading banner */
+#pyodide-status {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  z-index: 999;
+  opacity: 0.92;
+  transition: opacity 0.3s;
+}
+#pyodide-status.hidden { opacity: 0; pointer-events: none; }
