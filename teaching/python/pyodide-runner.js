@@ -419,21 +419,34 @@ class PyodideRunner {
       );
 
     const originalStdout =
-      this.pyodide.setStdout({
-        batched: text => {
-          output.push(text);
+  this.pyodide.setStdout({
+    batched: text => {
 
-          if (
-            typeof this.options.onOutput ===
-            "function"
-          ) {
-            this.options.onOutput({
-              type: "stdout",
-              text
-            });
-          }
-        }
-      });
+      /*
+       * Pyodide's batched stdout callback may provide
+       * output chunks without the line-ending that
+       * Python's print() produced.
+       *
+       * Preserve each batch as a separate line.
+       */
+
+      output.push(
+        text.endsWith("\n")
+          ? text
+          : text + "\n"
+      );
+
+      if (
+        typeof this.options.onOutput ===
+        "function"
+      ) {
+        this.options.onOutput({
+          type: "stdout",
+          text
+        });
+      }
+    }
+  });
 
     const originalStderr =
       this.pyodide.setStderr({
