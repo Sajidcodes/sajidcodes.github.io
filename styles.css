@@ -32,6 +32,11 @@ button, input, textarea, select { font: inherit; }
   margin: 0 auto;
 }
 
+
+/* =====================================================
+   HEADER
+===================================================== */
+
 .site-header {
   padding: 24px 0;
   border-bottom: 1px solid var(--light);
@@ -52,7 +57,7 @@ button, input, textarea, select { font: inherit; }
 .brand {
   font-weight: 700;
   letter-spacing: -.03em;
-  font-size: 40px; 
+  font-size: 40px;
 }
 
 .nav nav {
@@ -61,6 +66,11 @@ button, input, textarea, select { font: inherit; }
   color: var(--muted);
   font-size: 13px;
 }
+
+
+/* =====================================================
+   HERO
+===================================================== */
 
 .hero {
   padding-top: 90px;
@@ -105,6 +115,12 @@ button, input, textarea, select { font: inherit; }
   margin: 0;
 }
 
+.hero-note {
+  max-width: 670px;
+  color: var(--muted);
+  margin: 16px 0 0;
+}
+
 .links {
   display: flex;
   flex-wrap: wrap;
@@ -114,7 +130,7 @@ button, input, textarea, select { font: inherit; }
   font-size: 12px;
 }
 
-.links a, .text-link, .contact-links a {
+.links a, .contact-links a {
   border-bottom: 1px solid currentColor;
   padding-bottom: 2px;
 }
@@ -143,6 +159,11 @@ button, input, textarea, select { font: inherit; }
   margin-top: 12px;
 }
 
+
+/* =====================================================
+   GENERAL SECTIONS
+===================================================== */
+
 .section {
   padding: 80px 0;
   border-top: 1px solid var(--light);
@@ -167,6 +188,11 @@ button, input, textarea, select { font: inherit; }
   letter-spacing: -.04em;
 }
 
+
+/* =====================================================
+   FOCUS
+===================================================== */
+
 .focus-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -186,6 +212,11 @@ button, input, textarea, select { font: inherit; }
   color: var(--muted);
   margin-top: 30px;
 }
+
+
+/* =====================================================
+   EXPERIENCE / PROJECTS / EDUCATION
+===================================================== */
 
 .experience-list, .project-list, .education-list {
   border-top: 1px solid var(--light);
@@ -218,6 +249,23 @@ button, input, textarea, select { font: inherit; }
   color: #3f3f3f;
 }
 
+
+/* =====================================================
+   LINKS
+===================================================== */
+
+.text-link {
+  display: inline-block;
+  margin-top: 26px;
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+
+/* =====================================================
+   TAGS
+===================================================== */
+
 .tags {
   display: flex;
   flex-wrap: wrap;
@@ -233,12 +281,10 @@ button, input, textarea, select { font: inherit; }
   color: var(--muted);
 }
 
-.text-link {
-  display: inline-block;
-  margin-top: 26px;
-  font-family: var(--mono);
-  font-size: 12px;
-}
+
+/* =====================================================
+   SKILLS
+===================================================== */
 
 .skills-grid {
   display: grid;
@@ -265,6 +311,11 @@ button, input, textarea, select { font: inherit; }
   margin: 8px 0;
 }
 
+
+/* =====================================================
+   TABS
+===================================================== */
+
 .tabs {
   display: flex;
   gap: 4px;
@@ -290,6 +341,11 @@ button, input, textarea, select { font: inherit; }
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
 
+
+/* =====================================================
+   PROGRESS
+===================================================== */
+
 .progress-card {
   display: flex;
   justify-content: space-between;
@@ -312,6 +368,11 @@ button, input, textarea, select { font: inherit; }
   border-bottom: 1px solid currentColor;
 }
 
+
+/* =====================================================
+   CERTIFICATIONS
+===================================================== */
+
 .cert-list {
   border-top: 1px solid var(--light);
 }
@@ -320,6 +381,11 @@ button, input, textarea, select { font: inherit; }
   padding: 15px 0;
   border-bottom: 1px solid var(--light);
 }
+
+
+/* =====================================================
+   LEADERSHIP
+===================================================== */
 
 .leadership-list > div {
   display: grid;
@@ -333,8 +399,18 @@ button, input, textarea, select { font: inherit; }
 
 .leadership-list span { color: var(--muted); }
 
+
+/* =====================================================
+   EDUCATION
+===================================================== */
+
 .education-list h3 { margin-bottom: 4px; }
 .education-list p { color: var(--muted); margin: 0; }
+
+
+/* =====================================================
+   CONTACT
+===================================================== */
 
 .contact-grid {
   display: grid;
@@ -413,6 +489,11 @@ button, input, textarea, select { font: inherit; }
 .form-status.success { color: #236a3b; }
 .form-status.error { color: #a52a2a; }
 
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
 .footer {
   display: flex;
   justify-content: space-between;
@@ -424,13 +505,349 @@ button, input, textarea, select { font: inherit; }
   text-transform: uppercase;
   letter-spacing: .05em;
 }
-.community-image {
-  width: 640px;
-  height: 427px;
-  flex-shrink: 0;
-  overflow: hidden;
+
+
+/* =====================================================
+   BEYOND THE CODE — INTRO
+===================================================== */
+
+.beyond-code > h3 {
+  margin: 70px 0 28px;
+  font-size: 28px;
+  line-height: 1.2;
+  letter-spacing: -.04em;
 }
+
+.beyond-intro {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 40px;
+  margin-bottom: 55px;
+  align-items: start;
+}
+
+.beyond-intro h2 {
+  margin: 0;
+  font-size: 15px;
+  letter-spacing: .02em;
+  color: var(--muted);
+}
+
+.beyond-intro h3 {
+  margin: 0 0 14px;
+  font-size: 28px;
+  letter-spacing: -.04em;
+}
+
+.beyond-intro p {
+  max-width: 600px;
+  color: var(--muted);
+  margin: 0;
+}
+
+.award-number {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.award-feature {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+  align-items: start;
+  margin-bottom: 70px;
+}
+
+.award-copy p {
+  max-width: 650px;
+  margin: 0 0 18px;
+}
+
+.award-copy .eyebrow {
+  margin-bottom: 20px;
+}
+
+
+/* =====================================================
+   CUSTOM IMAGE SIZES
+===================================================== */
+
+.award-photo img {
+  width: 450px;
+  height: auto;
+  max-width: 100%;
+  object-fit: cover;
+}
+
+/* Awards: main photo wide on top, two below side by side */
+.award-photos {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.award-photo-main {
+  width: 100% !important;
+  height: 340px;
+  object-fit: cover;
+  display: block;
+}
+
+.award-photos-secondary {
+  display: flex;
+  gap: 12px;
+}
+
+.award-photos-secondary img {
+  width: calc(50% - 6px);
+  height: 220px;
+  object-fit: cover;
+  display: block;
+}
+
+/* i2i / leadership photo — bigger */
+.leadership-photo {
+  width: 100% !important;
+  max-width: 560px;
+  height: 380px;
+  object-fit: cover;
+  display: block;
+}
+
+.featured-event-photo img {
+  width: 100%;
+  max-width: 400px;
+  height: 260px;
+  object-fit: cover;
+  display: block;
+}
+
+/* tighten text-link gap directly under images */
+.award-copy .text-link,
+.community-meta .text-link,
+.leadership-links .text-link,
+.featured-event-copy .text-link {
+  margin-top: 8px;
+}
+
+.leadership-links {
+  margin-top: 4px;
+}
+
+
+/* =====================================================
+   COMMUNITY SECTION (NJ AI Hub / NJBDA / ACM)
+===================================================== */
+
+.community-section {
+  margin-top: 70px;
+}
+
+.community-heading {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+  align-items: start;
+  margin-bottom: 50px;
+}
+
+.community-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+}
+
+.community-item {
+  border-top: 1px solid var(--light);
+  padding-top: 24px;
+}
+
+.community-heading .community-item {
+  border-top: none;
+  padding-top: 0;
+}
+
+.community-item h3 {
+  margin: 0 0 12px;
+  font-size: 20px;
+  letter-spacing: -.03em;
+}
+
+.community-image {
+  margin-bottom: 8px;
+}
+
+.community-image img {
+  width: 100%;
+  max-width: 320px;
+  height: 220px;
+  object-fit: cover;
+  display: block;
+}
+
+.community-meta p {
+  color: var(--muted);
+  margin: 0 0 10px;
+  max-width: 500px;
+}
+
+
+/* =====================================================
+   IEEE / ACM CARD LABELS
+===================================================== */
+
+.ieee-card,
+.acm-card {
+  position: relative;
+}
+
+.ieee-card h3,
+.acm-card h3 {
+  margin: 0 0 10px;
+  font-size: 22px;
+  letter-spacing: -.03em;
+}
+
+.ieee-card img,
+.acm-card img {
+  display: block;
+}
+
+
+/* =====================================================
+   FEATURED EVENT (NJ AI Literacy Summit)
+===================================================== */
+
+.featured-event {
+  border-top: 1px solid var(--light);
+  padding-top: 40px;
+  margin-top: 70px;
+}
+
+.featured-event-copy h3 {
+  margin: 10px 0 12px;
+  font-size: 26px;
+  letter-spacing: -.035em;
+}
+
+.featured-event-photo {
+  margin: 12px 0;
+}
+
+.event-role {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--muted);
+  margin: 0 0 10px;
+}
+
+.featured-event > p:not(.event-role) {
+  max-width: 600px;
+  color: var(--muted);
+  margin: 0;
+}
+
+
+/* =====================================================
+   SELECTED MOMENTS
+===================================================== */
+
+.moments {
+  border-top: 1px solid var(--light);
+  padding-top: 40px;
+  margin-top: 70px;
+}
+
+.moments-heading h3 {
+  margin: 10px 0 24px;
+  font-size: 26px;
+  letter-spacing: -.035em;
+  line-height: 1.25;
+}
+
+.moments-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.moments-grid img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}
+
+
+/* =====================================================
+   IEEE PAGE
+===================================================== */
+
+.ieee-intro {
+  max-width: 760px;
+  margin-bottom: 55px;
+}
+
+.ieee-events {
+  border-top: 1px solid var(--light);
+}
+
+.ieee-events-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--light);
+}
+
+.ieee-event {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 40px;
+  padding: 35px 0;
+  border-bottom: 1px solid var(--light);
+}
+
+.ieee-event-date {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-top: 5px;
+}
+
+.ieee-event-content h2 {
+  margin: 7px 0 12px;
+  font-size: 25px;
+  line-height: 1.25;
+  letter-spacing: -.035em;
+}
+
+.ieee-event-content p:not(.eyebrow) {
+  max-width: 700px;
+  color: var(--muted);
+}
+
+.ieee-event-content .text-link {
+  margin-top: 15px;
+}
+
+.ieee-api-debug {
+  padding: 25px 0;
+  color: #a52a2a;
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
 @media (max-width: 760px) {
+
   .container { width: min(calc(100% - 28px), var(--max)); }
   .site-header { position: static; }
   .nav nav { display: none; }
@@ -446,20 +863,72 @@ button, input, textarea, select { font: inherit; }
   .leadership-list > div { grid-template-columns: 1fr; gap: 6px; }
   .progress-card { align-items: flex-start; flex-direction: column; gap: 12px; }
   .footer { flex-direction: column; }
-}
-/* Custom image sizes */
 
-.award-photo img {
-  width: 350px;
-  height: auto;
-  max-width: 100%;
-  object-fit: contain;
-}
+  .award-feature {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    margin-bottom: 55px;
+  }
 
-.community-image img {
-  width: 220px;
-  height: auto;
-  max-width: 100%;
-  object-fit: contain;
-}
+  .beyond-code > h3 {
+    margin-top: 55px;
+    margin-bottom: 25px;
+  }
 
+  .beyond-intro {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .leadership-photo {
+    max-width: 100%;
+    height: 260px;
+  }
+
+  .award-photos-secondary {
+    flex-direction: column;
+  }
+
+  .award-photos-secondary img {
+    width: 100%;
+  }
+
+  .community-heading,
+  .community-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .community-image img {
+    max-width: 100%;
+  }
+
+  .featured-event-photo img {
+    max-width: 100%;
+  }
+
+  .moments-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .moments-grid img {
+    height: 200px;
+  }
+
+  .featured-event,
+  .moments {
+    margin-top: 50px;
+    padding-top: 30px;
+  }
+
+  .ieee-event {
+    padding: 32px 0;
+    border-bottom: 1px solid var(--light);
+  }
+
+  .ieee-event h3 {
+    max-width: 750px;
+  }
+
+}
