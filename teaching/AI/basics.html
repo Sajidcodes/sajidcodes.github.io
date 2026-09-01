@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI at Work: A Peer-Support Toolkit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F2EA;
+    --ink:#1E2A22;
+    --ink-soft:#4A564C;
+    --teal:#1B6B63;
+    --teal-deep:#12403C;
+    --coral:#D2601A;
+    --line:#D9D0BE;
+    --card:#FFFFFF;
+    font-size:16px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#161A17;
+      --ink:#EDEAE1;
+      --ink-soft:#AEB7AC;
+      --teal:#5FBFB4;
+      --teal-deep:#8FD8CE;
+      --coral:#F0925A;
+      --line:#33392F;
+      --card:#1E241F;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#161A17;
+    --ink:#EDEAE1;
+    --ink-soft:#AEB7AC;
+    --teal:#5FBFB4;
+    --teal-deep:#8FD8CE;
+    --coral:#F0925A;
+    --line:#33392F;
+    --card:#1E241F;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', system-ui, sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Lora', Georgia, serif;
+    font-weight:600;
+    color:var(--ink);
+    margin:0 0 .4em;
+  }
+  a{color:var(--teal-deep);}
+
+  .wrap{max-width:760px;margin:0 auto;padding:0 24px;}
+
+  header.hero{
+    padding:72px 0 48px;
+    border-bottom:1px solid var(--line);
+  }
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.8rem;
+    color:var(--teal);
+    letter-spacing:.02em;
+    margin-bottom:14px;
+  }
+  h1{font-size:2.4rem; line-height:1.15; max-width:14ch;}
+  .hero p{
+    font-size:1.1rem;
+    color:var(--ink-soft);
+    max-width:56ch;
+    margin-top:14px;
+  }
+
+  nav.toc{
+    padding:28px 0;
+    border-bottom:1px solid var(--line);
+  }
+  nav.toc p{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.75rem;
+    color:var(--ink-soft);
+    margin:0 0 10px;
+  }
+  nav.toc ol{
+    list-style:none;
+    margin:0;padding:0;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 10px;
+  }
+  nav.toc a{
+    text-decoration:none;
+    font-size:.9rem;
+    color:var(--ink);
+    border:1px solid var(--line);
+    padding:6px 12px;
+    border-radius:100px;
+    display:inline-block;
+  }
+  nav.toc a:hover{border-color:var(--teal); color:var(--teal-deep);}
+
+  section.tool{
+    padding:56px 0;
+    border-bottom:1px solid var(--line);
+  }
+  section.tool .tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.75rem;
+    color:var(--coral);
+    margin-bottom:10px;
+  }
+  section.tool h2{font-size:1.6rem;}
+  .problem{
+    color:var(--ink-soft);
+    font-style:italic;
+    margin:10px 0 24px;
+    max-width:52ch;
+  }
+
+  .prompt-block{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-left:3px solid var(--teal);
+    border-radius:6px;
+    padding:20px 22px;
+    margin:0 0 20px;
+    position:relative;
+  }
+  .prompt-block .label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.72rem;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    margin-bottom:10px;
+  }
+  .prompt-block pre{
+    white-space:pre-wrap;
+    word-wrap:break-word;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.88rem;
+    line-height:1.6;
+    margin:0;
+    color:var(--ink);
+  }
+  .copy-btn{
+    position:absolute;
+    top:16px;
+    right:16px;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:.75rem;
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--ink-soft);
+    padding:5px 10px;
+    border-radius:5px;
+    cursor:pointer;
+  }
+  .copy-btn:hover{border-color:var(--teal); color:var(--teal-deep);}
+  .copy-btn.copied{border-color:var(--teal); color:var(--teal-deep);}
+
+  .example{
+    margin:0 0 22px;
+  }
+  .example .label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.72rem;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    margin-bottom:8px;
+  }
+  .example blockquote{
+    margin:0;
+    padding-left:16px;
+    border-left:2px solid var(--coral);
+    color:var(--ink-soft);
+    font-size:.95rem;
+  }
+
+  .why{
+    background:none;
+    padding:0;
+    margin:22px 0;
+    font-size:.95rem;
+  }
+  .why strong{color:var(--teal-deep);}
+
+  ul.moves{
+    margin:14px 0 0;
+    padding-left:20px;
+    font-size:.95rem;
+    color:var(--ink);
+  }
+  ul.moves li{margin-bottom:6px;}
+
+  section.closing{
+    padding:64px 0 40px;
+  }
+  section.closing h2{font-size:1.5rem;}
+  .principles{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+    margin:24px 0 32px;
+  }
+  .principle{
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:16px 18px;
+    background:var(--card);
+  }
+  .principle .name{
+    font-family:'Lora', serif;
+    font-weight:600;
+    color:var(--teal-deep);
+    font-size:1rem;
+    margin-bottom:4px;
+  }
+  .principle p{margin:0; font-size:.88rem; color:var(--ink-soft);}
+
+  .starter-kit{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:24px 26px;
+  }
+  .starter-kit h3{font-size:1.1rem;}
+  .starter-kit ol{
+    padding-left:20px;
+    margin:12px 0 0;
+    font-size:.95rem;
+  }
+  .starter-kit li{margin-bottom:6px;}
+
+  footer{
+    padding:40px 0 60px;
+    color:var(--ink-soft);
+    font-size:.85rem;
+  }
+
+  @media (max-width:600px){
+    header.hero{padding:52px 0 36px;}
+    h1{font-size:1.9rem;}
+    section.tool{padding:40px 0;}
+    .principles{grid-template-columns:1fr;}
+    .copy-btn{position:static; margin-bottom:10px; display:inline-block;}
+    .prompt-block{padding-top:16px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="kicker">TRIO STUDENT SUPPORT SERVICES · WORKSHOP RESOURCE</div>
+    <h1>AI at Work: A Toolkit for Helping Other Learners</h1>
+    <p>Six ready-to-use prompts for supporting the students you work with — from tutoring conversations to diagnosing a stuck study plan. Copy any prompt, swap in the details, and try it.</p>
+  </header>
+
+  <nav class="toc">
+    <p>JUMP TO A TOOL</p>
+    <ol>
+      <li><a href="#tutor">1. Tutor, Not Answer Key</a></li>
+      <li><a href="#5s">2. The 5S Framework</a></li>
+      <li><a href="#studyplan">3. Diagnose a Study Plan</a></li>
+      <li><a href="#quiz">4. Quiz From Notes</a></li>
+      <li><a href="#activity">5. Design an Activity</a></li>
+      <li><a href="#analyze">6. Check the Output</a></li>
+    </ol>
+  </nav>
+
+  <!-- 1. TUTOR PROMPT -->
+  <section class="tool" id="tutor">
+    <div class="tag">01 · PEER TUTORING</div>
+    <h2>Turn a Chatbot Into a Tutor, Not an Answer Key</h2>
+    <p class="problem">Students ask AI for the answer. You can teach them to ask for understanding instead.</p>
+
+    <div class="prompt-block">
+      <div class="label">The Template</div>
+      <button class="copy-btn" data-copy-target="prompt-tutor">Copy</button>
+      <pre id="prompt-tutor">I am a [subject/level] student working on [assignment type] about [topic]. My learning goal is [specific goal]. Act as a tutor — help me understand this deeply, don't give me finished content. Guide me through [specific concept] by asking me questions one at a time. Don't give me the answer directly.</pre>
+    </div>
+
+    <div class="example">
+      <div class="label">Example</div>
+      <blockquote>I am a community college student working on a discussion post about supply and demand for my intro economics class. My goal is to understand how price elasticity actually works, not just memorize the definition. Act as a tutor — ask me questions one at a time and help me reason through examples instead of explaining it for me.</blockquote>
+    </div>
+
+    <div class="why"><strong>Try it live:</strong> Compare "Write my discussion post on price elasticity" against the tutor prompt above, same chatbot. Same tool, two completely different experiences.</div>
+
+    <ul class="moves">
+      <li><strong>Flip it</strong> — ask the bot to act like the student and have your tutee teach it. Explaining something back is one of the fastest ways to find out if you actually know it.</li>
+      <li><strong>Add context, carefully</strong> — uploading notes gives the bot better material to work with. Always get instructor permission first if it's for a class.</li>
+    </ul>
+  </section>
+
+  <!-- 2. 5S FRAMEWORK -->
+  <section class="tool" id="5s">
+    <div class="tag">02 · PROMPTING SKILL</div>
+    <h2>The 5S Framework — Build Any Prompt, For Any Subject</h2>
+    <p class="problem">Most people don't know a bad prompt is bad until they see a good one.</p>
+
+    <ul class="moves">
+      <li><strong>Set the Scene</strong> — who should the AI act as, and what's your level?</li>
+      <li><strong>Be Specific</strong> — what exactly are you stuck on?</li>
+      <li><strong>Simplify Language</strong> — plain English or technical terms?</li>
+      <li><strong>Structure the Output</strong> — steps, bullets, table, examples?</li>
+      <li><strong>Share Feedback</strong> — test it, then refine it.</li>
+    </ul>
+
+    <div class="prompt-block" style="margin-top:22px;">
+      <div class="label">The Prompt</div>
+      <button class="copy-btn" data-copy-target="prompt-5s">Copy</button>
+      <pre id="prompt-5s">Act as an AI literacy coach. Walk me through the 5S framework, one question at a time, to help me build a strong prompt for [my task]. Ask me clarifying questions for each step before moving to the next.</pre>
+    </div>
+
+    <div class="example">
+      <div class="label">Example</div>
+      <blockquote>Act as an AI literacy coach. Walk me through the 5S framework, one question at a time, to help me build a strong prompt for my A&P exam review. Ask me clarifying questions for each step before moving to the next.</blockquote>
+    </div>
+
+    <div class="why"><strong>Takeaway line to reuse:</strong> "Before you ask AI anything, run it through 5S first."</div>
+  </section>
+
+  <!-- 3. STUDY PLAN DIAGNOSIS (full original prompt) -->
+  <section class="tool" id="studyplan">
+    <div class="tag">03 · STUDY STRATEGY</div>
+    <h2>Diagnose a Broken Study Method — Not Just "Study More"</h2>
+    <p class="problem">Students who say "I studied and still failed" usually don't have a motivation problem — they have a mismatch problem: how they studied doesn't match how they're being tested.</p>
+
+    <div class="prompt-block">
+      <div class="label">The Full Prompt</div>
+      <button class="copy-btn" data-copy-target="prompt-studyplan">Copy</button>
+      <pre id="prompt-studyplan">You are a learning strategies expert with deep knowledge of metacognition, study techniques, and how to match learning methods to different types of content for college students. Your task is to help me diagnose why my current study approach isn't working and develop a more effective, personalized study plan in student-friendly language that avoids jargon and abbreviations.
+
+My Current Study Situation:
+The topic/material I'm studying: [SPECIFIC TOPIC, UNIT, OR SUBJECT]
+My subject/course: [SUBJECT AREA]
+How I've been studying: [SPECIFIC METHODS — e.g., rereading notes, making flashcards, watching videos, highlighting textbook]
+Time I've invested: [HOW LONG AND HOW OFTEN YOU'VE STUDIED]
+Why I don't feel confident: [SPECIFIC CONCERNS — e.g., I can't recall information under pressure, I understand in the moment but forget quickly, I know facts but can't apply them, I can't see connections]
+Upcoming assessment type: [WHAT YOU'RE PREPARING FOR — e.g., multiple choice test, essay exam, problem-solving test, presentation, project]
+
+What I Need from You:
+Help me diagnose whether my study methods actually match what I need to learn and how I'll be assessed. Then guide me in creating a better approach:
+
+1. Analyze the mismatch: Based on what I'm studying and how I'll be tested, is my current study method actually preparing me for the right kind of thinking? What's the gap between how I'm studying and what I need to be able to do?
+
+2. Identify what this material actually requires: Does this topic require memorization, conceptual understanding, application skills, analysis, or some combination? Be specific about the cognitive demands.
+
+3. Recommend targeted strategies: Suggest 3-4 specific study techniques that match what I actually need to learn and how I'll be assessed. Not just generic study tips.
+
+4. Create a realistic study plan: Help me organize these strategies into a structured plan that fits my timeline and includes specific, actionable steps.
+
+5. Build in progress checks: Include concrete ways for me to test whether my new approach is working BEFORE the actual assessment. What should I be able to do if I'm truly learning effectively?
+
+Important: Don't just give me a list of popular study techniques. Help me understand WHY my current approach isn't working and HOW the new strategies specifically address my learning gaps for this particular type of material.</pre>
+    </div>
+
+    <div class="example">
+      <div class="label">Example</div>
+      <blockquote>Topic: hypothesis testing in intro statistics. How I've studied: reread notes, memorized formulas. Why I'm not confident: I can calculate a t-test but freeze when asked which test to use in a new scenario. Assessment: word-problem exam requiring me to choose the method and justify it.</blockquote>
+    </div>
+
+    <div class="why"><strong>Once there's a plan, keep going — three follow-ups worth knowing:</strong></div>
+    <ul class="moves">
+      <li><em>"For each strategy, explain how it addresses the specific gap I described."</em> — keeps the plan targeted, not generic.</li>
+      <li><em>"What are 5 'I can' statements I should be able to say if this is working?"</em> — turns vague confidence into checkable progress.</li>
+      <li><em>"After trying this for a week, what should I ask myself to know if it's actually working?"</em> — builds the self-check habit, not just a one-time fix.</li>
+    </ul>
+
+    <div class="why" style="margin-top:18px;"><strong>Why this matters for staff:</strong> Most students only ever get "study more." This gives you a diagnostic conversation instead — one real question ("are you studying to recall, or to apply?") plus follow-ups you can reuse for any subject a tutee brings you.</div>
+  </section>
+
+  <!-- 4. QUIZ FROM NOTES -->
+  <section class="tool" id="quiz">
+    <div class="tag">04 · SELF-TESTING</div>
+    <h2>Turn Your Notes Into a Practice Quiz</h2>
+    <p class="problem">Rereading notes feels like studying. It isn't. Testing yourself is.</p>
+
+    <div class="prompt-block">
+      <div class="label">The Prompt</div>
+      <button class="copy-btn" data-copy-target="prompt-quiz">Copy</button>
+      <pre id="prompt-quiz">Act as a study coach. Based on the [notes/chapter/slides] I'm pasting below, create a [10]-question quiz to test my understanding — mix multiple choice and short answer. Give me an answer key with brief explanations, not just the correct letter.
+"""[paste your notes or textbook excerpt here]"""</pre>
+    </div>
+
+    <div class="example">
+      <div class="label">Example</div>
+      <blockquote>Based on my A&P notes on the cardiovascular system below, create a 10-question quiz — mix multiple choice and short answer. Give me an answer key with explanations, not just correct answers.</blockquote>
+    </div>
+
+    <div class="why"><strong>Why this matters for staff:</strong> A direct answer to "I studied but I don't know if I actually learned it." Also a clean bridge into accuracy and verification — the quiz is only as good as the notes fed into it. Garbage in, garbage out.</div>
+
+    <ul class="moves">
+      <li><strong>Ask for harder questions</strong> if the first pass feels too easy.</li>
+      <li><strong>Ask for a study guide first, quiz second</strong> if a student isn't ready to test themselves yet.</li>
+    </ul>
+  </section>
+
+  <!-- 5. ACTIVITY DESIGN -->
+  <section class="tool" id="activity">
+    <div class="tag">05 · PEER SESSIONS</div>
+    <h2>Design a Real Activity for the Students You Support</h2>
+    <p class="problem">Generic "use AI in your studies" advice doesn't stick. A ready-made activity does.</p>
+
+    <div class="prompt-block">
+      <div class="label">The Prompt</div>
+      <button class="copy-btn" data-copy-target="prompt-activity">Copy</button>
+      <pre id="prompt-activity">I support community college students in [subject/skill area, e.g., "intro programming," "study skills," "resume writing"]. Design a short, hands-on activity that teaches them to use AI as a thinking partner — not an answer machine — while working on [specific task]. Include: (1) a realistic scenario, (2) a clear rule for when they should NOT rely on AI output as-is, (3) one reflection question they answer afterward. Keep it to something I could run in a 15-minute peer session.</pre>
+    </div>
+
+    <div class="example">
+      <div class="label">Example</div>
+      <blockquote>I support community college students preparing for job interviews. Design a short activity where they use AI to practice answering behavioral interview questions, but have to identify one thing the AI's sample answer got wrong or too generic for their actual experience. Include a reflection question about what they'd change.</blockquote>
+    </div>
+
+    <div class="why"><strong>Why this matters for staff:</strong> You're not just learning AI — you're about to be the person a confused student asks first. Having 2-3 of these ready means you can hand someone a real exercise instead of vague advice.</div>
+
+    <ul class="moves">
+      <li><strong>Ask for depth levels</strong> — request one version for a student just getting comfortable with AI, another for someone more advanced.</li>
+      <li><strong>Build in fact-checking</strong> — ask the prompt to include a step where the student verifies or challenges one AI claim.</li>
+    </ul>
+  </section>
+
+  <!-- 6. CRITICALLY ANALYZE OUTPUT -->
+  <section class="tool" id="analyze">
+    <div class="tag">06 · RESPONSIBLE USE</div>
+    <h2>Don't Trust It, Check It — Analyzing AI Output</h2>
+    <p class="problem">Students copy AI answers because they don't have a habit of checking them. This gives them one.</p>
+
+    <ul class="moves">
+      <li><strong>Accuracy</strong> — what factual claims does this make? How would you verify them?</li>
+      <li><strong>Depth</strong> — is this surface-level, or does it explain the why?</li>
+      <li><strong>Bias/errors</strong> — does anything sound overconfident or off?</li>
+    </ul>
+
+    <div class="prompt-block" style="margin-top:22px;">
+      <div class="label">The Prompt</div>
+      <button class="copy-btn" data-copy-target="prompt-analyze">Copy</button>
+      <pre id="prompt-analyze">Act as a writing coach. I'm going to paste something an AI generated for [topic]. Ask me one question at a time to help me evaluate it — is it accurate, is it deep enough, does it show any bias or errors? Give me feedback after each answer, and end by asking what this means for how I should use AI on this kind of work going forward.</pre>
+    </div>
+
+    <div class="why"><strong>Why this matters for staff:</strong> This is the core responsible-use skill in one sentence: AI output is a draft to interrogate, not an answer to copy.</div>
+
+    <ul class="moves">
+      <li>Ask AI for two different answers to the same question, compare which is stronger and why.</li>
+      <li>Compare an AI-written passage side-by-side with a human one — what feels different in the voice?</li>
+    </ul>
+  </section>
+
+  <!-- CLOSING -->
+  <section class="closing">
+    <h2>Using AI Effectively and Responsibly</h2>
+    <div class="principles">
+      <div class="principle">
+        <div class="name">Verify, don't assume</div>
+        <p>Treat every factual claim as something to check, not something to trust by default.</p>
+      </div>
+      <div class="principle">
+        <div class="name">Disclose when it counts</div>
+        <p>If a class or workplace policy asks how AI was used, be upfront about it.</p>
+      </div>
+      <div class="principle">
+        <div class="name">Watch for over-reliance</div>
+        <p>If AI is doing the thinking instead of supporting it, the skill isn't being built.</p>
+      </div>
+      <div class="principle">
+        <div class="name">Access isn't equal</div>
+        <p>Not every student has the same tools or comfort level — keep entry points low.</p>
+      </div>
+    </div>
+
+    <div class="starter-kit">
+      <h3>Starter Kit — What to Take With You</h3>
+      <ol>
+        <li>Pick 2-3 prompts from this page to try this week.</li>
+        <li>Bookmark this page — it's your reference, not something to memorize.</li>
+        <li>Next time a student says "I don't get it" or "I studied but still failed," start with the tutor prompt or the study plan diagnosis above.</li>
+      </ol>
+    </div>
+  </section>
+
+  <footer>
+    Built for PCCC Student Support Services · TRIO workshop resource
+  </footer>
+
+</div>
+
+<script>
+  document.querySelectorAll('.copy-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var targetId = btn.getAttribute('data-copy-target');
+      var text = document.getElementById(targetId).innerText;
+      var finish = function(){
+        var original = btn.textContent;
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(function(){
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 1500);
+      };
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(finish).catch(function(){
+          fallbackCopy(text); finish();
+        });
+      } else {
+        fallbackCopy(text); finish();
+      }
+    });
+  });
+
+  function fallbackCopy(text){
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    try { document.execCommand('copy'); } catch(e){}
+    document.body.removeChild(ta);
+  }
+</script>
+
+</body>
+</html>
