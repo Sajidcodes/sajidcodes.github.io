@@ -1,0 +1,2293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Python Lists — Complete Revision Guide</title>
+
+<style>
+    :root {
+        --bg: #f7f8fa;
+        --card: #ffffff;
+        --text: #1f2937;
+        --muted: #667085;
+        --border: #e5e7eb;
+        --accent: #2563eb;
+        --accent-light: #eff6ff;
+        --green: #15803d;
+        --green-light: #f0fdf4;
+        --yellow: #a16207;
+        --yellow-light: #fefce8;
+        --red: #b91c1c;
+        --red-light: #fef2f2;
+        --purple: #7c3aed;
+        --purple-light: #f5f3ff;
+        --code-bg: #111827;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        margin: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont,
+                     "Segoe UI", sans-serif;
+        line-height: 1.65;
+        color: var(--text);
+        background: var(--bg);
+    }
+
+    header {
+        background: #111827;
+        color: white;
+        padding: 60px 20px;
+    }
+
+    header .container {
+        max-width: 1100px;
+        margin: auto;
+    }
+
+    header h1 {
+        font-size: clamp(2.2rem, 5vw, 4rem);
+        line-height: 1.1;
+        margin-bottom: 18px;
+    }
+
+    header p {
+        max-width: 800px;
+        font-size: 1.15rem;
+        color: #d1d5db;
+    }
+
+    .container {
+        max-width: 1100px;
+        margin: auto;
+        padding: 0 20px;
+    }
+
+    nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: white;
+        border-bottom: 1px solid var(--border);
+        overflow-x: auto;
+    }
+
+    nav .container {
+        display: flex;
+        gap: 8px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        white-space: nowrap;
+    }
+
+    nav a {
+        color: var(--text);
+        text-decoration: none;
+        padding: 7px 12px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+    }
+
+    nav a:hover {
+        background: var(--accent-light);
+        color: var(--accent);
+    }
+
+    main {
+        padding: 40px 0 80px;
+    }
+
+    section {
+        margin-bottom: 60px;
+        scroll-margin-top: 70px;
+    }
+
+    h2 {
+        font-size: 2rem;
+        margin-top: 0;
+        border-bottom: 2px solid var(--border);
+        padding-bottom: 10px;
+    }
+
+    h3 {
+        margin-top: 32px;
+        font-size: 1.35rem;
+    }
+
+    h4 {
+        margin-bottom: 8px;
+    }
+
+    p {
+        margin-top: 8px;
+    }
+
+    .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 24px;
+        margin: 20px 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 18px;
+    }
+
+    .mini-card {
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+    }
+
+    .problem {
+        border-left: 5px solid var(--accent);
+        background: var(--accent-light);
+    }
+
+    .think {
+        border-left: 5px solid var(--purple);
+        background: var(--purple-light);
+    }
+
+    .error {
+        border-left: 5px solid var(--red);
+        background: var(--red-light);
+    }
+
+    .tip {
+        border-left: 5px solid var(--green);
+        background: var(--green-light);
+    }
+
+    .warning {
+        border-left: 5px solid var(--yellow);
+        background: var(--yellow-light);
+    }
+
+    .label {
+        display: inline-block;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        padding: 4px 8px;
+        border-radius: 6px;
+        margin-bottom: 8px;
+    }
+
+    .label-blue {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .label-purple {
+        background: #ede9fe;
+        color: #6d28d9;
+    }
+
+    .label-red {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+    .label-green {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    pre {
+        background: var(--code-bg);
+        color: #e5e7eb;
+        padding: 18px;
+        border-radius: 10px;
+        overflow-x: auto;
+        font-size: 0.92rem;
+        line-height: 1.55;
+    }
+
+    code {
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono",
+                     monospace;
+    }
+
+    :not(pre) > code {
+        background: #f1f5f9;
+        padding: 2px 6px;
+        border-radius: 5px;
+        font-size: 0.92em;
+    }
+
+    .output {
+        background: #f8fafc;
+        border: 1px dashed #94a3b8;
+        padding: 14px 18px;
+        border-radius: 8px;
+        font-family: monospace;
+        white-space: pre-wrap;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        background: white;
+    }
+
+    th, td {
+        border: 1px solid var(--border);
+        padding: 12px;
+        text-align: left;
+        vertical-align: top;
+    }
+
+    th {
+        background: #f3f4f6;
+    }
+
+    .toc {
+        columns: 2;
+    }
+
+    .toc a {
+        display: block;
+        padding: 5px 0;
+        color: var(--accent);
+    }
+
+    .question {
+        margin: 14px 0;
+        padding: 14px;
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+    }
+
+    .difficulty {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--muted);
+    }
+
+    .step {
+        counter-increment: step;
+        position: relative;
+        padding-left: 45px;
+        margin: 20px 0;
+    }
+
+    .step::before {
+        content: counter(step);
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: var(--accent);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+
+    .steps {
+        counter-reset: step;
+    }
+
+    .checklist li {
+        margin: 8px 0;
+    }
+
+    .cheat-sheet {
+        position: sticky;
+        top: 75px;
+    }
+
+    footer {
+        background: #111827;
+        color: #d1d5db;
+        padding: 40px 20px;
+        text-align: center;
+    }
+
+    @media (max-width: 700px) {
+        .toc {
+            columns: 1;
+        }
+
+        header {
+            padding: 40px 20px;
+        }
+
+        .card {
+            padding: 18px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="container">
+        <p>PYTHON PROGRAMMING • REVISION GUIDE</p>
+        <h1>🐍 Python Lists</h1>
+        <p>
+            A practical guide to understanding, using, debugging, and
+            reasoning about Python lists.
+        </p>
+        <p>
+            Don't just memorize list syntax. Learn to recognize the
+            problem a list solves, predict what your code will do,
+            explain why it works, and debug it when it doesn't.
+        </p>
+    </div>
+</header>
+
+<nav>
+    <div class="container">
+        <a href="#big-picture">Big Picture</a>
+        <a href="#creating">Creating</a>
+        <a href="#accessing">Accessing</a>
+        <a href="#modifying">Modifying</a>
+        <a href="#methods">Methods</a>
+        <a href="#loops">Loops</a>
+        <a href="#indexing">Indexing</a>
+        <a href="#nested">Nested Lists</a>
+        <a href="#comprehensions">Comprehensions</a>
+        <a href="#debugging">Debugging</a>
+        <a href="#practice">Practice</a>
+        <a href="#challenge">Challenge</a>
+        <a href="#cheat">Cheat Sheet</a>
+    </div>
+</nav>
+
+<main class="container">
+
+<!-- ====================================================== -->
+<!-- BIG PICTURE -->
+<!-- ====================================================== -->
+
+<section id="big-picture">
+
+<h2>1. The Big Picture: Why Do Lists Exist?</h2>
+
+<div class="card problem">
+    <span class="label label-blue">Start with the problem</span>
+
+    <p>
+        Suppose you need to store five test scores.
+    </p>
+
+<pre><code>score1 = 85
+score2 = 92
+score3 = 78
+score4 = 91
+score5 = 88</code></pre>
+
+    <p>
+        This works, but what happens when there are 500 scores?
+        What if you need to calculate an average? Find the highest
+        score? Process every score?
+    </p>
+
+    <p>
+        You need a way to store <strong>many related values under
+        one variable name</strong>.
+    </p>
+</div>
+
+<div class="card tip">
+    <strong>The solution: a list</strong>
+
+<pre><code>scores = [85, 92, 78, 91, 88]</code></pre>
+
+    <p>
+        Now one variable represents the entire collection.
+    </p>
+</div>
+
+<div class="card think">
+    <span class="label label-purple">Think before coding</span>
+
+    <p>
+        Which is easier to process with a loop?
+    </p>
+
+<pre><code>score1 = 85
+score2 = 92
+score3 = 78
+score4 = 91
+score5 = 88</code></pre>
+
+    <p>or:</p>
+
+<pre><code>scores = [85, 92, 78, 91, 88]</code></pre>
+
+    <p>
+        The important idea is not the brackets.
+        The important idea is <strong>collection + repetition</strong>.
+    </p>
+</div>
+
+</section>
+
+
+<!-- ====================================================== -->
+<!-- CHARACTERISTICS -->
+<!-- ====================================================== -->
+
+<section>
+
+<h2>2. What Is a Python List?</h2>
+
+<div class="card">
+
+<pre><code>numbers = [10, 20, 30, 40]</code></pre>
+
+<p>A Python list is an ordered collection of objects.</p>
+
+<table>
+<tr>
+    <th>Characteristic</th>
+    <th>What it means</th>
+    <th>Example</th>
+</tr>
+<tr>
+    <td>Ordered</td>
+    <td>Items have a defined position.</td>
+    <td><code>[10, 20, 30]</code></td>
+</tr>
+<tr>
+    <td>Mutable</td>
+    <td>Items can be changed after the list is created.</td>
+    <td><code>numbers[0] = 100</code></td>
+</tr>
+<tr>
+    <td>Allows duplicates</td>
+    <td>The same value can appear multiple times.</td>
+    <td><code>[3, 3, 5]</code></td>
+</tr>
+<tr>
+    <td>Heterogeneous</td>
+    <td>A list can contain different object types.</td>
+    <td><code>[10, "Python", 3.5]</code></td>
+</tr>
+<tr>
+    <td>Dynamic</td>
+    <td>Items can be added and removed.</td>
+    <td><code>append()</code></td>
+</tr>
+<tr>
+    <td>Nestable</td>
+    <td>A list can contain other lists.</td>
+    <td><code>[[1,2], [3,4]]</code></td>
+</tr>
+</table>
+
+</div>
+
+<div class="card think">
+
+<h3>Critical Thinking</h3>
+
+<p>
+Why might a list be better than five separate variables even
+when the number of values is small?
+</p>
+
+<p>
+Think about what happens when you want to:
+</p>
+
+<ul>
+    <li>repeat an operation</li>
+    <li>count values</li>
+    <li>find a maximum</li>
+    <li>filter values</li>
+    <li>calculate statistics</li>
+</ul>
+
+</div>
+
+</section>
+
+
+<!-- ====================================================== -->
+<!-- CREATING -->
+<!-- ====================================================== -->
+
+<section id="creating">
+
+<h2>3. Creating Lists</h2>
+
+<h3>Empty list</h3>
+
+<pre><code>numbers = []</code></pre>
+
+<h3>List of numbers</h3>
+
+<pre><code>scores = [85, 92, 78, 91]</code></pre>
+
+<h3>List of strings</h3>
+
+<pre><code>names = ["Ali", "Sara", "John"]</code></pre>
+
+<h3>Mixed data types</h3>
+
+<pre><code>student = ["Ali", 21, 3.8, True]</code></pre>
+
+<h3>Nested list</h3>
+
+<pre><code>matrix = [
+    [1, 2],
+    [3, 4],
+    [5, 6]
+]</code></pre>
+
+<div class="card think">
+
+<h3>Predict</h3>
+
+<p>What is the length of each list?</p>
+
+<pre><code>a = []
+b = [10]
+c = [10, 20, 30]
+d = [[1, 2], [3, 4]]</code></pre>
+
+<p>
+Remember: <code>len()</code> counts the items directly contained
+in the list.
+</p>
+
+</div>
+
+</section>
+
+
+<!-- ====================================================== -->
+<!-- ACCESS -->
+<!-- ====================================================== -->
+
+<section id="accessing">
+
+<h2>4. Accessing List Items</h2>
+
+<div class="card problem">
+
+<p>
+A list may contain many values. How do we retrieve one specific value?
+</p>
+
+<p>
+Python solves this using <strong>indexing</strong>.
+</p>
+
+<pre><code>names = ["Ali", "Sara", "John", "Maria"]</code></pre>
+
+</div>
+
+<h3>Zero-based indexing</h3>
+
+<table>
+<tr>
+    <th>Index</th>
+    <td>0</td>
+    <td>1</td>
+    <td>2</td>
+    <td>3</td>
+</tr>
+<tr>
+    <th>Value</th>
+    <td>Ali</td>
+    <td>Sara</td>
+    <td>John</td>
+    <td>Maria</td>
+</tr>
+</table>
+
+<pre><code>print(names[0])    # Ali
+print(names[2])    # John</code></pre>
+
+<div class="card warning">
+
+<h3>Common mistake</h3>
+
+<p>Students often think the first item is index 1.</p>
+
+<pre><code>names[1]</code></pre>
+
+<p>
+This gives <strong>Sara</strong>, not Ali.
+</p>
+
+<p>
+The index represents the item's position starting from zero.
+</p>
+
+</div>
+
+<h3>Negative indexing</h3>
+
+<pre><code>print(names[-1])   # Maria
+print(names[-2])   # John</code></pre>
+
+<p>
+Negative indexes count from the end.
+</p>
+
+<h3>Slicing</h3>
+
+<pre><code>numbers = [10, 20, 30, 40, 50]
+
+print(numbers[1:4])</code></pre>
+
+<div class="output">[20, 30, 40]</div>
+
+<p>
+The start index is included; the stop index is excluded.
+</p>
+
+<div class="card think">
+
+<h3>Predict before running</h3>
+
+<pre><code>numbers = [10, 20, 30, 40, 50]
+
+print(numbers[0])
+print(numbers[3])
+print(numbers[-1])
+print(numbers[1:4])
+print(numbers[:3])
+print(numbers[2:])</code></pre>
+
+<p>
+Write down the output before running the program.
+Then check your prediction.
+</p>
+
+</div>
+
+</section>
+
+
+<!-- ====================================================== -->
+<!-- MODIFYING -->
+<!-- ====================================================== -->
+
+<section id="modifying">
+
+<h2>5. Modifying Lists</h2>
+
+<div class="card problem">
+
+<p>
+We can retrieve an item with an index. But what if the value is
+wrong and needs to be changed?
+</p>
+
+</div>
+
+<h3>Change one item</h3>
+
+<pre><code>numbers = [10, 20, 30, 40]
+
+numbers[1] = 200
+
+print(numbers)</code></pre>
+
+<div class="output">[10, 200, 30, 40]</div>
+
+<h3>Change every occurrence</h3>
+
+<p>
+If the same value appears multiple times, changing one index only
+changes one item.
+</p>
+
+<pre><code>numbers = [1, 3, 5, 3, 7, 3]
+
+numbers[1] = 300
+
+print(numbers)</code></pre>
+
+<div class="output">[1, 300, 5, 3, 7, 3]</div>
+
+<p>
+If the goal is to replace <strong>every</strong> 3, you need repetition.
+</p>
+
+<pre><code>numbers = [1, 3, 5, 3, 7, 3]
+
+for i in range(len(numbers)):
+    if numbers[i] == 3:
+        numbers[i] = 300
+
+print(numbers)</code></pre>
+
+<div class="output">[1, 300, 5, 300, 7, 300]</div>
+
+<div class="card think">
+
+<h3>The important distinction</h3>
+
+<p>
+Ask yourself:
+</p>
+
+<ul>
+    <li>Am I changing <strong>one known position</strong>?</li>
+    <li>Am I changing <strong>every item that meets a condition</strong>?</li>
+</ul>
+
+<p>
+The first problem needs indexing.
+The second problem needs repetition + a condition.
+</p>
+
+</div>
+
+</section>
+
+
+<!-- ====================================================== -->
+<!-- ADD REMOVE -->
+<!-- ====================================================== -->
+
+<section id="methods">
+
+<h2>6. Adding and Removing Items</h2>
+
+<h3><code>append()</code></h3>
+
+<p>
+Use <code>append()</code> when you want to add one item to the end.
+</p>
+
+<pre><code>fruits = ["apple", "banana"]
+
+fruits.append("mango")
+
+print(fruits)</code></pre>
+
+<div class="output">['apple', 'banana', 'mango']</div>
+
+<h3><code>insert()</code></h3>
+
+<pre><code>fruits.insert(1, "orange")</code></pre>
+
+<p>
+Insert adds an item at a specific position.
+</p>
+
+<h3><code>remove()</code></h3>
+
+<pre><code>fruits.remove("banana")</code></pre>
+
+<p>
+Removes the first matching value.
+</p>
+
+<h3><code>pop()</code></h3>
+
+<pre><code>last_item = fruits.pop()</code></pre>
+
+<p>
+Removes and returns an item.
+</p>
+
+<h3><code>del</code></h3>
+
+<pre><code>del fruits[1]</code></pre>
+
+<p>
+Deletes an item using its index.
+</p>
+
+<table>
+<tr>
+    <th>Operation</th>
+    <th>Use it when...</th>
+</tr>
+<tr>
+    <td><code>append()</code></td>
+    <td>You want to add one item to the end.</td>
+</tr>
+<tr>
+    <td><code>insert()</code></td>
+    <td>You want to add an item at a particular position.</td>
+</tr>
+<tr>
+    <td><code>remove()</code></td>
+    <td>You know the value you want to remove.</td>
+</tr>
+<tr>
+    <td><code>pop()</code></td>
+    <td>You want to remove an item and possibly use the removed value.</td>
+</tr>
+<tr>
+    <td><code>del</code></td>
+    <td>You want to delete using an index.</td>
+</tr>
+</table>
+
+<div class="card error">
+
+<h3>Common Error: confusing <code>remove()</code> and <code>pop()</code></h3>
+
+<pre><code>numbers.remove(2)</code></pre>
+
+<p>
+This means: <strong>remove the value 2</strong>.
+</p>
+
+<pre><code>numbers.pop(2)</code></pre>
+
+<p>
+This means: <strong>remove the item at index 2</strong>.
+</p>
+
+</div>
+
+</section>
+
+
+<!-- ====================================================== -->
+<!-- BUILT INS -->
+<!-- ====================================================== -->
+
+<section>
+
+<h2>7. Useful Built-in Functions</h2>
+
+<pre><code>scores = [85, 92, 78, 91, 88]
+
+print(len(scores))
+print(sum(scores))
+print(max(scores))
+print(min(scores))
+print(sorted(scores))</code></pre>
+
+<table>
+<tr>
+    <th>Function</th>
+    <th>Purpose</th>
+</tr>
+<tr>
+    <td><code>len()</code></td>
+    <td>Number of items</td>
+</tr>
+<tr>
+    <td><code>sum()</code></td>
+    <td>Total of numeric items</td>
+</tr>
+<tr>
+    <td><code>max()</code></td>
+    <td>Largest item</td>
+</tr>
+<tr>
+    <td><code>min()</code></td>
+    <td>Smallest item</td>
+</tr>
+<tr>
+    <td><code>sorted()</code></td>
+    <td>Returns a new sorted list</td>
+</tr>
+</table>
+
+<div class="card error">
+
+<h3>Error-driven learning: "int object is not callable"</h3>
+
+<p>Suppose you write:</p>
+
+<pre><code>sum = 100
+
+print(sum(scores))</code></pre>
+
+<p>
+You may see:
+</p>
+
+<pre><code>TypeError: 'int' object is not callable</code></pre>
+
+<p>
+Why?
+</p>
+
+<p>
+You accidentally used the name <code>sum</code> for a variable.
+Python can no longer access the built-in <code>sum()</code> function
+through that name.
+</p>
+
+<p>
+Avoid variable names such as:
+</p>
+
+<pre><code>sum
+list
+str
+int
+len
+max
+min</code></pre>
+
+</div>
+
+</section>
+
+
+<!-- ====================================================== -->
+<!-- LOOPS -->
+<!-- ====================================================== -->
+
+<section id="loops">
+
+<h2>8. Lists + <code>for</code> Loops</h2>
+
+<div class="card problem">
+
+<h3>The problem</h3>
+
+<p>
+You have a list containing 1,000 values.
+You want to perform the same operation on every value.
+Writing 1,000 statements is not realistic.
+</p>
+
+<p>
+A loop lets the program repeat the operation.
+</p>
+
+</div>
+
+<h3>Loop directly through values</h3>
+
+<pre><code>names = ["Ali", "Sara", "John"]
+
+for name in names:
+    print(name)</code></pre>
+
+<p>
+Use this approach when you care about the <strong>values</strong>.
+</p>
+
+<h3>Process every number</h3>
+
+<pre><code>numbers = [3, 7, 10, 12]
+
+for number in numbers:
+    print(number ** 2)</code></pre>
+
+<h3>Counting with a loop</h3>
+
+<pre><code>scores = [85, 62, 91, 48, 77, 55, 93]
+
+count = 0
+
+for score in scores:
+    if score >= 70:
+        count += 1
+
+print(count)</code></pre>
+
+<div class="card think">
+
+<h3>Recognize the pattern</h3>
+
+<p>
+Many list problems follow this structure:
+</p>
+
+<pre><code>for item in list:
+    if condition:
+        do_something()</code></pre>
+
+<p>
+This is the basic pattern behind:
+</p>
+
+<ul>
+    <li>counting</li>
+    <li>filtering</li>
+    <li>searching</li>
+    <li>calculating totals</li>
+    <li>building new lists</li>
+</ul>
+
+</div>
+
+</section>
+
+
+<!-- ====================================================== -->
+<!-- INDEXING WITH LOOPS -->
+<!-- ====================================================== -->
+
+<section id="indexing">
+
+<h2>9. Index + Loop: When Position Matters</h2>
+
+<div class="card problem">
+
+<p>
+Sometimes you don't just need the value.
+You need to know <strong>where the value is</strong>.
+</p>
+
+</div>
+
+<h3>Example: names and scores</h3>
+
+<pre><code>names = ["Ali", "Sara", "John", "Maria"]
+scores = [85, 92, 78, 88]
+
+for i in range(len(names)):
+    print(names[i], "->", scores[i])</code></pre>
+
+<div class="output">Ali -> 85
+Sara -> 92
+John -> 78
+Maria -> 88</div>
+
+<p>
+Here, the same index connects the two lists.
+</p>
+
+<table>
+<tr>
+    <th>Index</th>
+    <th>names</th>
+    <th>scores</th>
+</tr>
+<tr>
+    <td>0</td>
+    <td>Ali</td>
+    <td>85</td>
+</tr>
+<tr>
+    <td>1</td>
+    <td>Sara</td>
+    <td>92</td>
+</tr>
+<tr>
+    <td>2</td>
+    <td>John</td>
+    <td>78</td>
+</tr>
+<tr>
+    <td>3</td>
+    <td>Maria</td>
+    <td>88</td>
+</tr>
+</table>
+
+<div class="card think">
+
+<h3>Important question</h3>
+
+<p>
+Why not simply write:
+</p>
+
+<pre><code>for name in names:
+    for score in scores:
+        print(name, score)</code></pre>
+
+<p>
+Because the inner loop creates every possible combination.
+It does not preserve the one-to-one relationship between the
+two lists.
+</p>
+
+</div>
+
+</section>
+
+
+<!-- ====================================================== -->
+<!-- NESTED -->
+<!-- ====================================================== -->
+
+<section id="nested">
+
+<h2>10. Nested Lists</h2>
+
+<div class="card problem">
+
+<p>
+What if one list is not enough to represent the structure of your
+data?
+</p>
+
+<p>
+Consider a spreadsheet:
+</p>
+
+<pre><code>1  2
+3  4
+5  6</code></pre>
+
+<p>
+A natural Python representation is:
+</p>
+
+<pre><code>matrix = [
+    [1, 2],
+    [3, 4],
+    [5, 6]
+]</code></pre>
+
+<p>
+This is a <strong>list containing lists</strong>.
+</p>
+
+</div>
+
+<h3>Accessing nested items</h3>
+
+<pre><code>print(matrix[0][0])  # 1
+print(matrix[1][1])  # 4
+print(matrix[2][0])  # 5</code></pre>
+
+<p>
+Think of it as:
+</p>
+
+<pre><code>matrix[row][column]</code></pre>
+
+<h3>Nested loops</h3>
+
+<pre><code>for i in range(len(matrix)):
+    for j in range(len(matrix[i])):
+        print(matrix[i][j])</code></pre>
+
+<div class="card think">
+
+<h3>Trace the loop</h3>
+
+<p>
+For this matrix:
+</p>
+
+<pre><code>matrix = [
+    [1, 2],
+    [3, 4],
+    [5, 6]
+]</code></pre>
+
+<p>
+Ask:
+</p>
+
+<ul>
+    <li>What is the first value of <code>i</code>?</li>
+    <li>What is the first value of <code>j</code>?</li>
+    <li>What does <code>matrix[i][j]</code> become?</li>
+    <li>When does the inner loop finish?</li>
+    <li>When does <code>i</code> change?</li>
+</ul>
+
+</div>
+
+<h3>Row totals</h3>
+
+<pre><code>matrix = [
+    [3, 8, 2],
+    [10, 5, 7],
+    [4, 12, 6]
+]
+
+for row in matrix:
+    total = 0
+
+    for number in row:
+        total += number
+
+    print(total)</code></pre>
+
+<div class="output">13
+22
+22</div>
+
+<div class="card tip">
+
+<p>
+Notice that we did not need indexes here.
+</p>
+
+<p>
+When you only need the values, looping directly through the
+values is often simpler.
+</p>
+
+</div>
+
+</section>
+
+
+<!-- ====================================================== -->
+<!-- COMPREHENSIONS -->
+<!-- ====================================================== -->
+
+<section id="comprehensions">
+
+<h2>11. List Comprehensions</h2>
+
+<div class="card problem">
+
+<h3>Why do we need them?</h3>
+
+<p>
+Suppose you want to create a new list by transforming every item
+in another list.
+</p>
+
+<p>The normal loop is:</p>
+
+<pre><code>numbers = [1, 2, 3, 4, 5]
+
+squares = []
+
+for number in numbers:
+    squares.append(number ** 2)</code></pre>
+
+<p>
+Python provides a compact way to express the same pattern.
+</p>
+
+<pre><code>squares = [number ** 2 for number in numbers]</code></pre>
+
+</div>
+
+<h3>The basic pattern</h3>
+
+<pre><code>[expression for item in iterable]</code></pre>
+
+<p>
+Read it conceptually as:
+</p>
+
+<p>
+<strong>
+"For each item, calculate this expression and put the result
+into a new list."
+</strong>
+</p>
+
+<h3>Transformation</h3>
+
+<pre><code>numbers = [1, 2, 3, 4]
+
+doubled = [n * 2 for n in numbers]</code></pre>
+
+<div class="output">[2, 4, 6, 8]</div>
+
+<h3>Filtering</h3>
+
+<pre><code>numbers = [3, 15, 8, 22, 4, 30]
+
+large = [n for n in numbers if n > 10]</code></pre>
+
+<div class="output">[15, 22, 30]</div>
+
+<div class="card think">
+
+<h3>Do not memorize the syntax blindly</h3>
+
+<p>
+Start with the normal loop:
+</p>
+
+<pre><code>result = []
+
+for n in numbers:
+    if n > 10:
+        result.append(n)</code></pre>
+
+<p>
+Then identify:
+</p>
+
+<ul>
+    <li><strong>What am I putting into the new list?</strong></li>
+    <li><strong>Where does each item come from?</strong></li>
+    <li><strong>Which items should be included?</strong></li>
+</ul>
+
+<p>
+Then translate it into:
+</p>
+
+<pre><code>[n for n in numbers if n > 10]</code></pre>
+
+</div>
+
+<h3>Flattening a nested list</h3>
+
+<pre><code>matrix = [
+    [1, 2],
+    [3, 4],
+    [5, 6]
+]
+
+flat = [number for row in matrix for number in row]
+
+print(flat)</code></pre>
+
+<div class="output">[1, 2, 3, 4, 5, 6]</div>
+
+<div class="card warning">
+
+<h3>Read nested comprehensions carefully</h3>
+
+<pre><code>[number for row in matrix for number in row]</code></pre>
+
+<p>
+A good strategy is to expand it back into ordinary loops when
+you are unsure:
+</p>
+
+<pre><code>result = []
+
+for row in matrix:
+    for number in row:
+        result.append(number)</code></pre>
+
+<p>
+If you cannot explain the ordinary loop, you probably should not
+write the comprehension yet.
+</p>
+
+</div>
+
+</section>
+
+
+<!-- ====================================================== -->
+<!-- COMMON ERRORS -->
+<!-- ====================================================== -->
+
+<section id="debugging">
+
+<h2>12. Debugging Lists</h2>
+
+<p>
+A strong programmer does not try to avoid every error.
+A strong programmer learns how to <strong>read and investigate
+errors</strong>.
+</p>
+
+<div class="card error">
+
+<h3>Error 1: Index out of range</h3>
+
+<pre><code>numbers = [10, 20, 30]
+
+print(numbers[3])</code></pre>
+
+<p>
+There is no index 3.
+The valid indexes are:
+</p>
+
+<pre><code>0, 1, 2</code></pre>
+
+<p>
+The list has length 3, but its last index is 2.
+</p>
+
+</div>
+
+<div class="card error">
+
+<h3>Error 2: Modifying while looping incorrectly</h3>
+
+<p>
+Changing the size of a list while iterating over it can create
+unexpected behavior.
+</p>
+
+<p>
+For example, repeatedly removing items from the same list while
+moving through it requires careful reasoning.
+</p>
+
+<p>
+When possible, consider creating a new list instead.
+</p>
+
+</div>
+
+<div class="card error">
+
+<h3>Error 3: Using parentheses instead of brackets</h3>
+
+<pre><code>numbers = (10, 20, 30)</code></pre>
+
+<p>
+This creates a tuple, not a list.
+</p>
+
+<pre><code>numbers = [10, 20, 30]</code></pre>
+
+<p>
+This creates a list.
+</p>
+
+</div>
+
+<div class="card error">
+
+<h3>Error 4: Calling a list like a function</h3>
+
+<pre><code>numbers = [10, 20, 30]
+
+print(numbers(0))</code></pre>
+
+<p>
+A list is indexed with square brackets:
+</p>
+
+<pre><code>print(numbers[0])</code></pre>
+
+</div>
+
+<div class="card error">
+
+<h3>Error 5: Forgetting that indexing starts at zero</h3>
+
+<pre><code>names = ["Ali", "Sara", "John"]
+
+print(names[1])</code></pre>
+
+<p>
+The result is <code>"Sara"</code>, not <code>"Ali"</code>.
+</p>
+
+</div>
+
+</section>
+
+
+<!-- ====================================================== -->
+<!-- PRACTICE -->
+<!-- ====================================================== -->
+
+<section id="practice">
+
+<h2>13. Practice: From Basic to Advanced</h2>
+
+<div class="card">
+<h3>Level 1 — Basic</h3>
+
+<ol>
+    <li>Create a list of five favorite foods.</li>
+    <li>Print the first item.</li>
+    <li>Print the last item.</li>
+    <li>Change the third item.</li>
+    <li>Add a new item.</li>
+    <li>Remove one item.</li>
+    <li>Print the length.</li>
+</ol>
+</div>
+
+<div class="card">
+<h3>Level 2 — Lists + Loops</h3>
+
+<ol start="8">
+    <li>Print every item in a list.</li>
+    <li>Print the square of every number.</li>
+    <li>Count numbers greater than 50.</li>
+    <li>Calculate the sum of all numbers.</li>
+    <li>Build a list containing only even numbers.</li>
+</ol>
+</div>
+
+<div class="card">
+<h3>Level 3 — Indexing</h3>
+
+<ol start="13">
+    <li>Print names and scores side by side.</li>
+    <li>Find the index of the highest score.</li>
+    <li>Compare two lists item by item.</li>
+    <li>Replace every occurrence of a value.</li>
+</ol>
+</div>
+
+<div class="card">
+<h3>Level 4 — Nested Lists</h3>
+
+<ol start="17">
+    <li>Access a specific matrix item.</li>
+    <li>Print every matrix item.</li>
+    <li>Calculate each row's total.</li>
+    <li>Find the maximum value in each row.</li>
+</ol>
+</div>
+
+<div class="card">
+<h3>Level 5 — List Comprehensions</h3>
+
+<ol start="21">
+    <li>Convert a loop into a comprehension.</li>
+    <li>Filter numbers using a comprehension.</li>
+    <li>Convert temperatures using a comprehension.</li>
+    <li>Flatten a nested list.</li>
+</ol>
+</div>
+
+</section>
+
+
+<!-- ====================================================== -->
+<!-- CRITICAL THINKING -->
+<!-- ====================================================== -->
+
+<section>
+
+<h2>14. Critical Thinking Questions</h2>
+
+<div class="question">
+    <strong>1.</strong>
+    When should you loop directly through values instead of using indexes?
+</div>
+
+<div class="question">
+    <strong>2.</strong>
+    When does an index become necessary?
+</div>
+
+<div class="question">
+    <strong>3.</strong>
+    Why does <code>range(len(numbers))</code> produce useful indexes?
+</div>
+
+<div class="question">
+    <strong>4.</strong>
+    What is the difference between modifying a list and creating
+    a new list?
+</div>
+
+<div class="question">
+    <strong>5.</strong>
+    Why is a nested loop necessary for a matrix?
+</div>
+
+<div class="question">
+    <strong>6.</strong>
+    What problem does a list comprehension solve?
+</div>
+
+<div class="question">
+    <strong>7.</strong>
+    When might a normal loop be clearer than a list comprehension?
+</div>
+
+<div class="question">
+    <strong>8.</strong>
+    If two lists contain related information, what assumptions must
+    be true before matching them by index?
+</div>
+
+<div class="question">
+    <strong>9.</strong>
+    What happens if the two lists have different lengths?
+</div>
+
+<div class="question">
+    <strong>10.</strong>
+    If your code produces the correct output but you cannot explain
+    why it works, have you really mastered the concept?
+</div>
+
+</section>
+
+
+<!-- ====================================================== -->
+<!-- TRACE -->
+<!-- ====================================================== -->
+
+<section>
+
+<h2>15. Code Tracing Practice</h2>
+
+<div class="card think">
+
+<h3>Trace 1</h3>
+
+<pre><code>numbers = [2, 4, 6]
+
+total = 0
+
+for n in numbers:
+    total += n
+
+print(total)</code></pre>
+
+<p>
+Before running it, write down the value of <code>total</code>
+after each loop iteration.
+</p>
+
+</div>
+
+<div class="card think">
+
+<h3>Trace 2</h3>
+
+<pre><code>numbers = [3, 8, 12, 5]
+
+result = []
+
+for n in numbers:
+    if n > 7:
+        result.append(n)
+
+print(result)</code></pre>
+
+<p>
+Track the contents of <code>result</code> after every iteration.
+</p>
+
+</div>
+
+<div class="card think">
+
+<h3>Trace 3 — Nested Loop</h3>
+
+<pre><code>matrix = [
+    [1, 2],
+    [3, 4]
+]
+
+for row in matrix:
+    for number in row:
+        print(number)</code></pre>
+
+<p>
+How many times does the inner loop execute?
+</p>
+
+</div>
+
+</section>
+
+
+<!-- ====================================================== -->
+<!-- CHALLENGES -->
+<!-- ====================================================== -->
+
+<section id="challenge">
+
+<h2>16. Challenge Problems</h2>
+
+<div class="card">
+<h3>Challenge 1 — Running Sum</h3>
+
+<pre><code>numbers = [2, 4, 6, 8]</code></pre>
+
+<p>
+Create:
+</p>
+
+<pre><code>[2, 6, 12, 20]</code></pre>
+
+<p>
+Each item represents the total accumulated up to that point.
+</p>
+</div>
+
+<div class="card">
+<h3>Challenge 2 — Sum Greater Elements</h3>
+
+<pre><code>numbers = [5, 12, 3, 20, 7, 15]</code></pre>
+
+<p>
+Calculate the sum of values greater than 10.
+</p>
+</div>
+
+<div class="card">
+<h3>Challenge 3 — Common Unique Items</h3>
+
+<pre><code>list1 = [1, 2, 3, 4, 5]
+list2 = [3, 4, 4, 5, 6, 7]</code></pre>
+
+<p>
+Create a list containing values found in both lists without
+duplicates.
+</p>
+
+<p>
+Expected:
+</p>
+
+<pre><code>[3, 4, 5]</code></pre>
+</div>
+
+<div class="card">
+<h3>Challenge 4 — Index-wise Combination</h3>
+
+<pre><code>list1 = [1, 2, 3, 4]
+list2 = [10, 20, 30, 40]</code></pre>
+
+<p>
+Create:
+</p>
+
+<pre><code>[11, 22, 33, 44]</code></pre>
+
+<p>
+Do it using indexes. Do not use <code>zip()</code>.
+</p>
+</div>
+
+<div class="card">
+<h3>Challenge 5 — Product of Digits</h3>
+
+<pre><code>numbers = [123, 45, 67]</code></pre>
+
+<p>
+Produce:
+</p>
+
+<pre><code>[6, 20, 42]</code></pre>
+
+<p>
+Because:
+</p>
+
+<pre><code>123 → 1 × 2 × 3 = 6
+45  → 4 × 5 = 20
+67  → 6 × 7 = 42</code></pre>
+</div>
+
+</section>
+
+
+<!-- ====================================================== -->
+<!-- FINAL PROJECT -->
+<!-- ====================================================== -->
+
+<section>
+
+<h2>17. 🏆 Final Challenge — Student Grade Analyzer</h2>
+
+<div class="card problem">
+
+<p>
+You are given two related lists:
+</p>
+
+<pre><code>students = ["Ali", "Sara", "John", "Maria", "David"]
+
+scores = [85, 92, 67, 74, 58]</code></pre>
+
+<p>
+Build a program that analyzes the students' scores.
+</p>
+
+</div>
+
+<div class="steps">
+
+<div class="step">
+    <strong>Display every student and score.</strong>
+</div>
+
+<div class="step">
+    <strong>Calculate the number of students.</strong>
+</div>
+
+<div class="step">
+    <strong>Count passing students.</strong>
+</div>
+
+<div class="step">
+    <strong>Count failing students.</strong>
+</div>
+
+<div class="step">
+    <strong>Calculate the average score.</strong>
+</div>
+
+<div class="step">
+    <strong>Find the highest score.</strong>
+</div>
+
+<div class="step">
+    <strong>Find the student who earned the highest score.</strong>
+</div>
+
+<div class="step">
+    <strong>Create a list containing only passing students.</strong>
+</div>
+
+<div class="step">
+    <strong>Assign each student a letter grade.</strong>
+</div>
+
+</div>
+
+<div class="card think">
+
+<h3>Do not start coding immediately.</h3>
+
+<p>
+First identify:
+</p>
+
+<ul>
+    <li>What information do I have?</li>
+    <li>What information do I need to calculate?</li>
+    <li>Which tasks require a loop?</li>
+    <li>Which tasks require an index?</li>
+    <li>Which tasks require a new list?</li>
+    <li>Which tasks can use a built-in function?</li>
+</ul>
+
+<p>
+This is the transition from <strong>writing syntax</strong> to
+<strong>designing an algorithm</strong>.
+</p>
+
+</div>
+
+</section>
+
+
+<!-- ====================================================== -->
+<!-- ALGORITHM THINKING -->
+<!-- ====================================================== -->
+
+<section>
+
+<h2>18. How to Approach an Unfamiliar List Problem</h2>
+
+<div class="card">
+
+<h3>Ask these questions in order:</h3>
+
+<ol class="checklist">
+
+<li>
+<strong>What is my input?</strong><br>
+Is it one list? Two lists? A nested list?
+</li>
+
+<li>
+<strong>What should my output look like?</strong><br>
+One value? A count? A new list? Multiple values?
+</li>
+
+<li>
+<strong>Do I need every item?</strong><br>
+If yes, consider a loop.
+</li>
+
+<li>
+<strong>Do I need the position?</strong><br>
+If yes, consider an index.
+</li>
+
+<li>
+<strong>Am I selecting some items?</strong><br>
+You probably need a condition.
+</li>
+
+<li>
+<strong>Am I creating a new collection?</strong><br>
+Consider building a new list.
+</li>
+
+<li>
+<strong>Is the data nested?</strong><br>
+You may need a nested loop.
+</li>
+
+<li>
+<strong>Can I clearly express the logic?</strong><br>
+Write the ordinary loop first.
+</li>
+
+<li>
+<strong>Can I simplify it?</strong><br>
+Only after the logic works, consider a list comprehension.
+</li>
+
+</ol>
+
+</div>
+
+</section>
+
+
+<!-- ====================================================== -->
+<!-- CHEAT SHEET -->
+<!-- ====================================================== -->
+
+<section id="cheat">
+
+<h2>19. Python Lists — Quick Reference</h2>
+
+<div class="card">
+
+<table>
+
+<tr>
+    <th>Task</th>
+    <th>Syntax</th>
+</tr>
+
+<tr>
+    <td>Create</td>
+    <td><code>numbers = [1, 2, 3]</code></td>
+</tr>
+
+<tr>
+    <td>Empty list</td>
+    <td><code>numbers = []</code></td>
+</tr>
+
+<tr>
+    <td>Access</td>
+    <td><code>numbers[0]</code></td>
+</tr>
+
+<tr>
+    <td>Last item</td>
+    <td><code>numbers[-1]</code></td>
+</tr>
+
+<tr>
+    <td>Slice</td>
+    <td><code>numbers[1:4]</code></td>
+</tr>
+
+<tr>
+    <td>Length</td>
+    <td><code>len(numbers)</code></td>
+</tr>
+
+<tr>
+    <td>Change</td>
+    <td><code>numbers[0] = 100</code></td>
+</tr>
+
+<tr>
+    <td>Add to end</td>
+    <td><code>numbers.append(100)</code></td>
+</tr>
+
+<tr>
+    <td>Insert</td>
+    <td><code>numbers.insert(1, 100)</code></td>
+</tr>
+
+<tr>
+    <td>Remove value</td>
+    <td><code>numbers.remove(100)</code></td>
+</tr>
+
+<tr>
+    <td>Remove by index</td>
+    <td><code>numbers.pop(1)</code></td>
+</tr>
+
+<tr>
+    <td>Delete by index</td>
+    <td><code>del numbers[1]</code></td>
+</tr>
+
+<tr>
+    <td>Total</td>
+    <td><code>sum(numbers)</code></td>
+</tr>
+
+<tr>
+    <td>Largest</td>
+    <td><code>max(numbers)</code></td>
+</tr>
+
+<tr>
+    <td>Smallest</td>
+    <td><code>min(numbers)</code></td>
+</tr>
+
+<tr>
+    <td>Sorted copy</td>
+    <td><code>sorted(numbers)</code></td>
+</tr>
+
+<tr>
+    <td>Loop through values</td>
+    <td><code>for n in numbers:</code></td>
+</tr>
+
+<tr>
+    <td>Loop through indexes</td>
+    <td><code>for i in range(len(numbers)):</code></td>
+</tr>
+
+<tr>
+    <td>Comprehension</td>
+    <td><code>[expression for item in numbers]</code></td>
+</tr>
+
+<tr>
+    <td>Filter comprehension</td>
+    <td><code>[item for item in numbers if condition]</code></td>
+</tr>
+
+</table>
+
+</div>
+
+</section>
+
+
+<!-- ====================================================== -->
+<!-- MASTER CHECK -->
+<!-- ====================================================== -->
+
+<section>
+
+<h2>20. 🧠 Mastery Check</h2>
+
+<div class="card">
+
+<p>
+Before moving on from lists, you should be able to explain
+these without looking at your notes:
+</p>
+
+<ul class="checklist">
+
+<li>□ What problem does a list solve?</li>
+
+<li>□ What does it mean for a list to be mutable?</li>
+
+<li>□ Why does Python use zero-based indexing?</li>
+
+<li>□ How do you access the last item?</li>
+
+<li>□ What is the difference between an index and a value?</li>
+
+<li>□ How do you change one item?</li>
+
+<li>□ How do you change every item that meets a condition?</li>
+
+<li>□ What is the difference between <code>remove()</code> and
+<code>pop()</code>?</li>
+
+<li>□ When should you loop directly through values?</li>
+
+<li>□ When do you need indexes?</li>
+
+<li>□ Why are nested loops useful with nested lists?</li>
+
+<li>□ What problem does a list comprehension solve?</li>
+
+<li>□ How do you convert a normal loop into a comprehension?</li>
+
+<li>□ How do you debug an <code>IndexError</code>?</li>
+
+<li>□ How can you determine what your code is doing without
+running it?</li>
+
+<li>□ Can you explain your algorithm before writing the code?</li>
+
+</ul>
+
+</div>
+
+<div class="card tip">
+
+<h3>Final principle</h3>
+
+<p>
+<strong>
+Don't memorize 20 list tricks.
+Learn to recognize the underlying patterns.
+</strong>
+</p>
+
+<p>
+Most list problems reduce to a small number of ideas:
+</p>
+
+<div class="grid">
+
+<div class="mini-card">
+<strong>Access</strong>
+<p>Get one item.</p>
+<code>numbers[i]</code>
+</div>
+
+<div class="mini-card">
+<strong>Traversal</strong>
+<p>Visit every item.</p>
+<code>for n in numbers</code>
+</div>
+
+<div class="mini-card">
+<strong>Selection</strong>
+<p>Keep items that meet a condition.</p>
+<code>if condition</code>
+</div>
+
+<div class="mini-card">
+<strong>Transformation</strong>
+<p>Turn each item into something new.</p>
+<code>n * 2</code>
+</div>
+
+<div class="mini-card">
+<strong>Accumulation</strong>
+<p>Combine values into a result.</p>
+<code>total += n</code>
+</div>
+
+<div class="mini-card">
+<strong>Indexing</strong>
+<p>Work with position.</p>
+<code>range(len(...))</code>
+</div>
+
+<div class="mini-card">
+<strong>Nesting</strong>
+<p>Process collections inside collections.</p>
+<code>for row ... for item ...</code>
+</div>
+
+<div class="mini-card">
+<strong>Construction</strong>
+<p>Build a new list.</p>
+<code>result.append(...)</code>
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ====================================================== -->
+<!-- EXIT TICKET -->
+<!-- ====================================================== -->
+
+<section>
+
+<h2>🎫 Exit Ticket</h2>
+
+<div class="card">
+
+<h3>1. Explain</h3>
+
+<p>
+In your own words, what problem do Python lists solve?
+</p>
+
+<h3>2. Predict</h3>
+
+<pre><code>numbers = [10, 20, 30, 40]
+
+print(numbers[-2])</code></pre>
+
+<p>What will be printed?</p>
+
+<h3>3. Debug</h3>
+
+<pre><code>numbers = [10, 20, 30]
+
+print(numbers[3])</code></pre>
+
+<p>
+What error occurs and why?
+</p>
+
+<h3>4. Choose</h3>
+
+<p>
+When would you use:
+</p>
+
+<ul>
+    <li>a direct <code>for</code> loop?</li>
+    <li>an indexed <code>for</code> loop?</li>
+    <li>a nested loop?</li>
+    <li>a list comprehension?</li>
+</ul>
+
+<h3>5. Transfer</h3>
+
+<p>
+Think of something outside programming that could be represented
+as a list. Explain why a list is an appropriate representation.
+</p>
+
+</div>
+
+</section>
+
+
+<!-- ====================================================== -->
+<!-- SOURCES -->
+<!-- ====================================================== -->
+
+<section>
+
+<h2>Reference</h2>
+
+<div class="card">
+
+<p>
+For formal Python documentation, see the Python documentation on
+data structures and lists.
+</p>
+
+<p>
+This revision guide is designed as instructional material rather
+than a replacement for the official Python documentation.
+</p>
+
+</div>
+
+</section>
+
+</main>
+
+
+<footer>
+
+<p>
+🐍 Python Lists — Revision Guide
+</p>
+
+<p>
+Practice → Predict → Code → Inspect → Debug → Explain → Apply
+</p>
+
+</footer>
+
+</body>
+</html>
