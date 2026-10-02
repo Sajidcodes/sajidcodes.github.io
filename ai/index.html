@@ -1,0 +1,1643 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sajid Hussain — teaching, building, experimenting</title>
+<meta name="description" content="Sajid Hussain teaches Python and data science, builds AI systems, and runs small experiments to understand how things actually work.">
+<meta name="theme-color" content="#F1F2EE" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121620" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   Tokens
+   ============================================================ */
+:root{
+  --paper:#F1F2EE; --paper-2:#E6E9E3; --card:#FBFBF9;
+  --ink:#172033; --ink-2:#3A4458; --muted:#5E6779;
+  --line:#D3D7CF; --line-2:#C2C7BE;
+  --pen:#2648B0; --pen-soft:#DCE3F6;
+  --hl:#F4D544; --hl-ink:#172033;
+  --ok:#2E7D5B; --warn:#A8641B; --fail:#B23A3A;
+  --shadow:0 1px 0 rgba(23,32,51,.04), 0 10px 30px -12px rgba(23,32,51,.18);
+  --shadow-lg:0 30px 80px -20px rgba(23,32,51,.35);
+  --display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --serif:"Newsreader", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  --mono:"JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --wrap:min(1180px, 100% - 2.5rem);
+  --ease:cubic-bezier(.2,.8,.2,1);
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#121620; --paper-2:#1A1F2C; --card:#181D29;
+    --ink:#E7EAF0; --ink-2:#C3C9D6; --muted:#8E97A8;
+    --line:#2A3142; --line-2:#394155;
+    --pen:#93B0FF; --pen-soft:#22305A;
+    --hl:#E8C83A; --hl-ink:#121620;
+    --ok:#6CC59B; --warn:#E0A55C; --fail:#F08C8C;
+    --shadow:0 1px 0 rgba(0,0,0,.2), 0 12px 30px -14px rgba(0,0,0,.6);
+    --shadow-lg:0 30px 80px -20px rgba(0,0,0,.7);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#121620; --paper-2:#1A1F2C; --card:#181D29;
+  --ink:#E7EAF0; --ink-2:#C3C9D6; --muted:#8E97A8;
+  --line:#2A3142; --line-2:#394155;
+  --pen:#93B0FF; --pen-soft:#22305A;
+  --hl:#E8C83A; --hl-ink:#121620;
+  --ok:#6CC59B; --warn:#E0A55C; --fail:#F08C8C;
+  --shadow:0 1px 0 rgba(0,0,0,.2), 0 12px 30px -14px rgba(0,0,0,.6);
+  --shadow-lg:0 30px 80px -20px rgba(0,0,0,.7);
+  color-scheme:dark;
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%;scroll-behavior:smooth;scroll-padding-top:calc(80px + env(safe-area-inset-top,0px));-webkit-text-size-adjust:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:clamp(17px,1.05vw + 12px,19.5px);line-height:1.62;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden}
+img,svg{max-width:100%}
+a{color:var(--pen);text-underline-offset:.18em;text-decoration-thickness:1px}
+a:hover{text-decoration-thickness:2px}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+:focus-visible{outline:2.5px solid var(--pen);outline-offset:3px;border-radius:6px}
+h1,h2,h3,h4{font-family:var(--display);font-weight:700;line-height:1.05;letter-spacing:-.02em;margin:0}
+p{margin:0 0 1em}
+code,pre{font-family:var(--mono);font-size:.84em}
+.wrap{width:var(--wrap);margin-inline:auto}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:1rem;top:-100px;background:var(--ink);color:var(--paper);padding:.6rem 1rem;border-radius:8px;z-index:200}
+.skip:focus{top:calc(1rem + env(safe-area-inset-top,0px))}
+
+/* ============================================================
+   Top bar (desktop) + tab bar (mobile)
+   ============================================================ */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:50;padding-top:env(safe-area-inset-top,0px);background:color-mix(in srgb,var(--paper) 78%,transparent);backdrop-filter:saturate(1.6) blur(16px);-webkit-backdrop-filter:saturate(1.6) blur(16px);border-bottom:1px solid transparent;transition:border-color .3s}
+.topbar.scrolled{border-bottom-color:var(--line)}
+.topbar .wrap{display:flex;align-items:center;gap:1.5rem;height:64px}
+.brand{font-family:var(--display);font-weight:700;font-size:1.06rem;letter-spacing:-.01em;text-decoration:none;color:var(--ink);display:flex;align-items:baseline;gap:1px}
+.brand-dot{display:inline-block;width:.42em;height:.42em;border-radius:50%;background:var(--hl);margin-left:2px;transform:translateY(-.02em);cursor:pointer;transition:transform .3s var(--ease)}
+.brand-dot:hover{transform:scale(1.35)}
+.nav{display:flex;gap:.2rem;margin-left:auto;font-family:var(--display);font-size:.93rem}
+.nav a{color:var(--ink-2);text-decoration:none;padding:.4rem .7rem;border-radius:999px;transition:background .2s,color .2s}
+.nav a:hover{background:var(--paper-2);color:var(--ink)}
+.nav a[aria-current="true"]{background:var(--ink);color:var(--paper)}
+.tools{display:flex;gap:.4rem;align-items:center}
+.pill{font-family:var(--display);font-size:.9rem;font-weight:600;display:inline-flex;align-items:center;gap:.45rem;padding:.5rem .95rem;border-radius:999px;border:1px solid var(--line-2);background:var(--card);color:var(--ink);transition:transform .15s var(--ease),background .2s,border-color .2s}
+.pill:hover{border-color:var(--ink)}
+.pill:active{transform:scale(.96)}
+.pill.solid{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.icon-btn{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line-2);background:var(--card)}
+.icon-btn:hover{border-color:var(--ink)}
+.icon-btn svg{width:18px;height:18px}
+
+.tabbar{display:none}
+@media (max-width: 860px){
+  .nav,.tools .surprise-top{display:none}
+  .topbar .wrap{height:54px}
+  .tools{margin-left:auto}
+  .tabbar{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:60;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));background:color-mix(in srgb,var(--paper) 82%,transparent);backdrop-filter:saturate(1.8) blur(20px);-webkit-backdrop-filter:saturate(1.8) blur(20px);border-top:1px solid var(--line)}
+  .tabbar a,.tabbar button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0 2px;font-family:var(--display);font-size:.68rem;font-weight:600;color:var(--muted);text-decoration:none;border-radius:10px;-webkit-tap-highlight-color:transparent}
+  .tabbar svg{width:24px;height:24px}
+  .tabbar [aria-current="true"]{color:var(--pen)}
+  .tabbar :active{transform:scale(.92)}
+  body{padding-bottom:calc(78px + env(safe-area-inset-bottom,0px))}
+}
+
+/* ============================================================
+   Hero
+   ============================================================ */
+.hero{padding:calc(120px + 4vh) 0 4rem;min-height:92vh;display:flex;align-items:center}
+.hero-name{font-family:var(--display);font-weight:600;font-size:1.05rem;color:var(--muted);margin-bottom:1.6rem;display:flex;align-items:center;gap:.7rem}
+.hero-name::before{content:"";width:28px;height:1.5px;background:var(--muted)}
+.verbs{font-family:var(--display);font-weight:800;font-size:clamp(2.9rem,8.4vw,7.4rem);line-height:.95;letter-spacing:-.045em;margin:0}
+.verbs span{display:block}
+.verbs .coda{font-family:var(--serif);font-weight:400;font-style:italic;letter-spacing:-.02em;font-size:clamp(1.6rem,3.6vw,3.1rem);line-height:1.12;max-width:20ch;margin-top:.55em;color:var(--ink-2)}
+.js .verbs span{opacity:0;transform:translateY(.25em);transition:opacity .7s var(--ease),transform .9s var(--ease)}
+.js .verbs.go span{opacity:1;transform:none}
+.verbs.go span:nth-child(2){transition-delay:.18s}
+.verbs.go span:nth-child(3){transition-delay:.36s}
+.verbs.go span:nth-child(4){transition-delay:.62s}
+.hero-foot{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2rem;align-items:end;margin-top:3.2rem}
+.hero-foot p{max-width:46ch;color:var(--ink-2);margin:0 0 1.2rem}
+.axes{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem .25rem;font-family:var(--display);font-weight:600}
+.axes button{padding:.38rem .8rem;border-radius:999px;border:1px solid var(--line-2);background:var(--card);font-size:.92rem;transition:background .2s,color .2s,border-color .2s}
+.axes button:hover,.axes button[aria-pressed="true"]{background:var(--hl);border-color:var(--hl);color:var(--hl-ink)}
+.axes .x{color:var(--muted);font-weight:400;padding:0 .1rem}
+.explore{font-family:var(--display);font-size:1.15rem;font-weight:700;display:inline-flex;align-items:center;gap:.7rem;padding:1rem 1.5rem 1rem 1.7rem;border-radius:999px;background:var(--ink);color:var(--paper);text-decoration:none;box-shadow:var(--shadow);transition:transform .2s var(--ease)}
+.explore:hover{transform:translateY(-2px)}
+.explore svg{width:20px;height:20px;transition:transform .3s var(--ease)}
+.explore:hover svg{transform:translateY(3px)}
+@media (max-width: 720px){
+  .hero{padding-top:100px;min-height:auto}
+  .hero-foot{grid-template-columns:1fr}
+}
+
+/* ============================================================
+   The map (floor plan)
+   ============================================================ */
+.map-sec{padding:3rem 0 5rem}
+.map-head{display:flex;justify-content:space-between;align-items:end;gap:1rem;flex-wrap:wrap;margin-bottom:1.4rem}
+.map-head h2{font-size:clamp(1.9rem,3.6vw,2.8rem)}
+.map-head p{margin:.4rem 0 0;color:var(--muted)}
+.progress{font-family:var(--display);font-size:.9rem;color:var(--muted);display:flex;align-items:center;gap:.6rem}
+.progress-bar{width:120px;height:6px;border-radius:99px;background:var(--line);overflow:hidden}
+.progress-bar i{display:block;height:100%;width:0;background:var(--pen);transition:width .6s var(--ease)}
+.plan{display:grid;gap:0;border:2px solid var(--ink);border-radius:18px;overflow:hidden;background:var(--card);
+  grid-template-columns:repeat(6,1fr);grid-auto-rows:minmax(148px,auto);
+  grid-template-areas:
+   "teach teach build build build ideas"
+   "lab phil phil lessons now now"
+   "time time time git about about";
+}
+.room-tile{position:relative;display:flex;flex-direction:column;justify-content:space-between;padding:1.1rem 1.2rem;text-decoration:none;color:var(--ink);border-right:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);margin:0 -1.5px -1.5px 0;transition:background .25s}
+.room-tile:hover,.room-tile.lit{background:var(--hl);color:var(--hl-ink)}
+.room-tile .n{font-family:var(--serif);font-style:italic;font-size:.95rem;color:inherit;opacity:.7}
+.room-tile .t{font-family:var(--display);font-weight:700;font-size:clamp(1.05rem,1.6vw,1.45rem);letter-spacing:-.02em;line-height:1.08}
+.room-tile .d{font-size:.86rem;opacity:.75;margin-top:.25rem;line-height:1.35}
+.room-tile svg.ico{position:absolute;right:1rem;top:1rem;width:30px;height:30px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
+.room-tile .seen{position:absolute;right:1rem;bottom:1rem;font-family:var(--display);font-size:.72rem;font-weight:600;opacity:0;transition:opacity .4s;display:flex;gap:.25rem;align-items:center}
+.room-tile.visited .seen{opacity:.7}
+.room-tile:active{background:var(--hl)}
+@media (max-width: 860px){
+  .plan{grid-template-columns:1fr 1fr;grid-auto-rows:minmax(126px,auto);
+    grid-template-areas:"teach build" "ideas lab" "phil phil" "lessons now" "time time" "git about"}
+  .room-tile .d{display:none}
+}
+
+/* ============================================================
+   Rooms (sections)
+   ============================================================ */
+.room{padding:clamp(4.5rem,9vw,8rem) 0;border-top:1px solid var(--line)}
+.room-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.5rem 3rem;align-items:end;margin-bottom:clamp(2rem,4vw,3.4rem)}
+.room-num{font-family:var(--serif);font-style:italic;color:var(--muted);font-size:1.05rem;margin-bottom:.6rem;display:block}
+.room-head h2{font-size:clamp(2.3rem,5.4vw,4.4rem);letter-spacing:-.035em}
+.room-head p{color:var(--ink-2);margin:0;max-width:44ch}
+@media (max-width: 720px){.room-head{grid-template-columns:1fr}}
+
+.chips{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.6rem;font-family:var(--display)}
+.chip{padding:.42rem .9rem;border-radius:999px;border:1px solid var(--line-2);font-size:.9rem;font-weight:600;color:var(--ink-2);background:transparent;transition:all .2s}
+.chip:hover{border-color:var(--ink);color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.tag{font-family:var(--display);font-size:.74rem;font-weight:600;padding:.18rem .55rem;border-radius:6px;background:var(--paper-2);color:var(--ink-2);white-space:nowrap}
+
+/* 01 Teach: subject cards */
+.teach-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.subject{position:relative;text-align:left;padding:1.3rem 1.3rem 1.2rem;border-radius:16px;background:var(--card);border:1px solid var(--line);min-height:190px;display:flex;flex-direction:column;justify-content:space-between;transition:transform .25s var(--ease),border-color .25s,box-shadow .25s}
+.subject:hover{transform:translateY(-3px);border-color:var(--ink);box-shadow:var(--shadow)}
+.subject .glyph{font-family:var(--mono);font-size:.92rem;color:var(--pen);margin-bottom:1.6rem}
+.subject h3{font-size:1.32rem;margin-bottom:.4rem}
+.subject p{font-size:.92rem;color:var(--muted);margin:0;line-height:1.4}
+.subject .open{position:absolute;right:1rem;top:1rem;width:26px;height:26px;border-radius:50%;border:1px solid var(--line-2);display:grid;place-items:center;font-family:var(--display);font-size:1rem;transition:transform .3s var(--ease)}
+.subject:hover .open{transform:rotate(90deg)}
+.subject.wide{grid-column:span 2}
+@media (max-width: 960px){.teach-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width: 520px){.teach-grid{grid-template-columns:1fr}.subject.wide{grid-column:auto}.subject{min-height:150px}}
+
+/* 02 Build: museum artifacts */
+.gallery{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}
+.artifact{grid-column:span 4;text-align:left;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:4px 4px 18px 18px;overflow:hidden;transition:transform .3s var(--ease),box-shadow .3s}
+.artifact:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.artifact.feature{grid-column:span 8}
+.artifact .vitrine{position:relative;aspect-ratio:16/9;background:var(--paper-2);border-bottom:1px solid var(--line);display:grid;place-items:center;overflow:hidden}
+.artifact.feature .vitrine{aspect-ratio:auto;min-height:260px}
+.artifact .vitrine svg{width:62%;max-height:78%;stroke:var(--ink);fill:none;stroke-width:1.4}
+.artifact .plaque{padding:1.1rem 1.25rem 1.3rem;display:flex;flex-direction:column;gap:.4rem;flex:1}
+.artifact .plaque-top{display:flex;justify-content:space-between;gap:.5rem;align-items:center}
+.artifact .accession{font-family:var(--serif);font-style:italic;color:var(--muted);font-size:.88rem}
+.artifact h3{font-size:1.38rem}
+.artifact p{margin:0;color:var(--ink-2);font-size:.95rem;line-height:1.45}
+.artifact .metrics{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.4rem}
+.status{font-family:var(--display);font-size:.74rem;font-weight:600;padding:.2rem .6rem;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.status[data-s="Building"]{color:var(--pen)}
+.status[data-s="Experiment"]{color:var(--warn)}
+.status[data-s="Teaching Tool"]{color:var(--ok)}
+.status[data-s="Completed"]{color:var(--ink-2)}
+.status[data-s="Archived"]{color:var(--muted)}
+.artifact[hidden]{display:none}
+@media (max-width: 960px){.artifact,.artifact.feature{grid-column:span 6}}
+@media (max-width: 640px){.artifact,.artifact.feature{grid-column:span 12}}
+
+/* 03 Ideas: notebook */
+.notebook{border:1px solid var(--line);border-radius:6px 18px 18px 6px;background:var(--card);box-shadow:var(--shadow);overflow:hidden}
+.q{border-bottom:1px solid var(--line)}
+.q:last-child{border-bottom:0}
+.q > button{width:100%;text-align:left;display:grid;grid-template-columns:3.2rem 1fr 32px;gap:.8rem;align-items:center;padding:1.15rem 1.4rem 1.15rem .6rem;transition:background .2s}
+.q > button:hover{background:var(--paper-2)}
+.q .qn{font-family:var(--serif);font-style:italic;color:var(--muted);text-align:right}
+.q .qt{font-family:var(--display);font-weight:600;font-size:clamp(1.05rem,1.8vw,1.32rem);letter-spacing:-.015em;line-height:1.25}
+.q .tw{width:28px;height:28px;border-radius:50%;border:1px solid var(--line-2);display:grid;place-items:center;transition:transform .35s var(--ease),background .2s}
+.q[data-open="true"] .tw{transform:rotate(45deg);background:var(--hl);border-color:var(--hl);color:var(--hl-ink)}
+.q .page{display:grid;grid-template-rows:0fr;transition:grid-template-rows .45s var(--ease)}
+.q[data-open="true"] .page{grid-template-rows:1fr}
+.q .page > div{overflow:hidden}
+.ruled{margin:0 1.4rem 1.4rem 4rem;padding:1.4rem 1.4rem 1.2rem 1.6rem;border-left:2px solid color-mix(in srgb,var(--fail) 55%,transparent);
+  background-image:repeating-linear-gradient(to bottom,transparent 0,transparent calc(1.7em - 1px),color-mix(in srgb,var(--pen) 16%,transparent) calc(1.7em - 1px),color-mix(in srgb,var(--pen) 16%,transparent) 1.7em);line-height:1.7em}
+.ruled h4{font-family:var(--serif);font-style:italic;font-weight:400;font-size:1rem;color:var(--muted);letter-spacing:0;line-height:1.7em;margin:0}
+.ruled p{margin:0 0 1.7em;max-width:62ch}
+.ruled p:last-child{margin-bottom:0}
+@media (max-width: 640px){.ruled{margin-left:1rem;margin-right:1rem}.q > button{grid-template-columns:2.2rem 1fr 30px}}
+
+/* 04 Lab */
+.lab{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.specimen{text-align:left;padding:1.1rem 1.15rem;background:var(--card);border:1.5px dashed var(--line-2);border-radius:12px;display:flex;flex-direction:column;gap:.5rem;transition:border-color .2s,transform .2s}
+.specimen:nth-child(3n+1){transform:rotate(-.4deg)}
+.specimen:nth-child(3n+2){transform:rotate(.35deg)}
+.specimen:hover{border-color:var(--ink);transform:rotate(0) translateY(-2px)}
+.specimen h3{font-size:1.1rem;letter-spacing:-.01em}
+.specimen p{margin:0;font-size:.92rem;color:var(--ink-2);line-height:1.45}
+.specimen .row{display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+.state{font-family:var(--display);font-size:.75rem;font-weight:600;display:inline-flex;align-items:center;gap:.35rem}
+.state::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.state[data-v="works"]{color:var(--ok)} .state[data-v="half-works"]{color:var(--warn)}
+.state[data-v="failed"]{color:var(--fail)} .state[data-v="thinking"]{color:var(--pen)}
+.specimen[hidden]{display:none}
+
+/* Playground */
+.play{margin-top:4rem;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.4fr);gap:2rem;align-items:start}
+.play h3{font-size:clamp(1.6rem,3vw,2.2rem);margin-bottom:.7rem}
+.play-intro p{color:var(--ink-2)}
+.editor{border-radius:16px;overflow:hidden;background:#10141D;color:#E6E9EF;box-shadow:var(--shadow-lg);border:1px solid #232A3A}
+.editor-bar{display:flex;align-items:center;gap:.4rem;padding:.6rem .7rem;border-bottom:1px solid #232A3A;overflow-x:auto}
+.editor-bar button{font-family:var(--display);font-size:.8rem;font-weight:600;padding:.35rem .7rem;border-radius:8px;color:#AEB6C6;white-space:nowrap}
+.editor-bar button[aria-selected="true"]{background:#232A3A;color:#fff}
+.editor textarea{display:block;width:100%;min-height:210px;resize:vertical;padding:1rem 1.1rem;border:0;outline:0;background:transparent;color:inherit;font-family:var(--mono);font-size:.88rem;line-height:1.6;tab-size:4}
+.editor textarea:focus-visible{box-shadow:inset 0 0 0 2px #93B0FF}
+.editor-actions{display:flex;gap:.5rem;align-items:center;padding:.6rem .7rem;border-top:1px solid #232A3A;flex-wrap:wrap}
+.run{font-family:var(--display);font-weight:700;font-size:.88rem;padding:.5rem 1rem;border-radius:999px;background:#F4D544;color:#121620}
+.ghost{font-family:var(--display);font-weight:600;font-size:.82rem;padding:.45rem .8rem;border-radius:999px;color:#AEB6C6;border:1px solid #2C3446}
+.ghost:hover{color:#fff;border-color:#55607A}
+.py-status{font-family:var(--display);font-size:.78rem;color:#8C95A8;margin-left:auto}
+.out{margin:0;padding:.9rem 1.1rem 1.1rem;font-family:var(--mono);font-size:.85rem;background:#0B0E15;color:#C9F0D6;min-height:3.2em;white-space:pre-wrap;border-top:1px solid #232A3A}
+.out.err{color:#FFB4B4}
+@media (max-width: 860px){.play{grid-template-columns:1fr}}
+
+/* Code blocks */
+.code{position:relative;background:#10141D;color:#E6E9EF;border-radius:12px;padding:1rem 1.1rem;overflow-x:auto;font-size:.86rem;line-height:1.6;margin:1rem 0;border:1px solid #232A3A}
+.code .k{color:#C3A6FF} .code .s{color:#9EE6B0} .code .c{color:#7D879B;font-style:italic} .code .n{color:#FFC48A} .code .b{color:#7FC6FF}
+.code .lbl{position:absolute;right:.7rem;top:.5rem;font-family:var(--display);font-size:.7rem;color:#7D879B}
+
+/* 05 Philosophy */
+.principles{display:grid;gap:0;border-top:2px solid var(--ink)}
+.principle{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:2rem;padding:2.4rem 0;border-bottom:1px solid var(--line)}
+.principle h3{font-size:clamp(1.6rem,3vw,2.4rem);letter-spacing:-.03em}
+.principle .idx{font-family:var(--serif);font-style:italic;color:var(--muted);display:block;margin-bottom:.4rem}
+.principle .body > p{color:var(--ink-2);max-width:56ch}
+.principle .big{font-family:var(--serif);font-style:italic;font-size:clamp(1.3rem,2.2vw,1.7rem);line-height:1.3;color:var(--ink);margin:.4rem 0 1rem}
+@media (max-width: 760px){.principle{grid-template-columns:1fr;gap:.8rem}}
+
+.predict{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+.predict-q{font-family:var(--display);font-weight:700;font-size:1.1rem;margin:0 0 .8rem}
+.guesses{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.guess{text-align:left;font-family:var(--mono);font-size:.84rem;padding:.7rem .85rem;border-radius:10px;border:1px solid var(--line-2);background:var(--paper);transition:border-color .2s,background .2s}
+.guess:hover{border-color:var(--ink)}
+.guess[data-r="right"]{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,var(--card))}
+.guess[data-r="wrong"]{border-color:var(--fail);background:color-mix(in srgb,var(--fail) 10%,var(--card))}
+.reveal{margin-top:1rem}
+.reveal[hidden]{display:none}
+.reveal .tb{font-family:var(--mono);font-size:.82rem;background:#10141D;color:#FFB4B4;padding:.8rem 1rem;border-radius:10px;white-space:pre-wrap;margin-bottom:.8rem}
+@media (max-width: 520px){.guesses{grid-template-columns:1fr}}
+
+.toggle{display:inline-flex;border:1px solid var(--line-2);border-radius:999px;padding:3px;background:var(--card);font-family:var(--display);font-size:.85rem;font-weight:600;margin:.6rem 0 1rem}
+.toggle button{padding:.35rem .9rem;border-radius:999px;color:var(--muted)}
+.toggle button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.explain{font-size:1.08rem;min-height:5.2em;transition:opacity .25s}
+
+/* How I think loop */
+.loop{margin-top:4rem;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:2.5rem;align-items:center}
+.loop h3{font-size:clamp(1.6rem,3vw,2.2rem);margin-bottom:.6rem}
+.loop svg{width:100%;max-width:440px;display:block;margin:auto;overflow:visible}
+.loop .node circle{fill:var(--card);stroke:var(--ink);stroke-width:1.5;transition:fill .3s}
+.loop .node text{font-family:var(--display);font-weight:600;font-size:13px;fill:var(--ink);text-anchor:middle;dominant-baseline:middle;pointer-events:none}
+.loop .node{cursor:pointer}
+.loop .node:focus{outline:none}
+.loop .node:focus-visible circle{stroke:var(--pen);stroke-width:3}
+.loop .node.on circle{fill:var(--hl);stroke:var(--hl-ink)}
+.loop .node.on text{fill:var(--hl-ink)}
+.loop .ring{fill:none;stroke:var(--line-2);stroke-width:1.5;stroke-dasharray:3 6}
+.loop .runner{fill:var(--pen);transition:transform .6s var(--ease)}
+.step-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.3rem 1.4rem}
+.step-card .s-name{font-family:var(--display);font-weight:700;font-size:1.3rem;margin-bottom:.3rem}
+.step-card .s-ex{font-size:.95rem;color:var(--muted);border-top:1px solid var(--line);margin-top:.8rem;padding-top:.8rem;margin-bottom:0}
+.step-nav{display:flex;gap:.5rem;margin-top:1rem}
+@media (max-width: 860px){.loop{grid-template-columns:1fr}}
+
+/* 06 Lessons: collectible cards */
+.deck{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.lesson{position:relative;text-align:left;aspect-ratio:5/6;padding:1.2rem;border-radius:14px;background:var(--card);border:1px solid var(--line);display:flex;flex-direction:column;justify-content:space-between;transition:transform .35s var(--ease),box-shadow .3s,background .3s}
+.lesson:hover{transform:translateY(-4px) rotate(-.6deg);box-shadow:var(--shadow-lg)}
+.lesson .no{font-family:var(--display);font-weight:800;font-size:2.4rem;letter-spacing:-.04em;color:var(--line-2);line-height:1}
+.lesson blockquote{margin:0;font-family:var(--serif);font-size:1.12rem;line-height:1.35}
+.lesson .stamp{position:absolute;right:1rem;top:1rem;font-family:var(--display);font-size:.7rem;font-weight:700;color:var(--pen);border:1.5px solid var(--pen);padding:.15rem .45rem;border-radius:6px;transform:rotate(8deg) scale(.6);opacity:0;transition:all .35s var(--ease)}
+.lesson[aria-pressed="true"]{background:color-mix(in srgb,var(--hl) 22%,var(--card))}
+.lesson[aria-pressed="true"] .stamp{opacity:1;transform:rotate(8deg) scale(1)}
+.lesson[aria-pressed="true"] .no{color:var(--ink)}
+.deck-foot{margin-top:1.2rem;font-family:var(--display);font-size:.9rem;color:var(--muted)}
+
+/* 07 Currently */
+.now{display:grid;grid-template-columns:repeat(5,1fr);border:1.5px solid var(--ink);border-radius:18px;overflow:hidden;background:var(--card)}
+.now-item{padding:1.4rem 1.2rem 1.5rem;border-right:1px solid var(--line)}
+.now-item:last-child{border-right:0}
+.now-item dt{font-family:var(--serif);font-style:italic;color:var(--muted);margin-bottom:.8rem}
+.now-item dd{margin:0;font-family:var(--display);font-weight:600;font-size:1.12rem;line-height:1.25;letter-spacing:-.01em}
+.updated{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--display);font-size:.86rem;color:var(--muted);margin-top:1rem}
+.pulse{width:9px;height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 color-mix(in srgb,var(--ok) 60%,transparent);animation:pulse 2.4s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 9px transparent}100%{box-shadow:0 0 0 0 transparent}}
+@media (max-width: 960px){.now{grid-template-columns:1fr 1fr}.now-item{border-bottom:1px solid var(--line)}.now-item:nth-child(2n){border-right:0}.now-item:last-child{grid-column:span 2;border-bottom:0}}
+@media (max-width: 480px){.now{grid-template-columns:1fr}.now-item{border-right:0}.now-item:last-child{grid-column:auto}}
+
+/* 08 Timeline */
+.track{position:relative;scroll-behavior:smooth;display:flex;gap:0;overflow-x:auto;padding:1.2rem .2rem 1.4rem;scrollbar-width:thin;scroll-snap-type:x mandatory}
+.track::before{content:"";position:absolute;left:0;right:0;top:calc(1.2rem + 13px);height:2px;background:var(--line-2);min-width:100%}
+.stop{position:relative;flex:1 0 140px;scroll-snap-align:start;display:flex;flex-direction:column;align-items:flex-start;gap:.7rem;text-align:left;padding-right:1rem}
+.stop .dot{width:28px;height:28px;border-radius:50%;background:var(--paper);border:2px solid var(--ink);display:grid;place-items:center;transition:all .3s var(--ease);z-index:1}
+.stop .dot::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--ink);transform:scale(0);transition:transform .3s var(--ease)}
+.stop[aria-selected="true"] .dot{background:var(--hl);border-color:var(--hl-ink)}
+.stop[aria-selected="true"] .dot::after{transform:scale(1);background:var(--hl-ink)}
+.stop .label{font-family:var(--display);font-weight:700;font-size:1rem;letter-spacing:-.01em;line-height:1.2}
+.stop .when{font-family:var(--serif);font-style:italic;font-size:.88rem;color:var(--muted);margin-top:-.4rem}
+.stop.next .dot{border-style:dashed}
+.story{display:grid;grid-template-columns:repeat(4,1fr);gap:1.4rem;padding:1.8rem;background:var(--card);border:1px solid var(--line);border-radius:18px;margin-top:.6rem}
+.story h3{grid-column:1/-1;font-size:clamp(1.5rem,3vw,2.1rem)}
+.story h4{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--muted);font-size:.98rem;letter-spacing:0;margin-bottom:.35rem}
+.story p{margin:0;font-size:.96rem;line-height:1.5}
+@media (max-width: 860px){.story{grid-template-columns:1fr 1fr}}
+@media (max-width: 520px){.story{grid-template-columns:1fr}}
+
+/* 09 GitHub */
+.workshop{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.repo{display:flex;flex-direction:column;gap:.55rem;padding:1.2rem 1.25rem;background:var(--card);border:1px solid var(--line);border-radius:14px;border-top:4px solid var(--ink)}
+.repo .r-top{display:flex;justify-content:space-between;gap:.6rem;align-items:flex-start}
+.repo h3{font-family:var(--mono);font-weight:600;font-size:1rem;letter-spacing:0;word-break:break-word}
+.repo p{margin:0;font-size:.94rem;color:var(--ink-2);line-height:1.45;flex:1}
+.repo .r-meta{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center}
+.repo .r-links{display:flex;gap:1rem;font-family:var(--display);font-size:.88rem;font-weight:600;padding-top:.6rem;border-top:1px solid var(--line)}
+.gh-cta{margin-top:1.6rem}
+
+/* 10 About */
+.about{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:3rem}
+.about-lines p{font-family:var(--serif);font-size:clamp(1.3rem,2.4vw,1.85rem);line-height:1.3;margin:0 0 .7rem;letter-spacing:-.01em}
+.about-lines p:nth-child(even){color:var(--ink-2)}
+.also{border-left:2px solid var(--ink);padding-left:1.4rem}
+.also h3{font-size:1.15rem;margin-bottom:.7rem}
+.also ul{list-style:none;margin:0 0 1.6rem;padding:0;font-size:.98rem}
+.also li{padding:.45rem 0;border-bottom:1px solid var(--line)}
+.links{display:flex;flex-wrap:wrap;gap:.5rem}
+@media (max-width: 860px){.about{grid-template-columns:1fr}}
+
+/* Footer */
+footer{padding:3rem 0 4rem;border-top:1px solid var(--line);color:var(--muted);font-size:.92rem}
+footer .wrap{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+footer kbd{font-family:var(--mono);font-size:.82em;border:1px solid var(--line-2);border-bottom-width:2px;border-radius:5px;padding:0 .35em;background:var(--card)}
+
+/* ============================================================
+   Sheet (detail view)
+   ============================================================ */
+.scrim{position:fixed;inset:0;z-index:100;background:rgba(10,14,22,.42);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:0;transition:opacity .3s;display:grid;place-items:center;padding:2rem}
+.scrim.open{opacity:1}
+.scrim[hidden]{display:none}
+.sheet{position:relative;width:min(760px,100%);max-height:min(86vh,900px);overflow:auto;background:var(--card);border-radius:24px;box-shadow:var(--shadow-lg);padding:2.2rem clamp(1.3rem,4vw,2.6rem) 2.4rem;transform:translateY(24px) scale(.98);transition:transform .4s var(--ease);overscroll-behavior:contain}
+.scrim.open .sheet{transform:none}
+.sheet .grab{display:none}
+.sheet .close{position:sticky;top:0;float:right;margin:-.8rem -1rem 0 1rem;width:36px;height:36px;border-radius:50%;background:var(--paper-2);display:grid;place-items:center;z-index:2}
+.sheet .close svg{width:16px;height:16px}
+.sheet .kicker{font-family:var(--serif);font-style:italic;color:var(--muted);margin-bottom:.4rem}
+.sheet h2{font-size:clamp(1.9rem,4.4vw,2.8rem);letter-spacing:-.03em;margin-bottom:1rem}
+.sheet h3{font-size:1.1rem;margin:1.6rem 0 .4rem}
+.sheet p{color:var(--ink-2)}
+.sheet .lede{font-size:1.15rem;color:var(--ink)}
+.sheet .pairs{display:grid;grid-template-columns:1fr 1fr;gap:.2rem 1.6rem}
+.sheet .pairs > div{border-top:1px solid var(--line);padding-top:.2rem}
+.sheet .tech{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:1.2rem}
+.sheet .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.6rem;margin:1rem 0}
+.sheet .stat{border:1px solid var(--line);border-radius:12px;padding:.7rem .85rem}
+.sheet .stat b{display:block;font-family:var(--display);font-size:1.35rem;letter-spacing:-.02em}
+.sheet .stat span{font-size:.85rem;color:var(--muted)}
+.sheet .actions{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.8rem}
+.sheet .note{font-size:.88rem;color:var(--muted);font-style:italic}
+@media (max-width: 640px){
+  .scrim{place-items:end center;padding:0}
+  .sheet{width:100%;max-height:calc(92vh - env(safe-area-inset-top,0px));border-radius:22px 22px 0 0;padding-top:1.4rem;padding-bottom:calc(2rem + env(safe-area-inset-bottom,0px));transform:translateY(100%)}
+  .sheet .grab{display:block;width:40px;height:5px;border-radius:9px;background:var(--line-2);margin:0 auto 1rem}
+  .sheet .pairs{grid-template-columns:1fr}
+}
+
+/* Toast */
+.toast{position:fixed;left:50%;bottom:calc(2rem + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);z-index:120;background:var(--ink);color:var(--paper);padding:.8rem 1.2rem;border-radius:14px;font-size:.98rem;max-width:min(92vw,460px);box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:opacity .3s,transform .4s var(--ease)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media (max-width: 860px){.toast{bottom:calc(92px + env(safe-area-inset-bottom,0px))}}
+
+/* Terminal easter egg */
+.term{position:fixed;right:1.2rem;bottom:calc(1.2rem + env(safe-area-inset-bottom,0px));z-index:110;width:min(560px,calc(100% - 2.4rem));height:340px;display:flex;flex-direction:column;background:#0C0F16;color:#D6DCE6;border:1px solid #2A3142;border-radius:14px;box-shadow:var(--shadow-lg);font-family:var(--mono);font-size:.84rem;transform:translateY(20px);opacity:0;transition:all .3s var(--ease)}
+.term.open{transform:none;opacity:1}
+.term[hidden]{display:none}
+.term-bar{display:flex;align-items:center;gap:.4rem;padding:.55rem .8rem;border-bottom:1px solid #222938;color:#7D879B;font-size:.75rem}
+.term-bar i{width:10px;height:10px;border-radius:50%;background:#3A4256;display:inline-block}
+.term-bar button{margin-left:auto;color:#7D879B;font-size:.8rem}
+.term-out{flex:1;overflow:auto;padding:.7rem .9rem;white-space:pre-wrap;line-height:1.55}
+.term-out .p{color:#F4D544}
+.term-in{display:flex;gap:.5rem;padding:.55rem .9rem;border-top:1px solid #222938}
+.term-in span{color:#F4D544}
+.term-in input{flex:1;background:transparent;border:0;outline:0;color:#fff;font:inherit}
+@media (max-width: 860px){.term{bottom:calc(88px + env(safe-area-inset-bottom,0px))}}
+
+/* "curious" easter egg */
+.qmark{position:fixed;top:-40px;z-index:130;font-family:var(--display);font-weight:800;color:var(--pen);pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(var(--r));opacity:.2}}
+
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;transition-delay:0s !important}
+  .js .verbs span{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar" id="topbar">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Sajid Hussain, back to top">Sajid Hussain<span class="brand-dot" id="brandDot" role="button" tabindex="0" aria-label="Tell me a Python joke"></span></a>
+    <nav class="nav" aria-label="Primary">
+      <a href="#map" data-nav="map">Explore</a>
+      <a href="#teach" data-nav="teach">Teaching</a>
+      <a href="#build" data-nav="build">Building</a>
+      <a href="#ideas" data-nav="ideas">Ideas</a>
+      <a href="#lab" data-nav="lab">Lab</a>
+      <a href="#about" data-nav="about">About</a>
+      <a href="#github" data-nav="github">GitHub</a>
+    </nav>
+    <div class="tools">
+      <button class="pill surprise-top" data-surprise type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
+        Surprise me
+      </button>
+      <button class="icon-btn" id="themeBtn" type="button" aria-label="Switch color theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<!-- =================== HERO =================== -->
+<section class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-name">Sajid Hussain</div>
+    <h1 class="verbs" id="verbs">
+      <span>I teach.</span>
+      <span>I build.</span>
+      <span>I experiment.</span>
+      <span class="coda">I try to understand how things actually work.</span>
+    </h1>
+    <div class="hero-foot">
+      <div>
+        <p>I teach programming and data science, build AI systems, and run small experiments to find out what's true. Most of my work sits where these meet:</p>
+        <div class="axes" id="axes" role="group" aria-label="Highlight rooms by theme">
+          <button type="button" data-axis="edu" aria-pressed="false">Education</button><span class="x" aria-hidden="true">×</span>
+          <button type="button" data-axis="data" aria-pressed="false">Data</button><span class="x" aria-hidden="true">×</span>
+          <button type="button" data-axis="ai" aria-pressed="false">AI</button><span class="x" aria-hidden="true">×</span>
+          <button type="button" data-axis="code" aria-pressed="false">Programming</button><span class="x" aria-hidden="true">×</span>
+          <button type="button" data-axis="cur" aria-pressed="false">Curiosity</button>
+        </div>
+      </div>
+      <a class="explore" href="#map">Explore
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- =================== MAP =================== -->
+<section class="map-sec" id="map" aria-labelledby="map-title">
+  <div class="wrap">
+    <div class="map-head">
+      <div>
+        <h2 id="map-title">Ten rooms. Start anywhere.</h2>
+        <p>Pick a room, or press “Surprise me” and let chance decide.</p>
+      </div>
+      <div class="progress" aria-live="polite"><span id="progressText">0 of 10 rooms explored</span><span class="progress-bar" aria-hidden="true"><i id="progressFill"></i></span></div>
+    </div>
+    <div class="plan" id="plan"></div>
+  </div>
+</section>
+
+<!-- =================== 01 TEACH =================== -->
+<section class="room" id="teach" aria-labelledby="teach-h">
+  <div class="wrap">
+    <div class="room-head">
+      <div><span class="room-num">Room 01</span><h2 id="teach-h">What I teach</h2></div>
+      <p>Every subject starts with a problem worth solving. Open a card to see how I introduce it.</p>
+    </div>
+    <div class="teach-grid" id="teachGrid"></div>
+  </div>
+</section>
+
+<!-- =================== 02 BUILD =================== -->
+<section class="room" id="build" aria-labelledby="build-h">
+  <div class="wrap">
+    <div class="room-head">
+      <div><span class="room-num">Room 02</span><h2 id="build-h">What I build</h2></div>
+      <p>Each piece here started as a problem. Open one to see the experiment, the result, and what I'd do differently.</p>
+    </div>
+    <div class="chips" role="group" aria-label="Filter projects" id="buildFilter"></div>
+    <div class="gallery" id="gallery"></div>
+  </div>
+</section>
+
+<!-- =================== 03 IDEAS =================== -->
+<section class="room" id="ideas" aria-labelledby="ideas-h">
+  <div class="wrap">
+    <div class="room-head">
+      <div><span class="room-num">Room 03</span><h2 id="ideas-h">Things I'm curious about</h2></div>
+      <p>Open questions, not settled answers. Each page holds my current thinking and the evidence I've found so far.</p>
+    </div>
+    <div class="notebook" id="notebook"></div>
+  </div>
+</section>
+
+<!-- =================== 04 LAB =================== -->
+<section class="room" id="lab" aria-labelledby="lab-h">
+  <div class="wrap">
+    <div class="room-head">
+      <div><span class="room-num">Room 04</span><h2 id="lab-h">The Lab</h2></div>
+      <p>Prototypes, half-finished ideas, and a few honest failures. I build things to learn.</p>
+    </div>
+    <div class="chips" role="group" aria-label="Filter experiments" id="labFilter"></div>
+    <div class="lab" id="labGrid"></div>
+
+    <div class="play" id="playground">
+      <div class="play-intro">
+        <h3>Play with a little Python</h3>
+        <p>Pick an example, change something, and run it. Try predicting the output before you press Run.</p>
+        <p class="note" style="font-size:.92rem;color:var(--muted)">Unchanged examples show their known output instantly. To run your own edits, load real Python in your browser (about 10 MB, one time).</p>
+      </div>
+      <div class="editor">
+        <div class="editor-bar" role="tablist" aria-label="Python examples" id="pgTabs"></div>
+        <label for="pgCode" class="sr">Python code</label>
+        <textarea id="pgCode" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
+        <div class="editor-actions">
+          <button class="run" id="pgRun" type="button">Run</button>
+          <button class="ghost" id="pgReset" type="button">Reset</button>
+          <button class="ghost" id="pgLoad" type="button">Load real Python</button>
+          <span class="py-status" id="pgStatus" aria-live="polite"></span>
+        </div>
+        <pre class="out" id="pgOut" aria-live="polite">Output appears here.</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== 05 PHILOSOPHY =================== -->
+<section class="room" id="philosophy" aria-labelledby="phil-h">
+  <div class="wrap">
+    <div class="room-head">
+      <div><span class="room-num">Room 05</span><h2 id="phil-h">How I teach</h2></div>
+      <p>Four principles I keep coming back to, whether the room is full of first-year students or working professionals.</p>
+    </div>
+    <div class="principles">
+      <article class="principle">
+        <div><span class="idx">First</span><h3>Start with the problem</h3></div>
+        <div class="body">
+          <p class="big">What problem does this concept solve?</p>
+          <p>I don't introduce a concept simply because it's next in the textbook. If a student can't say why a dictionary beats a list for this job, the syntax won't stick. So we feel the pain first, then meet the tool that removes it.</p>
+        </div>
+      </article>
+      <article class="principle">
+        <div><span class="idx">Second</span><h3>Make students think</h3></div>
+        <div class="body">
+          <p class="big">Predict, trace, debug, compare, explain.</p>
+          <p>Code completion tools can finish a line for you. They can't make you understand it. My exercises ask students to predict output before running, trace variables by hand, and explain why one version beats another.</p>
+        </div>
+      </article>
+      <article class="principle">
+        <div><span class="idx">Third</span><h3>Learn through failure</h3></div>
+        <div class="body">
+          <p class="big">Errors are information.</p>
+          <p>A traceback isn't a judgment. It's the computer telling you exactly where your mental model and reality disagree. Try one:</p>
+          <div class="predict">
+            <pre class="code" id="predictCode"></pre>
+            <p class="predict-q" id="predictQ">What do you think happens?</p>
+            <div class="guesses" role="group" aria-labelledby="predictQ" id="guesses">
+              <button class="guess" type="button" data-g="john">It prints John</button>
+              <button class="guess" type="button" data-g="none">It prints None</button>
+              <button class="guess" type="button" data-g="err">It raises an error</button>
+              <button class="guess" type="button" data-g="ali">It wraps around to Ali</button>
+            </div>
+            <div class="reveal" id="predictReveal" hidden aria-live="polite">
+              <div class="tb">Traceback (most recent call last):
+  File "lesson.py", line 3, in &lt;module&gt;
+    print(names[3])
+IndexError: list index out of range</div>
+              <p><strong id="predictVerdict"></strong> Python counts from zero, so this list has positions 0, 1 and 2. There is no position 3. John lives at <code>names[2]</code>, or at <code>names[-1]</code> if you want “the last one” no matter how long the list gets.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+      <article class="principle">
+        <div><span class="idx">Fourth</span><h3>Make technical ideas human</h3></div>
+        <div class="body">
+          <p class="big">The goal isn't to sound complicated. It's to be understood.</p>
+          <p>Same idea, two explanations. Which one would you remember tomorrow?</p>
+          <div class="toggle" role="group" aria-label="Explanation style">
+            <button type="button" aria-pressed="true" data-ex="jargon">Textbook</button>
+            <button type="button" aria-pressed="false" data-ex="human">Human</button>
+          </div>
+          <div class="chips" role="group" aria-label="Concept" id="exConcepts"></div>
+          <p class="explain" id="explain" aria-live="polite"></p>
+        </div>
+      </article>
+    </div>
+
+    <div class="loop" id="howithink">
+      <div>
+        <h3>How I think</h3>
+        <p style="color:var(--ink-2)">Most of what I build follows the same loop. Step through it, using a real project as the example.</p>
+        <div class="step-card" aria-live="polite">
+          <div class="s-name" id="stepName"></div>
+          <p id="stepDesc" style="margin:0;color:var(--ink-2)"></p>
+          <p class="s-ex" id="stepEx"></p>
+        </div>
+        <div class="step-nav">
+          <button class="pill" type="button" id="stepPrev">Back</button>
+          <button class="pill solid" type="button" id="stepNext">Next step</button>
+        </div>
+      </div>
+      <svg viewBox="0 0 440 440" role="group" aria-label="Question, hypothesis, build, test, learn, iterate cycle" id="loopSvg"></svg>
+    </div>
+  </div>
+</section>
+
+<!-- =================== 06 LESSONS =================== -->
+<section class="room" id="lessons" aria-labelledby="lessons-h">
+  <div class="wrap">
+    <div class="room-head">
+      <div><span class="room-num">Room 06</span><h2 id="lessons-h">Things I've learned</h2></div>
+      <p>Short lessons from teaching, building, and being wrong. Tap the ones you agree with to collect them.</p>
+    </div>
+    <div class="deck" id="deck"></div>
+    <p class="deck-foot" id="deckFoot" aria-live="polite"></p>
+  </div>
+</section>
+
+<!-- =================== 07 CURRENTLY =================== -->
+<section class="room" id="now" aria-labelledby="now-h">
+  <div class="wrap">
+    <div class="room-head">
+      <div><span class="room-num">Room 07</span><h2 id="now-h">Currently</h2></div>
+      <p>A snapshot of where my attention is right now.</p>
+    </div>
+    <dl class="now" id="nowList"></dl>
+    <div class="updated"><span class="pulse" aria-hidden="true"></span><span id="nowUpdated"></span></div>
+  </div>
+</section>
+
+<!-- =================== 08 TIMELINE =================== -->
+<section class="room" id="timeline" aria-labelledby="time-h">
+  <div class="wrap">
+    <div class="room-head">
+      <div><span class="room-num">Room 08</span><h2 id="time-h">How I got here</h2></div>
+      <p>Not a list of job titles. Each stop is a change in what I was trying to understand.</p>
+    </div>
+    <div class="track" role="tablist" aria-label="Journey milestones" id="track"></div>
+    <div class="story" role="tabpanel" id="story" tabindex="0"></div>
+  </div>
+</section>
+
+<!-- =================== 09 GITHUB =================== -->
+<section class="room" id="github" aria-labelledby="gh-h">
+  <div class="wrap">
+    <div class="room-head">
+      <div><span class="room-num">Room 09</span><h2 id="gh-h">Things I've actually built</h2></div>
+      <p>The workshop behind this site. Code, notes, and the commits where things broke.</p>
+    </div>
+    <div class="workshop" id="workshop"></div>
+    <div class="gh-cta"><a class="pill solid" id="ghProfile" href="#">Open my GitHub</a></div>
+  </div>
+</section>
+
+<!-- =================== 10 ABOUT =================== -->
+<section class="room" id="about" aria-labelledby="about-h">
+  <div class="wrap">
+    <div class="room-head">
+      <div><span class="room-num">Room 10</span><h2 id="about-h">A little about me</h2></div>
+      <p>The parts that don't fit on a résumé.</p>
+    </div>
+    <div class="about">
+      <div class="about-lines" id="aboutLines"></div>
+      <aside class="also">
+        <h3>Where I've shared ideas</h3>
+        <ul id="talks"></ul>
+        <h3>Also</h3>
+        <ul id="alsoList"></ul>
+        <div class="links" id="contactLinks"></div>
+      </aside>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Built by hand by Sajid Hussain. No trackers, no frameworks.</span>
+    <span>There's a terminal hiding here. Try <kbd>`</kbd> or <button type="button" id="termTap" style="text-decoration:underline;text-underline-offset:.18em">tap here</button>.</span>
+  </div>
+</footer>
+
+<!-- Mobile tab bar -->
+<nav class="tabbar" aria-label="Sections">
+  <a href="#map" data-nav="map"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14"/></svg>Explore</a>
+  <a href="#teach" data-nav="teach"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18v11H3zM8 20h8M12 16v4"/></svg>Teach</a>
+  <a href="#build" data-nav="build"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z M12 12l8-4.5M12 12v9M12 12 4 7.5"/></svg>Build</a>
+  <a href="#ideas" data-nav="ideas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 18h.01"/><circle cx="12" cy="12" r="9.5"/></svg>Ideas</a>
+  <button type="button" id="moreTab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg>More</button>
+</nav>
+
+<!-- Sheet -->
+<div class="scrim" id="scrim" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" id="sheet" tabindex="-1">
+    <div class="grab" aria-hidden="true"></div>
+    <button class="close" type="button" id="sheetClose" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+    <div id="sheetBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- Terminal -->
+<div class="term" id="term" hidden role="dialog" aria-label="Terminal">
+  <div class="term-bar"><i></i><i></i><i></i>&nbsp; sajid@notebook: ~ <button type="button" id="termClose" aria-label="Close terminal">esc</button></div>
+  <div class="term-out" id="termOut" aria-live="polite"></div>
+  <div class="term-in"><span aria-hidden="true">$</span><label for="termInput" class="sr">Terminal command</label><input id="termInput" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+</div>
+
+<script>
+/* =================================================================
+   CONTENT — edit everything about the site here.
+   Lines marked DRAFT are written from what I knew about you; rewrite
+   them in your own words before publishing.
+   ================================================================= */
+const CONFIG = {
+  links: {
+    github:   "https://github.com/Sajidcodes",
+    linkedin: "",   // e.g. "https://www.linkedin.com/in/your-handle"
+    youtube:  "",   // e.g. "https://www.youtube.com/@your-handle"
+    email:    ""    // e.g. "you@example.com"
+  },
+
+  currently: {
+    updated: "October 2026",
+    items: [
+      ["Building",          "AI agents and RAG systems"],
+      ["Teaching",          "Python, Data Science, AI & Business"],
+      ["Learning",          "Advanced AI/ML engineering: evals, tracing, cost"],
+      ["Experimenting with","New ways to teach programming"],
+      ["Thinking about",    "AI, education, productivity, and evidence"]
+    ]
+  },
+
+  teach: [
+    { id:"python", title:"Python", glyph:">>> print()", wide:true,
+      short:"Problem first. Then the code.",
+      body:"I enjoy teaching programming by starting with the problem first: what problem does this concept solve? Then we write the code. In CIS 108 a list comprehension isn't a new syntax to memorize. It's the answer to “I keep writing the same four-line loop.”",
+      code:'scores = [72, 88, 95, 61]\n\n# Which students passed?\npassed = [s for s in scores if s >= 70]\nprint(len(passed), "of", len(scores), "passed")',
+      output:"3 of 4 passed" },
+    { id:"ds", title:"Data Science", glyph:"df.groupby()",
+      short:"A question before a model.",
+      body:"Most beginner mistakes in data science aren't coding mistakes. They're question mistakes. In Data Science Fundamentals we write the question in plain English before touching pandas, and we decide what answer would surprise us.",
+      code:'import pandas as pd\n\n# Question: do students who submit early score higher?\ndf.groupby("submitted_early")["final_score"].mean()' },
+    { id:"fund", title:"Programming Fundamentals", glyph:"while i < n:",
+      short:"Trace it by hand first.",
+      body:"Before students run a loop, they trace it on paper: what's in each variable after each pass? It feels slow. It's the fastest way I know to build a mental model that survives the first real bug.",
+      code:'total = 0\nfor n in [3, 5, 2]:\n    total = total + n\n    print(n, total)',
+      output:"3 3\n5 8\n2 10" },
+    { id:"aib", title:"AI for Business", glyph:"cost × risk",
+      short:"When does AI actually pay off?",
+      body:"At Kean I teach AI in Business with one recurring question: not “can AI do this?” but “should it?” We look at how often a task happens, what a wrong answer costs, and who checks the output. Many good business uses of AI are boring, and that's fine." },
+    { id:"dm", title:"Data Mining", glyph:"signal / noise",
+      short:"Real patterns versus lucky ones.",
+      body:"Data mining finds patterns. The harder skill is deciding which patterns are real. We hold data back, try to break our own findings, and ask whether a pattern would help anyone make a better decision.",
+      code:'from sklearn.model_selection import train_test_split\n\n# Never judge a pattern on the data that found it\nX_train, X_test, y_train, y_test = train_test_split(\n    X, y, test_size=0.25, random_state=42)' },
+    { id:"r", title:"R", glyph:"|> summarise()",
+      short:"Same questions, different language.",
+      body:"Teaching R next to Python shows students that ideas outlive syntax. Filtering, grouping, and summarizing look different in each language but answer the same questions.",
+      code:'library(dplyr)\n\nstudents |>\n  group_by(section) |>\n  summarise(avg = mean(score))' },
+    { id:"genai", title:"Generative AI", glyph:"retrieve → generate", wide:true,
+      short:"How it works, where it breaks.",
+      body:"I teach generative AI by building it in small pieces: what an embedding is, why retrieval reduces made-up answers, and how to tell when the model is guessing. Students leave able to explain RAG to a friend, not just call an API.",
+      code:'# RAG in four lines of thought\nquestion = "When is the CIS 108 midterm?"\nchunks   = search(index, question, k=3)   # retrieve\nprompt   = build_prompt(question, chunks)  # ground\nanswer   = llm(prompt)                     # generate' },
+    { id:"crit", title:"Critical Thinking with Technology", glyph:"claim? evidence?",
+      short:"Measured, or just repeated?",
+      body:"“AI makes you 40% more productive.” At what task? Compared to what? Measured how? I teach students to ask those three questions about any tech claim, including mine." }
+  ],
+
+  // status: Building | Experiment | Teaching Tool | Completed | Archived
+  // cat: ai | data | teach
+  projects: [
+    { id:"zerag1", title:"zerag1", cat:"ai", status:"Building", feature:true, accession:"No. 001",
+      one:"A multi-agent RAG system that answers questions across 11 sources in about two seconds, for a fraction of a cent.",
+      metrics:[["~36,000","chunks indexed"],["11","sources"],["~2.3 s","p99 latency"],["< $0.0005","per query"]],
+      problem:"Answers were scattered across many sources. Searching each one by hand was slow, and a plain chatbot made things up.",
+      why:"I wanted to know whether a small, carefully built system could be fast, cheap, and honest about its sources at the same time, and I wanted to understand every layer of it rather than just wiring an API.",
+      tech:["Google ADK","Gemini 2.5 Flash","ChromaDB","Cohere Rerank","FastAPI","OpenTelemetry","Google Cloud Trace"],
+      learned:"Reranking did more for answer quality than a bigger model would have. And you can't fix latency you can't see: tracing every agent step turned guesses into measurements.",
+      failed:"My first versions on LangChain and LangGraph worked, but I couldn't see clearly what each agent was doing. I rebuilt on Google ADK. I also lost a stretch of time to OpenTelemetry spans that silently never reached Cloud Trace.",
+      change:"DRAFT: Build the evaluation set on day one, before the first prompt, so every architecture change is measured against the same questions.",
+      repo:"", demo:"" },
+    { id:"evals", title:"AI evals notebook", cat:"ai", status:"Experiment", accession:"No. 002",
+      one:"Small, repeatable tests for judging whether an LLM's answers are actually good.",
+      problem:"“It seems better” isn't a measurement. I needed a way to compare prompts and models that didn't depend on my mood that day.",
+      why:"Evaluation is where AI engineering stops being a demo. I wanted hands-on practice with it, not just reading about it.",
+      tech:["Python","LLM-as-judge","pandas"],
+      learned:"DRAFT: A small set of hard, hand-written test questions beats a large set of easy ones.",
+      failed:"DRAFT: Early judge prompts agreed with themselves more than with me.",
+      change:"DRAFT: Write down what “good” means before writing the grader.",
+      repo:"", demo:"" },
+    { id:"term", title:"Terminal agent", cat:"ai", status:"Experiment", accession:"No. 003",
+      one:"DRAFT: An AI agent that lives in the command line and works through tasks step by step.",
+      problem:"DRAFT",
+      why:"DRAFT",
+      tech:["Python","LLM tool use"],
+      learned:"DRAFT", failed:"DRAFT", change:"DRAFT", repo:"", demo:"" },
+    { id:"labs", title:"Python practice labs", cat:"teach", status:"Teaching Tool", accession:"No. 004",
+      one:"Predict-then-run exercises for CIS 108 that make students think before they type.",
+      problem:"Students could finish exercises with autocomplete and still not understand what their code did.",
+      why:"I wanted practice that rewards reasoning: predict the output, trace variables, find the bug, explain the fix.",
+      tech:["Python","Jupyter"],
+      learned:"Asking “what will this print?” before running reveals misconceptions faster than any quiz.",
+      failed:"DRAFT",
+      change:"DRAFT", repo:"", demo:"" },
+    { id:"course", title:"Course videos & materials", cat:"teach", status:"Building", accession:"No. 005",
+      one:"Lessons and short videos for my CIS courses, built around one problem per lesson.",
+      problem:"Textbook chapters introduce ten ideas at once. Students need one idea, one problem, one win.",
+      why:"Good materials outlast any single semester and reach students who missed class.",
+      tech:["Python","Video","Slides"],
+      learned:"DRAFT", failed:"DRAFT", change:"DRAFT", repo:"", demo:"" },
+    { id:"inventory", title:"AI tools inventory", cat:"data", status:"Building", accession:"No. 006",
+      one:"Mapping which AI tools are in use across a college, as chair of a working group on PCCC's Enterprise AI Committee.",
+      problem:"Nobody had a clear picture of which AI tools people were already using, or how.",
+      why:"You can't write sensible AI policy for tools you haven't counted.",
+      tech:["Surveys","Data analysis"],
+      learned:"DRAFT", failed:"DRAFT", change:"DRAFT", repo:"", demo:"" },
+    { id:"evidence", title:"Does AI really make you productive?", cat:"data", status:"Experiment", accession:"No. 007",
+      one:"Short, evidence-first investigations of popular AI claims, for YouTube.",
+      problem:"Bold claims about AI spread faster than the studies behind them.",
+      why:"I wanted a habit of reading the actual research and explaining what it does and doesn't show.",
+      tech:["Research","Video"],
+      learned:"Most headline numbers come from narrow tasks. The interesting part is usually in the limitations section.",
+      failed:"DRAFT", change:"DRAFT", repo:"", demo:"" }
+  ],
+
+  questions: [
+    { q:"Can AI actually make programmers more productive?",
+      think:"Faster at what, though? Generating code is one part of programming. Reading, debugging, and deciding what to build are others, and those may not speed up at all.",
+      evidence:"The studies I've read measure narrow, well-defined tasks. Results on real, messy codebases are much more mixed. I'm collecting both.",
+      related:"Does AI really make you productive?" },
+    { q:"What happens when students learn programming through productive failure?",
+      think:"Letting students struggle with a problem before teaching the solution feels unkind. I suspect it's often the opposite: the struggle builds the hook the explanation hangs on.",
+      evidence:"I've started giving problems before lectures in some sections. Early impression: more frustration on day one, better explanations on the exam.",
+      related:"Python practice labs" },
+    { q:"How should programming education change because of generative AI?",
+      think:"If a model can write the syntax, the skills that matter more are reading code, testing it, and knowing when it's wrong.",
+      evidence:"I'm shifting exercises toward prediction, tracing, and code review. Still figuring out how to grade them fairly.",
+      related:"Python practice labs" },
+    { q:"What makes an explanation genuinely understandable?",
+      think:"My working theory: a good explanation names the problem first, uses one concrete example, and only then generalizes.",
+      evidence:"When I flip the order in class, student questions change from “what does this do?” to “what if I tried this instead?”" },
+    { q:"Can we design better ways to learn data science?",
+      think:"Most courses teach tools in order: pandas, then plotting, then models. Real work goes question, data, mess, answer.",
+      evidence:"I'm testing question-first assignments in Data Science Fundamentals." },
+    { q:"Where does automation help humans, and where does it just add complexity?",
+      think:"Automation helps when a task is frequent, well-defined, and cheap to check. It hurts when it hides decisions someone should be making.",
+      evidence:"Building multi-agent systems taught me that every agent you add is another thing to trace, test, and debug.",
+      related:"zerag1" },
+    { q:"How can we tell impressive technology from useful technology?",
+      think:"Impressive technology makes a great demo. Useful technology still works on the hundredth boring Tuesday.",
+      evidence:"My test now: who uses this weekly, and what would they do if it disappeared?" }
+  ],
+
+  // tag: ai | data | edu | code | random      state: works | half-works | failed | thinking
+  lab: [
+    { t:"LangGraph version of zerag1", tag:"ai", state:"failed", note:"It worked. I just couldn't see inside it well enough to trust it. Retired in favor of Google ADK." },
+    { t:"The missing traces", tag:"code", state:"half-works", note:"OpenTelemetry spans that existed locally and vanished in Cloud Trace. Fixed, mostly understood." },
+    { t:"Explain it like a TA, not a textbook", tag:"ai", state:"thinking", note:"Prompt experiment: does asking a model to explain like a teaching assistant produce explanations students prefer?" },
+    { t:"Predict-the-output warmups", tag:"edu", state:"works", note:"Five-minute class openers. Students commit to an answer before the code runs." },
+    { t:"Stuck timer", tag:"edu", state:"thinking", note:"What if a lab tool noticed you'd been stuck for ten minutes and offered a question instead of an answer?" },
+    { t:"Reranker or bigger model?", tag:"ai", state:"works", note:"Same budget, two ways to spend it. Reranking won on my questions." },
+    { t:"Grades vs. submission time", tag:"data", state:"half-works", note:"Does submitting early predict higher scores? Interesting pattern, too many confounders." },
+    { t:"Error message translator", tag:"code", state:"thinking", note:"Rewrite Python tracebacks into plain English for beginners, without hiding the original." },
+    { t:"A Python joke generator", tag:"random", state:"failed", note:"Every joke was about indentation. Every single one." }
+  ],
+
+  lessons: [
+    "A working prototype teaches you more than a perfect architecture diagram.",
+    "If students can't explain why they need a concept, they probably aren't ready for the syntax.",
+    "The fastest way to understand a technology is often to build something small with it.",
+    "“Can AI do this?” is usually a less interesting question than “When should we use AI for this?”",
+    "You can't fix latency you can't see.",
+    "Students remember the bug they found long after they forget the rule they were told.",
+    "“I don't know yet” builds more trust than a confident guess.",
+    "Most “AI makes you X% faster” claims never say faster at what."
+  ],
+
+  timeline: [
+    { label:"Computer Science", when:"Where it started",
+      doing:"DRAFT: Studying how computers work, from the bottom up.",
+      learned:"DRAFT: Programs are just precise instructions, and precision is a skill.",
+      changed:"DRAFT: I realized I cared more about applying ideas than collecting them.",
+      next:"Building real software for real users." },
+    { label:"Software & technology", when:"Learning by shipping",
+      doing:"DRAFT: Writing software and learning how systems behave outside the classroom.",
+      learned:"DRAFT: Users don't care how clever the code is. They care whether it helps.",
+      changed:"I got curious about the data behind decisions.",
+      next:"A deeper look at data." },
+    { label:"Data Science", when:"MS, NJIT",
+      doing:"Earned an MS in Data Science at NJIT, then worked as a data scientist at NeuroTechR3 and an ML engineer at iNeuron.",
+      learned:"Most of the work is understanding the question and the data. The model is the short part.",
+      changed:"I kept explaining things to colleagues and enjoying it more than I expected.",
+      next:"The classroom." },
+    { label:"Teaching", when:"PCCC, Kean, UCC",
+      doing:"Teaching Python, Data Science, AI in Business, and Data Mining at Passaic County Community College, Kean University, and Union County College.",
+      learned:"Explaining something simply is the strictest test of whether you understand it.",
+      changed:"Generative AI arrived in my students' hands overnight.",
+      next:"Figuring out what that means." },
+    { label:"Generative AI", when:"Teaching it, building with it",
+      doing:"Teaching AI literacy, chairing an AI tools working group at PCCC, and building with LLMs.",
+      learned:"The gap between an impressive demo and a reliable tool is enormous, and that gap is where the interesting work is.",
+      changed:"I wanted to build systems that hold up, not just demos.",
+      next:"Engineering." },
+    { label:"AI Engineering", when:"Now",
+      doing:"Building production RAG and multi-agent systems, with tracing, evaluation, and cost in view from the start.",
+      learned:"Observability, evaluation, and cost discipline matter as much as the model.",
+      changed:"Still happening.",
+      next:"See below." },
+    { label:"Whatever comes next", when:"Unwritten", next:true,
+      doing:"Something that combines building real AI systems with explaining them clearly.",
+      learned:"Ask me in a year.",
+      changed:"—",
+      next:"—" }
+  ],
+
+  about: [
+    "I enjoy teaching.",
+    "I like understanding how things work.",
+    "I like turning complicated technical ideas into simple explanations.",
+    "I enjoy experimenting with new technologies.",
+    "I care about evidence, reasoning, and critical thinking.",
+    "I believe building things is one of the best ways to learn."
+  ],
+  talks: ["PyCon US", "ACM SIGCITE", "NJ AI Literacy Summit"],
+  also: [
+    "Teacher Excellence Award and recognition for AI leadership, among five honors at PCCC Faculty Development Day",
+    "Chair, IEEE NJ Coast Young Professionals",
+    "ACM Life Member",
+    "MS in Data Science, NJIT"
+  ],
+
+  playground: [
+    { name:"Counting words", code:'text = "the cat sat on the mat the end"\ncounts = {}\nfor word in text.split():\n    counts[word] = counts.get(word, 0) + 1\nprint(counts["the"])\nprint(max(counts, key=counts.get))', output:"3\nthe" },
+    { name:"Slicing", code:'word = "notebook"\nprint(word[:4])\nprint(word[4:])\nprint(word[::-1])', output:"note\nbook\nkoobeton" },
+    { name:"Mutable surprise", code:'a = [1, 2, 3]\nb = a\nb.append(4)\nprint(a)\n# Why did a change? Try b = a.copy()', output:"[1, 2, 3, 4]" },
+    { name:"Float puzzle", code:'print(0.1 + 0.2)\nprint(0.1 + 0.2 == 0.3)\nprint(round(0.1 + 0.2, 2) == 0.3)', output:"0.30000000000000004\nFalse\nTrue" }
+  ]
+};
+
+/* =================================================================
+   Helpers
+   ================================================================= */
+document.documentElement.classList.add("js");
+const $ = (s, el=document) => el.querySelector(s);
+const $$ = (s, el=document) => [...el.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const isDraft = s => typeof s === "string" && s.trim().startsWith("DRAFT");
+const clean = s => isDraft(s) ? s.replace(/^DRAFT:?\s*/,"") : s;
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// Tiny Python highlighter
+const PY_KW = new Set("def return for in if else elif import from as while class True False None and or not with lambda try except pass break continue".split(" "));
+const PY_BI = new Set("print len range max min sum sorted round list dict set str int float enumerate zip".split(" "));
+function highlight(code){
+  const re = /(#[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')|(\b\d+(?:\.\d+)?\b)|([A-Za-z_][A-Za-z0-9_]*)/g;
+  let out = "", last = 0, m;
+  while((m = re.exec(code))){
+    out += esc(code.slice(last, m.index));
+    if(m[1]) out += '<span class="c">'+esc(m[1])+'</span>';
+    else if(m[2]) out += '<span class="s">'+esc(m[2])+'</span>';
+    else if(m[3]) out += '<span class="n">'+m[3]+'</span>';
+    else if(PY_KW.has(m[4])) out += '<span class="k">'+m[4]+'</span>';
+    else if(PY_BI.has(m[4])) out += '<span class="b">'+m[4]+'</span>';
+    else out += esc(m[4]);
+    last = re.lastIndex;
+  }
+  return out + esc(code.slice(last));
+}
+const codeBlock = (code, lbl) => '<pre class="code">'+(lbl?'<span class="lbl">'+esc(lbl)+'</span>':'')+highlight(code)+'</pre>';
+
+/* =================================================================
+   Toast
+   ================================================================= */
+let toastTimer;
+function toast(msg){
+  const t = $("#toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("show"), 3600);
+}
+
+/* =================================================================
+   Sheet (dialog)
+   ================================================================= */
+const scrim = $("#scrim"), sheet = $("#sheet");
+let lastFocus = null;
+function openSheet(html){
+  lastFocus = document.activeElement;
+  $("#sheetBody").innerHTML = html;
+  scrim.hidden = false;
+  sheet.scrollTop = 0;
+  requestAnimationFrame(() => { scrim.classList.add("open"); sheet.focus({preventScroll:true}); });
+  document.body.style.overflow = "hidden";
+}
+function closeSheet(){
+  scrim.classList.remove("open");
+  document.body.style.overflow = "";
+  setTimeout(() => { scrim.hidden = true; }, reduceMotion ? 0 : 300);
+  if(lastFocus && lastFocus.focus) lastFocus.focus({preventScroll:true});
+}
+$("#sheetClose").addEventListener("click", closeSheet);
+scrim.addEventListener("click", e => { if(e.target === scrim) closeSheet(); });
+sheet.addEventListener("keydown", e => {
+  if(e.key !== "Tab") return;
+  const f = $$('a[href],button:not([disabled]),[tabindex]:not([tabindex="-1"]),input,textarea', sheet).filter(el => el.offsetParent !== null);
+  if(!f.length) return;
+  const first = f[0], last = f[f.length-1];
+  if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+  else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+});
+// Swipe down to dismiss on mobile
+(() => {
+  let y0 = null, dy = 0;
+  sheet.addEventListener("touchstart", e => { if(sheet.scrollTop <= 0) y0 = e.touches[0].clientY; }, {passive:true});
+  sheet.addEventListener("touchmove", e => { if(y0 === null) return; dy = e.touches[0].clientY - y0; if(dy > 0) sheet.style.transform = "translateY("+dy+"px)"; }, {passive:true});
+  sheet.addEventListener("touchend", () => { sheet.style.transform = ""; if(dy > 110) closeSheet(); y0 = null; dy = 0; });
+})();
+
+/* =================================================================
+   Map / floor plan
+   ================================================================= */
+const ICONS = {
+  teach:'<path d="M3 5h18v11H3zM8 20h8M12 16v4M7 9h6M7 12h4"/>',
+  build:'<path d="m12 3 8 4.5v9L12 21l-8-4.5v-9zM12 12l8-4.5M12 12v9M12 12 4 7.5"/>',
+  ideas:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17.5h.01"/>',
+  lab:'<path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3M7.5 15h9"/>',
+  philosophy:'<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 21V5M8 7h7M8 10h5"/>',
+  lessons:'<rect x="4" y="5" width="13" height="16" rx="2"/><path d="M8 3h11a1 1 0 0 1 1 1v14"/>',
+  now:'<circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8" stroke-dasharray="2 3"/>',
+  timeline:'<path d="M3 17c4 0 4-10 9-10s5 10 9 10"/><circle cx="3" cy="17" r="1.5"/><circle cx="12" cy="7" r="1.5"/><circle cx="21" cy="17" r="1.5"/>',
+  github:'<circle cx="6" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="8" r="2"/><path d="M6 8v8M18 10c0 4-6 3-11 6.5"/>',
+  about:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>'
+};
+const ROOMS = [
+  {id:"teach", n:"01", t:"What I teach", d:"Subjects, and how I open them", axes:["edu","code","data"]},
+  {id:"build", n:"02", t:"What I build", d:"Projects as museum pieces", axes:["ai","code","data"]},
+  {id:"ideas", n:"03", t:"Things I'm curious about", d:"Pages from a notebook", axes:["cur","ai","edu"]},
+  {id:"lab", n:"04", t:"The Lab", d:"Unfinished on purpose", axes:["cur","code","ai"]},
+  {id:"philosophy", n:"05", t:"How I teach", d:"Four principles, one loop", axes:["edu","cur"]},
+  {id:"lessons", n:"06", t:"Things I've learned", d:"Collect the ones you like", axes:["edu","cur"]},
+  {id:"now", n:"07", t:"Currently", d:"Where my attention is", axes:["ai","edu"]},
+  {id:"timeline", n:"08", t:"How I got here", d:"An evolution, not a résumé", axes:["data","edu","ai"]},
+  {id:"github", n:"09", t:"Things I've built", d:"The workshop", axes:["code","ai"]},
+  {id:"about", n:"10", t:"A little about me", d:"The human part", axes:["cur","edu"]}
+];
+$("#plan").innerHTML = ROOMS.map(r =>
+  '<a class="room-tile" href="#'+r.id+'" data-room="'+r.id+'" style="grid-area:'+r.id.replace("philosophy","phil").replace("timeline","time").replace("github","git")+'">'+
+  '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">'+ICONS[r.id]+'</svg>'+
+  '<span class="n">Room '+r.n+'</span>'+
+  '<span><span class="t">'+esc(r.t)+'</span><span class="d" style="display:block">'+esc(r.d)+'</span></span>'+
+  '<span class="seen" aria-hidden="true">✓ visited</span><span class="sr visited-sr"></span></a>'
+).join("");
+
+// Axis chips light up related rooms
+$$("#axes button").forEach(b => b.addEventListener("click", () => {
+  const on = b.getAttribute("aria-pressed") !== "true";
+  $$("#axes button").forEach(x => x.setAttribute("aria-pressed","false"));
+  $$(".room-tile").forEach(t => t.classList.remove("lit"));
+  if(on){
+    b.setAttribute("aria-pressed","true");
+    const ax = b.dataset.axis;
+    ROOMS.filter(r => r.axes.includes(ax)).forEach(r => $('.room-tile[data-room="'+r.id+'"]').classList.add("lit"));
+    document.getElementById("map").scrollIntoView({behavior: reduceMotion ? "auto" : "smooth"});
+  }
+}));
+
+// Visited rooms
+const visited = new Set(store.get("sh-visited", []));
+function renderVisited(){
+  visited.forEach(id => { const t = $('.room-tile[data-room="'+id+'"]'); if(t){ t.classList.add("visited"); $(".visited-sr", t).textContent = " (visited)"; } });
+  $("#progressText").textContent = visited.size + " of 10 rooms explored";
+  $("#progressFill").style.width = (visited.size*10) + "%";
+}
+renderVisited();
+const roomObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting && !visited.has(e.target.id)){
+      visited.add(e.target.id); store.set("sh-visited", [...visited]); renderVisited();
+      if(visited.size === 10) setTimeout(() => toast("You've explored every room. Thanks for wandering through."), 600);
+    }
+  });
+}, {threshold:.35});
+ROOMS.forEach(r => roomObs.observe(document.getElementById(r.id)));
+
+/* =================================================================
+   01 Teach
+   ================================================================= */
+$("#teachGrid").innerHTML = CONFIG.teach.map(s =>
+  '<button class="subject'+(s.wide?' wide':'')+'" type="button" data-teach="'+s.id+'" aria-haspopup="dialog">'+
+  '<span class="open" aria-hidden="true">+</span>'+
+  '<span class="glyph" aria-hidden="true">'+esc(s.glyph)+'</span>'+
+  '<span><h3>'+esc(s.title)+'</h3><p>'+esc(s.short)+'</p></span></button>'
+).join("");
+function teachSheet(s){
+  return '<p class="kicker">What I teach</p><h2 id="sheetTitle">'+esc(s.title)+'</h2>'+
+    '<p class="lede">'+esc(s.body)+'</p>'+
+    (s.code ? codeBlock(s.code, s.id==="r" ? "R" : "Python") : "")+
+    (s.output ? '<pre class="out" style="border-radius:10px;margin-top:-.4rem">'+esc(s.output)+'</pre>' : "");
+}
+$("#teachGrid").addEventListener("click", e => {
+  const b = e.target.closest("[data-teach]"); if(!b) return;
+  openSheet(teachSheet(CONFIG.teach.find(x => x.id === b.dataset.teach)));
+});
+
+/* =================================================================
+   02 Build
+   ================================================================= */
+const VITRINE = {
+  ai:'<svg viewBox="0 0 200 110" aria-hidden="true"><circle cx="30" cy="55" r="10"/><circle cx="100" cy="22" r="10"/><circle cx="100" cy="88" r="10"/><circle cx="170" cy="55" r="12"/><path d="M40 55 90 25M40 55l50 30M110 22l50 28M110 88l50-28M100 32v46" stroke-dasharray="3 4"/></svg>',
+  data:'<svg viewBox="0 0 200 110" aria-hidden="true"><path d="M15 95h175M15 95V10"/><circle cx="40" cy="70" r="3"/><circle cx="62" cy="60" r="3"/><circle cx="80" cy="66" r="3"/><circle cx="100" cy="45" r="3"/><circle cx="122" cy="50" r="3"/><circle cx="140" cy="32" r="3"/><circle cx="165" cy="26" r="3"/><path d="M30 78 175 20" stroke-dasharray="4 4"/></svg>',
+  teach:'<svg viewBox="0 0 200 110" aria-hidden="true"><rect x="30" y="12" width="140" height="80" rx="6"/><path d="M46 34h40M46 48h70M58 62h50M46 76h24"/><path d="M150 30l8 8-8 8"/></svg>'
+};
+const CAT_LABEL = {all:"All", ai:"AI & Generative AI", data:"Data Science", teach:"Teaching tools"};
+$("#buildFilter").innerHTML = Object.entries(CAT_LABEL).map(([k,v],i) =>
+  '<button class="chip" type="button" data-f="'+k+'" aria-pressed="'+(i===0)+'">'+v+'</button>').join("");
+$("#gallery").innerHTML = CONFIG.projects.map(p =>
+  '<button class="artifact'+(p.feature?' feature':'')+'" type="button" data-proj="'+p.id+'" data-cat="'+p.cat+'" aria-haspopup="dialog">'+
+  '<span class="vitrine">'+VITRINE[p.cat]+'</span>'+
+  '<span class="plaque"><span class="plaque-top"><span class="accession">'+esc(p.accession)+'</span><span class="status" data-s="'+p.status+'">'+p.status+'</span></span>'+
+  '<h3>'+esc(p.title)+'</h3><p>'+esc(clean(p.one))+'</p>'+
+  (p.metrics ? '<span class="metrics">'+p.metrics.map(m => '<span class="tag">'+esc(m[0])+' '+esc(m[1])+'</span>').join("")+'</span>' : "")+
+  '</span></button>'
+).join("");
+$("#buildFilter").addEventListener("click", e => {
+  const b = e.target.closest("[data-f]"); if(!b) return;
+  $$("#buildFilter .chip").forEach(c => c.setAttribute("aria-pressed", c === b));
+  $$("#gallery .artifact").forEach(a => a.hidden = !(b.dataset.f === "all" || a.dataset.cat === b.dataset.f));
+});
+function field(label, val){ return isDraft(val) && clean(val) === "" ? "" : '<div><h3>'+label+'</h3><p>'+esc(clean(val))+'</p></div>'; }
+function projectSheet(p){
+  const repo = p.repo || CONFIG.links.github;
+  return '<p class="kicker">'+esc(p.accession)+', '+esc(CAT_LABEL[p.cat])+'</p><h2 id="sheetTitle">'+esc(p.title)+'</h2>'+
+    '<p class="lede">'+esc(clean(p.one))+'</p>'+
+    (p.metrics ? '<div class="stat-row">'+p.metrics.map(m => '<div class="stat"><b>'+esc(m[0])+'</b><span>'+esc(m[1])+'</span></div>').join("")+'</div>' : "")+
+    '<div class="pairs">'+field("The problem", p.problem)+field("Why I built it", p.why)+'</div>'+
+    '<h3>Built with</h3><div class="tech">'+p.tech.map(t => '<span class="tag">'+esc(t)+'</span>').join("")+'</div>'+
+    '<div class="pairs">'+field("What I learned", p.learned)+field("What didn't work", p.failed)+'</div>'+
+    field("What I'd change", p.change)+
+    '<div class="actions"><a class="pill solid" href="'+esc(repo)+'" target="_blank" rel="noopener">'+(p.repo?'View on GitHub':'Open my GitHub')+'</a>'+
+    (p.demo ? '<a class="pill" href="'+esc(p.demo)+'" target="_blank" rel="noopener">Open live demo</a>' : "")+'</div>';
+}
+$("#gallery").addEventListener("click", e => {
+  const b = e.target.closest("[data-proj]"); if(!b) return;
+  openSheet(projectSheet(CONFIG.projects.find(x => x.id === b.dataset.proj)));
+});
+
+/* =================================================================
+   03 Ideas notebook
+   ================================================================= */
+$("#notebook").innerHTML = CONFIG.questions.map((q,i) =>
+  '<div class="q" data-open="false"><button type="button" aria-expanded="false" aria-controls="qp'+i+'">'+
+  '<span class="qn">p. '+(i+1)+'</span><span class="qt">'+esc(q.q)+'</span><span class="tw" aria-hidden="true">+</span></button>'+
+  '<div class="page" id="qp'+i+'" role="region"><div><div class="ruled">'+
+  '<h4>Current thinking</h4><p>'+esc(q.think)+'</p>'+
+  '<h4>Evidence and experiments</h4><p>'+esc(q.evidence)+'</p>'+
+  (q.related ? '<h4>Related</h4><p>'+esc(q.related)+'</p>' : "")+
+  '</div></div></div></div>'
+).join("");
+$("#notebook").addEventListener("click", e => {
+  const b = e.target.closest(".q > button"); if(!b) return;
+  const q = b.parentElement, open = q.dataset.open !== "true";
+  q.dataset.open = open; b.setAttribute("aria-expanded", open);
+});
+
+/* =================================================================
+   04 Lab
+   ================================================================= */
+const LAB_TAGS = {all:"All", ai:"AI", data:"Data", edu:"Education", code:"Code", random:"Random"};
+const STATE_LABEL = {"works":"Works", "half-works":"Half works", "failed":"Failed", "thinking":"Still thinking"};
+$("#labFilter").innerHTML = Object.entries(LAB_TAGS).map(([k,v],i) =>
+  '<button class="chip" type="button" data-f="'+k+'" aria-pressed="'+(i===0)+'">'+v+'</button>').join("");
+$("#labGrid").innerHTML = CONFIG.lab.map(x =>
+  '<article class="specimen" data-tag="'+x.tag+'"><div class="row"><span class="tag">'+LAB_TAGS[x.tag]+'</span><span class="state" data-v="'+x.state+'">'+STATE_LABEL[x.state]+'</span></div>'+
+  '<h3>'+esc(x.t)+'</h3><p>'+esc(x.note)+'</p></article>'
+).join("");
+$("#labFilter").addEventListener("click", e => {
+  const b = e.target.closest("[data-f]"); if(!b) return;
+  $$("#labFilter .chip").forEach(c => c.setAttribute("aria-pressed", c === b));
+  $$("#labGrid .specimen").forEach(a => a.hidden = !(b.dataset.f === "all" || a.dataset.tag === b.dataset.f));
+});
+
+/* Playground */
+let pgIndex = 0, pyodide = null, pyLoading = null;
+const pgCode = $("#pgCode"), pgOut = $("#pgOut"), pgStatus = $("#pgStatus");
+$("#pgTabs").innerHTML = CONFIG.playground.map((p,i) =>
+  '<button type="button" role="tab" aria-selected="'+(i===0)+'" data-i="'+i+'">'+esc(p.name)+'</button>').join("");
+function loadExample(i){
+  pgIndex = i; pgCode.value = CONFIG.playground[i].code;
+  pgOut.textContent = "Predict the output, then press Run."; pgOut.classList.remove("err");
+  $$("#pgTabs button").forEach((b,j) => b.setAttribute("aria-selected", j===i));
+}
+$("#pgTabs").addEventListener("click", e => { const b = e.target.closest("[data-i]"); if(b) loadExample(+b.dataset.i); });
+pgCode.addEventListener("keydown", e => {
+  if(e.key === "Tab" && !e.shiftKey && !e.metaKey){
+    e.preventDefault(); const s = pgCode.selectionStart;
+    pgCode.setRangeText("    ", s, pgCode.selectionEnd, "end");
+  }
+  if(e.key === "Enter" && (e.metaKey || e.ctrlKey)){ e.preventDefault(); runPython(); }
+});
+function loadPyodide(){
+  if(pyodide) return Promise.resolve(pyodide);
+  if(pyLoading) return pyLoading;
+  pgStatus.textContent = "Loading Python…";
+  pyLoading = new Promise((res, rej) => {
+    const s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js";
+    s.onload = async () => {
+      try{
+        pyodide = await window.loadPyodide({indexURL:"https://cdn.jsdelivr.net/pyodide/v0.26.2/full/"});
+        pgStatus.textContent = "Python ready"; $("#pgLoad").hidden = true; res(pyodide);
+      }catch(err){ rej(err); }
+    };
+    s.onerror = () => rej(new Error("network"));
+    document.head.appendChild(s);
+  }).catch(err => {
+    pyLoading = null; pgStatus.textContent = "Couldn't load Python. Check your connection and try again."; throw err;
+  });
+  return pyLoading;
+}
+$("#pgLoad").addEventListener("click", () => loadPyodide().catch(()=>{}));
+$("#pgReset").addEventListener("click", () => loadExample(pgIndex));
+async function runPython(){
+  const ex = CONFIG.playground[pgIndex], code = pgCode.value;
+  pgOut.classList.remove("err");
+  if(!pyodide && code.trim() === ex.code.trim()){ pgOut.textContent = ex.output; return; }
+  if(!pyodide){
+    pgOut.textContent = "You changed the code. Loading real Python to run it…";
+    try{ await loadPyodide(); }catch(e){ pgOut.textContent = "Python couldn't load, so edited code can't run right now. Press Reset to see the original output."; return; }
+  }
+  const lines = [];
+  pyodide.setStdout({batched: s => lines.push(s)});
+  pyodide.setStderr({batched: s => lines.push(s)});
+  try{
+    await pyodide.runPythonAsync(code);
+    pgOut.textContent = lines.join("\n") || "(no output — try adding a print)";
+  }catch(err){
+    const msg = String(err.message || err).trim().split("\n");
+    pgOut.textContent = (lines.length ? lines.join("\n")+"\n" : "") + msg.slice(-3).join("\n");
+    pgOut.classList.add("err");
+  }
+}
+$("#pgRun").addEventListener("click", runPython);
+loadExample(0);
+
+/* =================================================================
+   05 Philosophy
+   ================================================================= */
+$("#predictCode").innerHTML = highlight('names = ["Ali", "Sara", "John"]\n\nprint(names[3])');
+$("#guesses").addEventListener("click", e => {
+  const b = e.target.closest(".guess"); if(!b) return;
+  $$(".guess").forEach(g => g.removeAttribute("data-r"));
+  const right = b.dataset.g === "err";
+  b.dataset.r = right ? "right" : "wrong";
+  if(!right) $('.guess[data-g="err"]').dataset.r = "right";
+  $("#predictVerdict").textContent = right ? "Right. " : "Close, but no. ";
+  $("#predictReveal").hidden = false;
+});
+
+const EXPLAIN = {
+  "Variable": {
+    jargon:"A variable is a symbolic name bound to a reference to an object stored in memory, enabling the program to access and manipulate that value through the identifier.",
+    human:"A variable is a label you stick on a value so you can find it again later. Move the label, and it points to something else."},
+  "Function": {
+    jargon:"A function is a reusable, named block of code that accepts parameters, executes a sequence of statements, and optionally returns a value to the caller.",
+    human:"A function is a recipe you write once and use whenever you need it. You hand it ingredients, it hands you back a dish."},
+  "Overfitting": {
+    jargon:"Overfitting occurs when a model learns noise and idiosyncrasies of the training data, resulting in low training error but poor generalization to unseen data.",
+    human:"Overfitting is memorizing the practice exam instead of learning the subject. Perfect score on the practice test, trouble on the real one."},
+  "RAG": {
+    jargon:"Retrieval-augmented generation conditions a language model's output on documents retrieved from an external corpus via embedding similarity search.",
+    human:"RAG is an open-book exam for an AI. Before answering, it looks up the relevant pages, then answers using what it found."}
+};
+let exMode = "jargon", exConcept = "Variable";
+$("#exConcepts").innerHTML = Object.keys(EXPLAIN).map((k,i) => '<button class="chip" type="button" aria-pressed="'+(i===0)+'" data-c="'+k+'">'+k+'</button>').join("");
+function renderExplain(){ $("#explain").textContent = EXPLAIN[exConcept][exMode]; }
+$$(".toggle button").forEach(b => b.addEventListener("click", () => {
+  exMode = b.dataset.ex; $$(".toggle button").forEach(x => x.setAttribute("aria-pressed", x === b)); renderExplain();
+}));
+$("#exConcepts").addEventListener("click", e => {
+  const b = e.target.closest("[data-c]"); if(!b) return;
+  exConcept = b.dataset.c; $$("#exConcepts .chip").forEach(x => x.setAttribute("aria-pressed", x === b)); renderExplain();
+});
+renderExplain();
+
+/* How I think loop */
+const STEPS = [
+  ["Question", "Start with something I genuinely don't know.", "Can a small RAG system be fast, cheap, and grounded in its sources, all at once?"],
+  ["Hypothesis", "Make a guess specific enough to be wrong.", "A good reranker on a fast model will beat a bigger, slower model on answer quality."],
+  ["Build", "Build the smallest version that can test the guess.", "zerag1: retrieval from ChromaDB, Cohere reranking, Gemini 2.5 Flash, served through FastAPI."],
+  ["Test", "Measure it. Don't trust the feeling.", "Traced every step with OpenTelemetry: ~2.3 s at p99, under $0.0005 per query."],
+  ["Learn", "Write down what surprised me.", "The framework mattered more than I expected. I couldn't see inside the LangGraph version well enough."],
+  ["Iterate", "Change one thing, then run the loop again.", "Rebuilt on Google ADK. Same questions, clearer traces, and a new set of questions."]
+];
+let step = 0;
+(function buildLoop(){
+  const svg = $("#loopSvg"), cx = 220, cy = 220, R = 160;
+  let html = '<circle class="ring" cx="'+cx+'" cy="'+cy+'" r="'+R+'"/>';
+  STEPS.forEach((s,i) => {
+    const a = -Math.PI/2 + i*(2*Math.PI/STEPS.length);
+    const x = cx + R*Math.cos(a), y = cy + R*Math.sin(a);
+    html += '<g class="node" data-i="'+i+'" tabindex="0" role="button" aria-label="Step '+(i+1)+': '+s[0]+'"><circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="44"/><text x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'">'+s[0]+'</text></g>';
+  });
+  html += '<text x="220" y="212" text-anchor="middle" style="font-family:var(--serif);font-style:italic;font-size:15px;fill:var(--muted)">and again,</text><text x="220" y="234" text-anchor="middle" style="font-family:var(--serif);font-style:italic;font-size:15px;fill:var(--muted)">and again</text>';
+  svg.innerHTML = html;
+  svg.addEventListener("click", e => { const g = e.target.closest(".node"); if(g) setStep(+g.dataset.i); });
+  svg.addEventListener("keydown", e => { const g = e.target.closest(".node"); if(g && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); setStep(+g.dataset.i); } });
+})();
+function setStep(i){
+  step = (i + STEPS.length) % STEPS.length;
+  $$("#loopSvg .node").forEach((n,j) => n.classList.toggle("on", j === step));
+  $("#stepName").textContent = (step+1) + ". " + STEPS[step][0];
+  $("#stepDesc").textContent = STEPS[step][1];
+  $("#stepEx").textContent = "Example: " + STEPS[step][2];
+  $("#stepNext").textContent = step === STEPS.length-1 ? "Back to the question" : "Next step";
+}
+$("#stepNext").addEventListener("click", () => setStep(step+1));
+$("#stepPrev").addEventListener("click", () => setStep(step-1));
+setStep(0);
+
+/* =================================================================
+   06 Lessons
+   ================================================================= */
+const collected = new Set(store.get("sh-lessons", []));
+$("#deck").innerHTML = CONFIG.lessons.map((l,i) =>
+  '<button class="lesson" type="button" data-i="'+i+'" aria-pressed="'+collected.has(i)+'">'+
+  '<span class="stamp" aria-hidden="true">Collected</span>'+
+  '<span class="no">'+String(i+1).padStart(2,"0")+'</span><blockquote>'+esc(l)+'</blockquote></button>'
+).join("");
+function deckFoot(){
+  const n = collected.size, t = CONFIG.lessons.length;
+  $("#deckFoot").textContent = n === 0 ? "Nothing collected yet." : n === t ? "You collected all "+t+". We'd get along." : "You've collected "+n+" of "+t+".";
+}
+$("#deck").addEventListener("click", e => {
+  const b = e.target.closest(".lesson"); if(!b) return;
+  const i = +b.dataset.i;
+  collected.has(i) ? collected.delete(i) : collected.add(i);
+  b.setAttribute("aria-pressed", collected.has(i));
+  store.set("sh-lessons", [...collected]); deckFoot();
+});
+deckFoot();
+
+/* =================================================================
+   07 Currently
+   ================================================================= */
+$("#nowList").innerHTML = CONFIG.currently.items.map(([k,v]) => '<div class="now-item"><dt>'+esc(k)+'</dt><dd>'+esc(v)+'</dd></div>').join("");
+$("#nowUpdated").textContent = "Updated " + CONFIG.currently.updated;
+
+/* =================================================================
+   08 Timeline
+   ================================================================= */
+let tIdx = CONFIG.timeline.length - 2;
+$("#track").innerHTML = CONFIG.timeline.map((m,i) =>
+  '<button class="stop'+(m.next?' next':'')+'" type="button" role="tab" id="tl'+i+'" aria-controls="story" aria-selected="false" tabindex="-1" data-i="'+i+'">'+
+  '<span class="dot" aria-hidden="true"></span><span class="label">'+esc(m.label)+'</span><span class="when">'+esc(m.when)+'</span></button>'
+).join("");
+function setStop(i, focus){
+  tIdx = (i + CONFIG.timeline.length) % CONFIG.timeline.length;
+  const m = CONFIG.timeline[tIdx];
+  $$("#track .stop").forEach((b,j) => { b.setAttribute("aria-selected", j===tIdx); b.tabIndex = j===tIdx ? 0 : -1; });
+  const cur = $("#tl"+tIdx);
+  if(focus) cur.focus({preventScroll:true});
+  const tr = $("#track"); tr.scrollTo({left: Math.max(0, cur.offsetLeft - tr.clientWidth/2 + cur.clientWidth/2), behavior: reduceMotion ? "auto" : "smooth"});
+  $("#story").setAttribute("aria-labelledby", "tl"+tIdx);
+  $("#story").innerHTML = '<h3>'+esc(m.label)+'</h3>'+
+    [["What I was doing",m.doing],["What I learned",m.learned],["What changed",m.changed],["What came next",m.next]]
+    .map(([h,v]) => '<div><h4>'+h+'</h4><p>'+esc(clean(v))+'</p></div>').join("");
+}
+$("#track").addEventListener("click", e => { const b = e.target.closest(".stop"); if(b) setStop(+b.dataset.i); });
+$("#track").addEventListener("keydown", e => {
+  if(e.key === "ArrowRight"){ e.preventDefault(); setStop(tIdx+1, true); }
+  if(e.key === "ArrowLeft"){ e.preventDefault(); setStop(tIdx-1, true); }
+});
+setStop(tIdx);
+
+/* =================================================================
+   09 GitHub
+   ================================================================= */
+$("#workshop").innerHTML = CONFIG.projects.map(p => {
+  const repo = p.repo || CONFIG.links.github;
+  return '<article class="repo"><div class="r-top"><h3>'+esc(p.repo ? p.repo.split("/").pop() : p.title.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""))+'</h3><span class="status" data-s="'+p.status+'">'+p.status+'</span></div>'+
+    '<p>'+esc(clean(p.one))+'</p><div class="r-meta">'+p.tech.slice(0,3).map(t => '<span class="tag">'+esc(t)+'</span>').join("")+'</div>'+
+    '<div class="r-links"><a href="'+esc(repo)+'" target="_blank" rel="noopener">GitHub</a>'+(p.demo ? '<a href="'+esc(p.demo)+'" target="_blank" rel="noopener">Live demo</a>' : '')+'</div></article>';
+}).join("");
+$("#ghProfile").href = CONFIG.links.github;
+
+/* =================================================================
+   10 About
+   ================================================================= */
+$("#aboutLines").innerHTML = CONFIG.about.map(l => '<p>'+esc(l)+'</p>').join("");
+$("#talks").innerHTML = CONFIG.talks.map(t => '<li>'+esc(t)+'</li>').join("");
+$("#alsoList").innerHTML = CONFIG.also.map(t => '<li>'+esc(t)+'</li>').join("");
+const L = CONFIG.links;
+$("#contactLinks").innerHTML = [
+  L.github && '<a class="pill" href="'+esc(L.github)+'" target="_blank" rel="noopener">GitHub</a>',
+  L.linkedin && '<a class="pill" href="'+esc(L.linkedin)+'" target="_blank" rel="noopener">LinkedIn</a>',
+  L.youtube && '<a class="pill" href="'+esc(L.youtube)+'" target="_blank" rel="noopener">YouTube</a>',
+  L.email && '<a class="pill solid" href="mailto:'+esc(L.email)+'">Email me</a>'
+].filter(Boolean).join("");
+
+/* =================================================================
+   Surprise me
+   ================================================================= */
+function surprise(){
+  const pool = [
+    ...CONFIG.projects.map(p => () => openSheet(projectSheet(p))),
+    ...CONFIG.teach.map(t => () => openSheet(teachSheet(t))),
+    ...CONFIG.questions.map(q => () => openSheet('<p class="kicker">A question I\'m exploring</p><h2 id="sheetTitle">'+esc(q.q)+'</h2><p class="lede">'+esc(q.think)+'</p><h3>Evidence so far</h3><p>'+esc(q.evidence)+'</p>')),
+    ...CONFIG.lab.map(x => () => openSheet('<p class="kicker">From the Lab: '+STATE_LABEL[x.state].toLowerCase()+'</p><h2 id="sheetTitle">'+esc(x.t)+'</h2><p class="lede">'+esc(x.note)+'</p>')),
+    ...CONFIG.lessons.map((l,i) => () => openSheet('<p class="kicker">Lesson '+String(i+1).padStart(2,"0")+'</p><h2 id="sheetTitle" style="font-family:var(--serif);font-weight:400;letter-spacing:-.01em;line-height:1.2">'+esc(l)+'</h2>')),
+    ...CONFIG.playground.map(p => () => openSheet('<p class="kicker">A random bit of Python</p><h2 id="sheetTitle">'+esc(p.name)+'</h2>'+codeBlock(p.code,"Python")+'<p>What do you think it prints? Try it in the playground in the Lab.</p><div class="actions"><a class="pill solid" href="#playground" data-close>Go to the playground</a></div>'))
+  ];
+  pool[Math.floor(Math.random()*pool.length)]();
+}
+document.addEventListener("click", e => {
+  if(e.target.closest("[data-surprise]")) surprise();
+  if(e.target.closest("[data-close]")) closeSheet();
+});
+
+/* =================================================================
+   Navigation state, top bar, theme, More tab
+   ================================================================= */
+const topbar = $("#topbar");
+const onScroll = () => topbar.classList.toggle("scrolled", window.scrollY > 8);
+window.addEventListener("scroll", onScroll, {passive:true}); onScroll();
+
+const NAV_FOR = {map:"map", teach:"teach", build:"build", ideas:"ideas", lab:"lab", philosophy:"lab", lessons:"about", now:"about", timeline:"about", github:"github", about:"about"};
+const navObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(!e.isIntersecting) return;
+    const key = NAV_FOR[e.target.id];
+    $$("[data-nav]").forEach(a => a.setAttribute("aria-current", a.dataset.nav === key ? "true" : "false"));
+    $("#moreTab").setAttribute("aria-current", ["lab","about","github"].includes(key) ? "true" : "false");
+  });
+}, {rootMargin:"-45% 0px -50% 0px"});
+["map", ...ROOMS.map(r => r.id)].forEach(id => navObs.observe(document.getElementById(id)));
+
+$("#moreTab").addEventListener("click", () => openSheet(
+  '<p class="kicker">More rooms</p><h2 id="sheetTitle">Where to next?</h2>'+
+  '<div class="actions" style="margin-top:0">'+
+  [["lab","The Lab"],["philosophy","How I teach"],["lessons","Things I've learned"],["now","Currently"],["timeline","How I got here"],["github","GitHub"],["about","About"]]
+    .map(([id,t]) => '<a class="pill" href="#'+id+'" data-close>'+t+'</a>').join("")+
+  '<button class="pill solid" type="button" data-surprise>Surprise me</button></div>'
+));
+
+const themeBtn = $("#themeBtn");
+function currentTheme(){
+  const forced = document.documentElement.dataset.theme;
+  return forced || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+}
+const savedTheme = store.get("sh-theme", null);
+if(savedTheme) document.documentElement.dataset.theme = savedTheme;
+themeBtn.addEventListener("click", () => {
+  const next = currentTheme() === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = next; store.set("sh-theme", next);
+  themeBtn.setAttribute("aria-label", "Switch to " + (next === "dark" ? "light" : "dark") + " theme");
+});
+
+/* Hero entrance — the one orchestrated moment */
+requestAnimationFrame(() => setTimeout(() => $("#verbs").classList.add("go"), 120));
+
+/* =================================================================
+   Easter eggs
+   ================================================================= */
+// 1. The dot after my name tells a Python joke
+const JOKES = [
+  "Why did the list break up with the tuple? It needed someone who could change.",
+  "My code has no bugs. Just surprise features that raise exceptions.",
+  "I'd tell you a joke about recursion, but first I'd tell you a joke about recursion.",
+  "A student asked why Python counts from zero. I said: that's where the index starts, and it's too late to argue.",
+  "There are only two hard problems in teaching: explaining off-by-one errors, explaining off-by-one errors, and explaining off-by-one errors."
+];
+let jokeI = 0;
+function tellJoke(e){ e.preventDefault(); e.stopPropagation(); toast(JOKES[jokeI++ % JOKES.length]); }
+$("#brandDot").addEventListener("click", tellJoke);
+$("#brandDot").addEventListener("keydown", e => { if(e.key === "Enter" || e.key === " ") tellJoke(e); });
+
+// 2. Backtick opens a terminal
+const term = $("#term"), termOut = $("#termOut"), termIn = $("#termInput");
+function tprint(s, cls){ const d = document.createElement("div"); if(cls) d.className = cls; d.textContent = s; termOut.appendChild(d); termOut.scrollTop = termOut.scrollHeight; }
+function openTerm(){
+  term.hidden = false; requestAnimationFrame(() => term.classList.add("open"));
+  if(!termOut.childElementCount) tprint("Welcome to the notebook. Type 'help' to look around.");
+  termIn.focus();
+}
+function closeTerm(){ term.classList.remove("open"); setTimeout(() => term.hidden = true, reduceMotion ? 0 : 300); }
+const CMDS = {
+  help: () => "Commands: whoami, ls, cd <room>, now, lessons, joke, surprise, margins, theme, clear, exit",
+  whoami: () => "Sajid Hussain. Teacher, builder, professional asker of questions.",
+  ls: () => ROOMS.map(r => r.id + "/").join("  "),
+  now: () => CONFIG.currently.items.map(([k,v]) => k.padEnd(19) + v).join("\n"),
+  lessons: () => CONFIG.lessons.map((l,i) => String(i+1).padStart(2,"0") + "  " + l).join("\n"),
+  joke: () => JOKES[jokeI++ % JOKES.length],
+  surprise: () => { closeTerm(); surprise(); return "Opening something at random…"; },
+  margins: () => { closeTerm(); openMargins(); return "Opening the margins…"; },
+  theme: () => { themeBtn.click(); return "Theme switched to " + currentTheme() + "."; },
+  clear: () => { termOut.innerHTML = ""; return null; },
+  exit: () => { closeTerm(); return null; },
+  sudo: () => "Nice try. Permission comes from understanding, not sudo.",
+  "import": a => a[0] === "this" ? "Readability counts. So does a good explanation." : "ModuleNotFoundError: No module named '" + (a[0]||"") + "'",
+  python: () => "Python is down the page in the Lab. Type 'cd lab'.",
+  cd: a => {
+    const id = (a[0]||"").replace(/\/$/,"");
+    if(!id || id === "~"){ window.scrollTo({top:0}); return "~"; }
+    if(document.getElementById(id) && ROOMS.some(r => r.id === id)){ document.getElementById(id).scrollIntoView(); return "Moved to " + id + "/"; }
+    return "cd: no such room: " + id + ". Try 'ls'.";
+  }
+};
+termIn.addEventListener("keydown", e => {
+  if(e.key === "Escape"){ closeTerm(); return; }
+  if(e.key !== "Enter") return;
+  const raw = termIn.value.trim(); termIn.value = "";
+  tprint("$ " + raw, "p"); if(!raw) return;
+  const [cmd, ...args] = raw.split(/\s+/);
+  const fn = CMDS[cmd.toLowerCase()];
+  const res = fn ? fn(args) : cmd + ": command not found. Type 'help'.";
+  if(res) tprint(res);
+});
+$("#termClose").addEventListener("click", closeTerm);
+$("#termTap").addEventListener("click", openTerm);
+
+// 3. Hidden page: "the margins"
+function openMargins(){
+  openSheet('<p class="kicker">You found the margins</p><h2 id="sheetTitle">Notes I haven\'t finished</h2>'+
+  '<div class="ruled" style="margin:1rem 0 0">'+
+  '<p>Half-formed thoughts live here before they earn a room of their own.</p>'+
+  '<p>Is “prompting” a skill, or a symptom of tools that don\'t understand us yet?</p>'+
+  '<p>The best debugging question I know: what did you expect, and what happened instead?</p>'+
+  '<p>Every abstraction is a promise. Teaching is showing students where the promise breaks.</p>'+
+  '</div><p class="note" style="margin-top:1rem">Shortcut for next time: press Shift + M.</p>');
+}
+
+// 4. Typing a word triggers something
+let typed = "";
+document.addEventListener("keydown", e => {
+  const tag = (e.target.tagName || "").toLowerCase();
+  if(tag === "input" || tag === "textarea") return;
+  if(e.key === "`"){ e.preventDefault(); term.hidden ? openTerm() : closeTerm(); return; }
+  if(e.key === "Escape"){ if(!scrim.hidden) closeSheet(); else if(!term.hidden) closeTerm(); return; }
+  if(e.key === "M" && e.shiftKey && !e.metaKey && !e.ctrlKey){ openMargins(); return; }
+  if(e.key.length === 1){
+    typed = (typed + e.key.toLowerCase()).slice(-10);
+    if(typed.endsWith("curious")) curiousRain();
+    if(typed.endsWith("python")) toast("Hiss. You found the snake. There are a few more secrets.");
+  }
+});
+function curiousRain(){
+  if(reduceMotion){ toast("Curiosity noted."); return; }
+  for(let i=0;i<26;i++){
+    const q = document.createElement("span");
+    q.className = "qmark"; q.textContent = "?"; q.setAttribute("aria-hidden","true");
+    q.style.left = Math.random()*100 + "vw";
+    q.style.fontSize = (14 + Math.random()*34) + "px";
+    q.style.setProperty("--r", (Math.random()*360 - 180) + "deg");
+    q.style.animationDuration = (2.2 + Math.random()*2.4) + "s";
+    q.style.animationDelay = (Math.random()*0.8) + "s";
+    document.body.appendChild(q);
+    setTimeout(() => q.remove(), 6000);
+  }
+  toast("Stay curious.");
+}
+
+// Console note for the curious
+console.log("%cHello, fellow tinkerer.", "font:600 16px sans-serif");
+console.log("Press ` for a terminal, Shift+M for the margins, or type 'curious' anywhere.");
+</script>
+</body>
+</html>
