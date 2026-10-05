@@ -3,285 +3,312 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
 <title>Finding and Validating Text Patterns — Regular Expressions in Python</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
 <style>
 :root {
-  --paper: #F4F6FA;
-  --surface: #FFFFFF;
-  --ink: #1B2333;
-  --muted: #5A6578;
-  --rule: #D9DFEA;
-  --teal: #0F6E74;
-  --hl: #FFE45C;
-  --hl-ink: #1B2333;
-  --code-bg: #1C2230;
-  --out-bg: #EEF1F6;
-  --sans: "Atkinson Hyperlegible", "Segoe UI", system-ui, -apple-system, sans-serif;
-  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --bg: #000000;
+  --panel: #0D0D0D;
+  --panel2: #1A1A1A;
+  --line: #2B2B2B;
+  --fg: #E8E6DF;
+  --muted: #8E8B82;
+  --y: #FFD400;
+  --y-tint: #1F1A00;
+  --good: #6BD968;
+  --good-bg: #0A1C0A;
+  --bad: #FF5F57;
+  --bad-bg: #210B0A;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
   box-sizing: border-box;
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --paper: #12161F; --surface: #1A1F2B; --ink: #E3E8F1; --muted: #9AA5B8;
-    --rule: #2C3343; --teal: #5CC4C9; --code-bg: #0E1219; --out-bg: #1F2533;
-  }
-}
-:root[data-theme="dark"] {
-  --paper: #12161F; --surface: #1A1F2B; --ink: #E3E8F1; --muted: #9AA5B8;
-  --rule: #2C3343; --teal: #5CC4C9; --code-bg: #0E1219; --out-bg: #1F2533;
-}
 *, *::before, *::after { box-sizing: inherit; }
-html { scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 16px); scroll-behavior: smooth; }
+html { scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 80px); scroll-behavior: smooth; background: var(--bg); }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
-body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans);
-  font-size: 1.0625rem; line-height: 1.6; }
-a { color: var(--teal); }
-:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; border-radius: 3px; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--mono);
+  font-size: .9375rem; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+::selection { background: var(--y); color: #000; }
+a { color: var(--y); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--y); outline-offset: 2px; }
+code, pre { font-family: var(--mono); }
 
-/* ---------- hero with live tester ---------- */
-header.hero { border-bottom: 1px solid var(--rule); background: var(--surface); }
-.hero-inner { max-width: 1180px; margin: 0 auto; padding: 3rem 1.5rem 2.5rem;
-  display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.1fr); gap: 3rem; align-items: start; }
-.hero h1 { font-size: clamp(2rem, 4.2vw, 3.1rem); line-height: 1.08; margin: 0 0 1rem; letter-spacing: -0.01em; }
-.hero h1 .pat { font-family: var(--mono); font-weight: 600; font-size: 0.82em; display: inline-block;
-  background: var(--hl); color: var(--hl-ink); padding: 0 .25em; border-radius: 4px; }
-.hero p { color: var(--muted); max-width: 34em; margin: 0 0 .75rem; }
-.tester { background: var(--paper); border: 1px solid var(--rule); border-radius: 12px; padding: 1.25rem; }
-.tester h2 { font-size: 1.05rem; margin: 0 0 .9rem; }
-.tester label { display: block; font-size: .875rem; color: var(--muted); margin: .6rem 0 .3rem; }
-.tester input, .tester textarea { width: 100%; font-family: var(--mono); font-size: .95rem; color: var(--ink);
-  background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: .6rem .75rem; }
-.tester textarea { resize: vertical; min-height: 4.5rem; line-height: 1.5; }
-.pattern-row { display: flex; align-items: center; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; }
-.pattern-row span { font-family: var(--mono); color: var(--muted); padding-left: .75rem; }
-.pattern-row input { border: 0; background: transparent; padding-left: .15rem; }
-.hero p code { font-family: var(--mono); font-size: .9em; }
-.pattern-row:focus-within { outline: 3px solid var(--teal); outline-offset: 2px; }
-.pattern-row input:focus-visible { outline: none; }
-.result { margin-top: .9rem; font-family: var(--mono); font-size: .95rem; background: var(--surface);
-  border: 1px solid var(--rule); border-radius: 8px; padding: .75rem; white-space: pre-wrap; word-break: break-word; min-height: 3rem; }
-.result mark { background: var(--hl); color: var(--hl-ink); border-radius: 3px; padding: 0 1px; }
-.status { font-size: .875rem; color: var(--muted); margin-top: .5rem; }
-.status.err { color: #C2410C; }
-.chips { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .8rem; }
-.chips button { font-family: var(--mono); font-size: .8rem; background: var(--surface); color: var(--ink);
-  border: 1px solid var(--rule); border-radius: 999px; padding: .25rem .65rem; cursor: pointer; }
-.chips button:hover { border-color: var(--teal); }
-.note { font-size: .8rem; color: var(--muted); margin-top: .75rem; }
+/* ---------- hero ---------- */
+header.hero { border-bottom: 1px solid var(--line); }
+.hero-inner { max-width: 1200px; margin: 0 auto; padding: 3rem 1.5rem 2.75rem;
+  display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 3rem; align-items: start; }
+.cmd { color: var(--muted); margin: 0 0 1.25rem; font-size: .875rem; }
+.cmd b { color: var(--y); font-weight: 400; }
+.hero h1 { font-size: clamp(1.9rem, 3.6vw, 2.75rem); line-height: 1.15; margin: 0 0 1.25rem; font-weight: 700; letter-spacing: -.02em; }
+.cursor { display: inline-block; width: .55em; height: 1em; background: var(--y); vertical-align: -.12em; margin-left: .15em;
+  animation: blink 1.1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .cursor { animation: none; } }
+.hero p { color: var(--muted); max-width: 46ch; margin: 0 0 .8rem; }
+.hero p code { color: var(--y); }
+
+.tester { border: 1px solid var(--line); background: var(--panel); }
+.tbar { display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); padding: .45rem .9rem; font-size: .78rem; color: var(--muted); }
+.tbar span:first-child { color: var(--y); }
+.tbody { padding: 1rem .95rem 1.05rem; }
+.field { display: flex; align-items: flex-start; border: 1px solid var(--line); background: var(--bg); margin-bottom: .6rem; }
+.field:focus-within { border-color: var(--y); }
+.field label { color: var(--y); padding: .55rem 0 .55rem .7rem; white-space: nowrap; font-size: .875rem; }
+.field input, .field textarea { flex: 1; min-width: 0; border: 0; background: transparent; color: var(--fg); font-family: var(--mono);
+  font-size: .9rem; padding: .55rem .7rem; caret-color: var(--y); resize: vertical; line-height: 1.55; }
+.field textarea { min-height: 3.4rem; }
+.field input:focus-visible, .field textarea:focus-visible { outline: none; }
+#strip { display: block; width: 100%; margin: .9rem 0 .3rem; overflow: visible; }
+#strip text { font-family: var(--mono); font-size: 13px; dominant-baseline: central; text-anchor: middle; pointer-events: none; }
+.status { font-size: .82rem; color: var(--muted); min-height: 1.4em; }
+.status.err { color: var(--bad); }
+.matches { margin: .5rem 0 0; font-size: .82rem; max-height: 9.5rem; overflow: auto; border-top: 1px dashed var(--line); padding-top: .45rem; }
+.matches div { display: grid; grid-template-columns: 2.5rem 6.5rem 1fr; gap: .5rem; padding: .05rem .3rem; cursor: default; }
+.matches div.hd { color: var(--muted); }
+.matches div.on { background: var(--y-tint); }
+.matches div span:last-child { color: var(--y); white-space: pre; overflow: hidden; text-overflow: ellipsis; }
+.chips { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .85rem; }
+.chips button { font-family: var(--mono); font-size: .78rem; background: transparent; color: var(--fg);
+  border: 1px solid var(--line); padding: .2rem .55rem; cursor: pointer; }
+.chips button:hover { border-color: var(--y); color: var(--y); }
+.tester .note { font-size: .75rem; color: var(--muted); margin: .85rem 0 0; max-width: none; }
+.fallback { white-space: pre-wrap; word-break: break-word; border: 1px solid var(--line); padding: .6rem .7rem; margin-top: .8rem; }
+.fallback mark { background: var(--y); color: #000; }
 
 /* ---------- layout ---------- */
-.layout { max-width: 1180px; margin: 0 auto; padding: 2rem 1.5rem 5rem;
+.layout { max-width: 1200px; margin: 0 auto; padding: 2.25rem 1.5rem 5rem;
   display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 3rem; }
 nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 1rem); align-self: start;
-  max-height: calc(100vh - 2rem); overflow-y: auto; font-size: .875rem; padding-right: .5rem; }
-nav.toc h2 { font-size: .95rem; margin: 0 0 .6rem; }
+  max-height: calc(100vh - 2rem); overflow-y: auto; font-size: .8rem; padding-right: .5rem; }
+nav.toc h2 { font-size: .8rem; color: var(--muted); font-weight: 400; margin: 0 0 .6rem; }
 nav.toc ol { list-style: none; margin: 0; padding: 0; }
-nav.toc a { display: block; color: var(--muted); text-decoration: none; padding: .2rem 0 .2rem .7rem;
-  border-left: 2px solid var(--rule); line-height: 1.35; }
-nav.toc a:hover { color: var(--ink); }
-nav.toc a.active { color: var(--teal); border-left-color: var(--teal); font-weight: 700; }
-main { max-width: 760px; }
+nav.toc a { display: block; color: var(--muted); text-decoration: none; padding: .18rem 0 .18rem 1.1rem; line-height: 1.4; position: relative; }
+nav.toc a:hover { color: var(--fg); }
+nav.toc a.active { color: var(--y); }
+nav.toc a.active::before { content: "▸"; position: absolute; left: 0; }
+main { max-width: 780px; min-width: 0; }
 
 /* ---------- prose ---------- */
-.prose h2 { font-size: 1.6rem; line-height: 1.2; margin: 3.25rem 0 .75rem; padding-top: 1.25rem; border-top: 1px solid var(--rule); }
+.prose h2 { font-size: 1.3rem; line-height: 1.3; margin: 3.5rem 0 .8rem; padding-top: 1.4rem; border-top: 1px dashed var(--line); color: var(--fg); }
+.prose h2::before { content: "## "; color: var(--y); }
 .prose:first-child h2 { margin-top: 0; border-top: 0; padding-top: 0; }
-.prose h3 { font-size: 1.2rem; margin: 2rem 0 .5rem; }
-.prose p, .prose li { max-width: 68ch; }
-.prose code { font-family: var(--mono); font-size: .88em; background: var(--out-bg); padding: .1em .35em; border-radius: 4px; }
-.prose pre { background: var(--out-bg); border-radius: 8px; padding: .9rem 1rem; overflow-x: auto; line-height: 1.45; }
-.prose pre code { background: none; padding: 0; font-size: .875rem; }
-.prose blockquote { margin: 1rem 0; padding: .6rem 1rem; border-left: 4px solid var(--hl); background: var(--surface); border-radius: 0 8px 8px 0; }
+.prose h3 { font-size: 1rem; margin: 2rem 0 .5rem; }
+.prose h3::before { content: "### "; color: var(--y); }
+.prose p, .prose li { max-width: 72ch; }
+.prose li::marker { color: var(--y); }
+.prose code { color: var(--y); background: var(--panel2); padding: .08em .35em; font-size: .92em; }
+.prose pre { background: var(--panel); border: 1px solid var(--line); padding: .85rem 1rem; overflow-x: auto; line-height: 1.5; }
+.prose pre code { background: none; padding: 0; color: var(--fg); }
+.prose blockquote { margin: 1rem 0; padding: .5rem 1rem; border-left: 3px solid var(--y); background: var(--y-tint); }
 .prose blockquote p { margin: .25rem 0; }
+.prose strong { color: #fff; }
 .table-wrap { overflow-x: auto; margin: 1rem 0; }
-.prose table { border-collapse: collapse; background: var(--surface); font-size: .95rem; min-width: 60%; }
-.prose th, .prose td { border: 1px solid var(--rule); padding: .45rem .8rem; text-align: left; vertical-align: top; }
-.prose th { background: var(--out-bg); }
-.prose details { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: .6rem 1rem; margin: 1rem 0; }
-.prose summary { cursor: pointer; color: var(--teal); }
+.prose table { border-collapse: collapse; font-size: .875rem; min-width: 60%; }
+.prose th, .prose td { border: 1px solid var(--line); padding: .4rem .8rem; text-align: left; vertical-align: top; }
+.prose th { color: var(--y); font-weight: 700; background: var(--panel); }
+.prose details { border: 1px dashed var(--line); padding: .55rem 1rem; margin: 1rem 0; }
+.prose summary { cursor: pointer; color: var(--y); }
 .prose details[open] summary { margin-bottom: .5rem; }
 
 /* ---------- code cells ---------- */
-figure.cell { margin: 1.25rem 0 1.5rem; border-radius: 10px; overflow: hidden; border: 1px solid var(--rule); }
-.code { position: relative; background: var(--code-bg); }
-.code pre { margin: 0; padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--mono); font-size: .875rem;
-  line-height: 1.55; color: #E6EDF3; background: var(--code-bg); }
-.copy { position: absolute; top: .5rem; right: .5rem; font-family: var(--sans); font-size: .75rem;
-  background: rgba(255,255,255,.08); color: #C9D3E1; border: 1px solid rgba(255,255,255,.15); border-radius: 6px;
-  padding: .2rem .55rem; cursor: pointer; opacity: .8; }
-.copy:hover { opacity: 1; }
-.out { background: var(--out-bg); border-top: 1px solid var(--rule); padding: .7rem 1.1rem .9rem; }
-.out-label { display: block; font-size: .75rem; color: var(--muted); margin-bottom: .25rem; }
-.out pre { margin: 0; font-family: var(--mono); font-size: .875rem; line-height: 1.5; overflow-x: auto; white-space: pre; }
+figure.cell { margin: 1.25rem 0 1.6rem; border: 1px solid var(--line); }
+.code { position: relative; background: var(--panel); }
+.prompt { display: block; font-size: .72rem; color: var(--y); padding: .5rem 1.1rem 0; opacity: .85; }
+.code pre { margin: 0; padding: .35rem 1.1rem 1rem; overflow-x: auto; font-size: .85rem; line-height: 1.6; color: var(--fg); background: var(--panel); }
+.copy { position: absolute; top: .4rem; right: .5rem; font-family: var(--mono); font-size: .72rem;
+  background: transparent; color: var(--muted); border: 1px solid var(--line); padding: .1rem .5rem; cursor: pointer; }
+.copy:hover { color: var(--y); border-color: var(--y); }
+.out { background: var(--bg); border-top: 1px solid var(--line); }
+.out .prompt { color: var(--muted); }
+.out pre { margin: 0; padding: .3rem 1.1rem .9rem; font-size: .85rem; line-height: 1.55; overflow-x: auto; white-space: pre; }
 pre { line-height: 125%; }
-td.linenos .normal { color: #6e7681; background-color: #0d1117; padding-left: 5px; padding-right: 5px; }
-span.linenos { color: #6e7681; background-color: #0d1117; padding-left: 5px; padding-right: 5px; }
-td.linenos .special { color: #e6edf3; background-color: #6e7681; padding-left: 5px; padding-right: 5px; }
-span.linenos.special { color: #e6edf3; background-color: #6e7681; padding-left: 5px; padding-right: 5px; }
-.code pre .hll { background-color: #6e7681 }
-.code pre { background: #0d1117; color: #E6EDF3 }
-.code pre .c { color: #8B949E; font-style: italic } /* Comment */
-.code pre .err { color: #F85149 } /* Error */
-.code pre .esc { color: #E6EDF3 } /* Escape */
-.code pre .g { color: #E6EDF3 } /* Generic */
-.code pre .k { color: #FF7B72 } /* Keyword */
-.code pre .l { color: #A5D6FF } /* Literal */
-.code pre .n { color: #E6EDF3 } /* Name */
-.code pre .o { color: #FF7B72; font-weight: bold } /* Operator */
-.code pre .x { color: #E6EDF3 } /* Other */
-.code pre .p { color: #E6EDF3 } /* Punctuation */
-.code pre .ch { color: #8B949E; font-style: italic } /* Comment.Hashbang */
-.code pre .cm { color: #8B949E; font-style: italic } /* Comment.Multiline */
-.code pre .cp { color: #8B949E; font-weight: bold; font-style: italic } /* Comment.Preproc */
-.code pre .cpf { color: #8B949E; font-style: italic } /* Comment.PreprocFile */
-.code pre .c1 { color: #8B949E; font-style: italic } /* Comment.Single */
-.code pre .cs { color: #8B949E; font-weight: bold; font-style: italic } /* Comment.Special */
-.code pre .gd { color: #FFA198; background-color: #490202 } /* Generic.Deleted */
-.code pre .ge { color: #E6EDF3; font-style: italic } /* Generic.Emph */
-.code pre .ges { color: #E6EDF3; font-weight: bold; font-style: italic } /* Generic.EmphStrong */
-.code pre .gr { color: #FFA198 } /* Generic.Error */
-.code pre .gh { color: #79C0FF; font-weight: bold } /* Generic.Heading */
-.code pre .gi { color: #56D364; background-color: #0F5323 } /* Generic.Inserted */
-.code pre .go { color: #8B949E } /* Generic.Output */
-.code pre .gp { color: #8B949E } /* Generic.Prompt */
-.code pre .gs { color: #E6EDF3; font-weight: bold } /* Generic.Strong */
-.code pre .gu { color: #79C0FF } /* Generic.Subheading */
-.code pre .gt { color: #FF7B72 } /* Generic.Traceback */
-.code pre .g-Underline { color: #E6EDF3; text-decoration: underline } /* Generic.Underline */
-.code pre .kc { color: #79C0FF } /* Keyword.Constant */
-.code pre .kd { color: #FF7B72 } /* Keyword.Declaration */
-.code pre .kn { color: #FF7B72 } /* Keyword.Namespace */
-.code pre .kp { color: #79C0FF } /* Keyword.Pseudo */
-.code pre .kr { color: #FF7B72 } /* Keyword.Reserved */
-.code pre .kt { color: #FF7B72 } /* Keyword.Type */
-.code pre .ld { color: #79C0FF } /* Literal.Date */
-.code pre .m { color: #A5D6FF } /* Literal.Number */
-.code pre .s { color: #A5D6FF } /* Literal.String */
-.code pre .na { color: #E6EDF3 } /* Name.Attribute */
-.code pre .nb { color: #E6EDF3 } /* Name.Builtin */
-.code pre .nc { color: #F0883E; font-weight: bold } /* Name.Class */
-.code pre .no { color: #79C0FF; font-weight: bold } /* Name.Constant */
-.code pre .nd { color: #D2A8FF; font-weight: bold } /* Name.Decorator */
-.code pre .ni { color: #FFA657 } /* Name.Entity */
-.code pre .ne { color: #F0883E; font-weight: bold } /* Name.Exception */
-.code pre .nf { color: #D2A8FF; font-weight: bold } /* Name.Function */
-.code pre .nl { color: #79C0FF; font-weight: bold } /* Name.Label */
-.code pre .nn { color: #FF7B72 } /* Name.Namespace */
-.code pre .nx { color: #E6EDF3 } /* Name.Other */
-.code pre .py { color: #79C0FF } /* Name.Property */
-.code pre .nt { color: #7EE787 } /* Name.Tag */
-.code pre .nv { color: #79C0FF } /* Name.Variable */
-.code pre .ow { color: #FF7B72; font-weight: bold } /* Operator.Word */
-.code pre .pm { color: #E6EDF3 } /* Punctuation.Marker */
-.code pre .w { color: #6E7681 } /* Text.Whitespace */
-.code pre .mb { color: #A5D6FF } /* Literal.Number.Bin */
-.code pre .mf { color: #A5D6FF } /* Literal.Number.Float */
-.code pre .mh { color: #A5D6FF } /* Literal.Number.Hex */
-.code pre .mi { color: #A5D6FF } /* Literal.Number.Integer */
-.code pre .mo { color: #A5D6FF } /* Literal.Number.Oct */
-.code pre .sa { color: #79C0FF } /* Literal.String.Affix */
-.code pre .sb { color: #A5D6FF } /* Literal.String.Backtick */
-.code pre .sc { color: #A5D6FF } /* Literal.String.Char */
-.code pre .dl { color: #79C0FF } /* Literal.String.Delimiter */
-.code pre .sd { color: #A5D6FF } /* Literal.String.Doc */
-.code pre .s2 { color: #A5D6FF } /* Literal.String.Double */
-.code pre .se { color: #79C0FF } /* Literal.String.Escape */
-.code pre .sh { color: #79C0FF } /* Literal.String.Heredoc */
-.code pre .si { color: #A5D6FF } /* Literal.String.Interpol */
-.code pre .sx { color: #A5D6FF } /* Literal.String.Other */
-.code pre .sr { color: #79C0FF } /* Literal.String.Regex */
-.code pre .s1 { color: #A5D6FF } /* Literal.String.Single */
-.code pre .ss { color: #A5D6FF } /* Literal.String.Symbol */
-.code pre .bp { color: #E6EDF3 } /* Name.Builtin.Pseudo */
-.code pre .fm { color: #D2A8FF; font-weight: bold } /* Name.Function.Magic */
-.code pre .vc { color: #79C0FF } /* Name.Variable.Class */
-.code pre .vg { color: #79C0FF } /* Name.Variable.Global */
-.code pre .vi { color: #79C0FF } /* Name.Variable.Instance */
-.code pre .vm { color: #79C0FF } /* Name.Variable.Magic */
-.code pre .il { color: #A5D6FF } /* Literal.Number.Integer.Long */
-.code pre { background: var(--code-bg); }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.code pre .hll { background-color: #49483e }
+.code pre { background: #272822; color: #F8F8F2 }
+.code pre .c { color: #959077 } /* Comment */
+.code pre .err { color: #ED007E; background-color: #1E0010 } /* Error */
+.code pre .esc { color: #F8F8F2 } /* Escape */
+.code pre .g { color: #F8F8F2 } /* Generic */
+.code pre .k { color: #66D9EF } /* Keyword */
+.code pre .l { color: #AE81FF } /* Literal */
+.code pre .n { color: #F8F8F2 } /* Name */
+.code pre .o { color: #FF4689 } /* Operator */
+.code pre .x { color: #F8F8F2 } /* Other */
+.code pre .p { color: #F8F8F2 } /* Punctuation */
+.code pre .ch { color: #959077 } /* Comment.Hashbang */
+.code pre .cm { color: #959077 } /* Comment.Multiline */
+.code pre .cp { color: #959077 } /* Comment.Preproc */
+.code pre .cpf { color: #959077 } /* Comment.PreprocFile */
+.code pre .c1 { color: #959077 } /* Comment.Single */
+.code pre .cs { color: #959077 } /* Comment.Special */
+.code pre .gd { color: #FF4689 } /* Generic.Deleted */
+.code pre .ge { color: #F8F8F2; font-style: italic } /* Generic.Emph */
+.code pre .ges { color: #F8F8F2; font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.code pre .gr { color: #F8F8F2 } /* Generic.Error */
+.code pre .gh { color: #F8F8F2 } /* Generic.Heading */
+.code pre .gi { color: #A6E22E } /* Generic.Inserted */
+.code pre .go { color: #66D9EF } /* Generic.Output */
+.code pre .gp { color: #FF4689; font-weight: bold } /* Generic.Prompt */
+.code pre .gs { color: #F8F8F2; font-weight: bold } /* Generic.Strong */
+.code pre .gu { color: #959077 } /* Generic.Subheading */
+.code pre .gt { color: #F8F8F2 } /* Generic.Traceback */
+.code pre .kc { color: #66D9EF } /* Keyword.Constant */
+.code pre .kd { color: #66D9EF } /* Keyword.Declaration */
+.code pre .kn { color: #FF4689 } /* Keyword.Namespace */
+.code pre .kp { color: #66D9EF } /* Keyword.Pseudo */
+.code pre .kr { color: #66D9EF } /* Keyword.Reserved */
+.code pre .kt { color: #66D9EF } /* Keyword.Type */
+.code pre .ld { color: #E6DB74 } /* Literal.Date */
+.code pre .m { color: #AE81FF } /* Literal.Number */
+.code pre .s { color: #E6DB74 } /* Literal.String */
+.code pre .na { color: #A6E22E } /* Name.Attribute */
+.code pre .nb { color: #F8F8F2 } /* Name.Builtin */
+.code pre .nc { color: #A6E22E } /* Name.Class */
+.code pre .no { color: #66D9EF } /* Name.Constant */
+.code pre .nd { color: #A6E22E } /* Name.Decorator */
+.code pre .ni { color: #F8F8F2 } /* Name.Entity */
+.code pre .ne { color: #A6E22E } /* Name.Exception */
+.code pre .nf { color: #A6E22E } /* Name.Function */
+.code pre .nl { color: #F8F8F2 } /* Name.Label */
+.code pre .nn { color: #F8F8F2 } /* Name.Namespace */
+.code pre .nx { color: #A6E22E } /* Name.Other */
+.code pre .py { color: #F8F8F2 } /* Name.Property */
+.code pre .nt { color: #FF4689 } /* Name.Tag */
+.code pre .nv { color: #F8F8F2 } /* Name.Variable */
+.code pre .ow { color: #FF4689 } /* Operator.Word */
+.code pre .pm { color: #F8F8F2 } /* Punctuation.Marker */
+.code pre .w { color: #F8F8F2 } /* Text.Whitespace */
+.code pre .mb { color: #AE81FF } /* Literal.Number.Bin */
+.code pre .mf { color: #AE81FF } /* Literal.Number.Float */
+.code pre .mh { color: #AE81FF } /* Literal.Number.Hex */
+.code pre .mi { color: #AE81FF } /* Literal.Number.Integer */
+.code pre .mo { color: #AE81FF } /* Literal.Number.Oct */
+.code pre .sa { color: #E6DB74 } /* Literal.String.Affix */
+.code pre .sb { color: #E6DB74 } /* Literal.String.Backtick */
+.code pre .sc { color: #E6DB74 } /* Literal.String.Char */
+.code pre .dl { color: #E6DB74 } /* Literal.String.Delimiter */
+.code pre .sd { color: #E6DB74 } /* Literal.String.Doc */
+.code pre .s2 { color: #E6DB74 } /* Literal.String.Double */
+.code pre .se { color: #AE81FF } /* Literal.String.Escape */
+.code pre .sh { color: #E6DB74 } /* Literal.String.Heredoc */
+.code pre .si { color: #E6DB74 } /* Literal.String.Interpol */
+.code pre .sx { color: #E6DB74 } /* Literal.String.Other */
+.code pre .sr { color: #E6DB74 } /* Literal.String.Regex */
+.code pre .s1 { color: #E6DB74 } /* Literal.String.Single */
+.code pre .ss { color: #E6DB74 } /* Literal.String.Symbol */
+.code pre .bp { color: #F8F8F2 } /* Name.Builtin.Pseudo */
+.code pre .fm { color: #A6E22E } /* Name.Function.Magic */
+.code pre .vc { color: #F8F8F2 } /* Name.Variable.Class */
+.code pre .vg { color: #F8F8F2 } /* Name.Variable.Global */
+.code pre .vi { color: #F8F8F2 } /* Name.Variable.Instance */
+.code pre .vm { color: #F8F8F2 } /* Name.Variable.Magic */
+.code pre .il { color: #AE81FF } /* Literal.Number.Integer.Long */
+.code pre { background: var(--panel); }
 
 
-:root { --good: #15803D; --good-bg: #E8F6EC; --bad: #B42318; --bad-bg: #FDECEA; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --good: #4ADE80; --good-bg: #13291C; --bad: #F87171; --bad-bg: #2E1517; } }
-:root[data-theme="dark"] { --good: #4ADE80; --good-bg: #13291C; --bad: #F87171; --bad-bg: #2E1517; }
 .quiz { margin-top: 1rem; }
-.scorebar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface);
-  border: 1px solid var(--rule); border-radius: 10px; padding: .7rem 1rem; margin: 1.5rem 0;
-  display: flex; flex-wrap: wrap; align-items: center; gap: .4rem 1.25rem; font-size: .95rem; }
-.scorebar strong { font-size: 1.15rem; }
+.scorebar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg);
+  border: 1px solid var(--line); padding: .65rem .9rem .5rem; margin: 1.5rem 0;
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: .3rem 1.25rem; font-size: .9rem; }
+.scorebar strong { font-size: 1.15rem; color: var(--y); }
 #sb-progress { color: var(--muted); }
-.sb-track { flex: 1 1 100%; height: 6px; background: var(--out-bg); border-radius: 99px; overflow: hidden; }
-.sb-fill { height: 100%; width: 0; background: var(--teal); transition: width .3s ease; }
-@media (prefers-reduced-motion: reduce) { .sb-fill { transition: none; } }
-.questions { list-style: none; margin: 0; padding: 0; counter-reset: q; }
-.qcard { background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; padding: 1.25rem 1.25rem 1.1rem; margin: 0 0 1.25rem; }
-.qhead { display: flex; justify-content: space-between; gap: 1rem; font-size: .85rem; color: var(--muted); margin-bottom: .5rem; }
-.qnum { font-weight: 700; color: var(--ink); }
-.qtext { margin: 0 0 .75rem; }
-.qcard code, .results code { font-family: var(--mono); font-size: .88em; background: var(--out-bg); padding: .08em .35em; border-radius: 4px; }
-.qcode { background: var(--code-bg); color: #E6EDF3; font-family: var(--mono); font-size: .875rem; line-height: 1.5;
-  padding: .8rem 1rem; border-radius: 8px; overflow-x: auto; margin: 0 0 .9rem; white-space: pre; }
-.opts { display: grid; gap: .5rem; margin: 0 0 .9rem; padding: 0; border: 0; }
-.opt { display: flex; gap: .65rem; align-items: flex-start; border: 1px solid var(--rule); border-radius: 8px;
-  padding: .6rem .8rem; cursor: pointer; background: var(--paper); }
-.opt:hover { border-color: var(--teal); }
-.opt input { margin-top: .3rem; accent-color: var(--teal); flex: none; }
+.sb-legend { margin-left: auto; color: var(--muted); font-size: .78rem; display: flex; gap: .9rem; }
+.sb-legend i { display: inline-block; width: .7em; height: .7em; margin-right: .35em; vertical-align: -.05em; }
+#sb-seg { flex: 1 1 100%; display: block; width: 100%; height: 16px; margin-top: .35rem; overflow: visible; }
+#sb-seg rect { cursor: pointer; }
+#sb-seg rect:focus-visible { outline: none; stroke: var(--fg); stroke-width: 2; }
+.questions { list-style: none; margin: 0; padding: 0; }
+.qcard { border: 1px solid var(--line); background: var(--panel); padding: 1.1rem 1.2rem 1rem; margin: 0 0 1.25rem; }
+.qcard.locked { border-left: 3px solid var(--muted); }
+.qcard.st-good { border-left-color: var(--good); }
+.qcard.st-part { border-left-color: var(--y); }
+.qcard.st-bad { border-left-color: var(--bad); }
+.qhead { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .25rem 1rem; font-size: .8rem; color: var(--muted); margin-bottom: .55rem; }
+.qnum { color: var(--y); font-weight: 700; }
+.qtext { margin: 0 0 .8rem; }
+.qcard code, .results code { color: var(--y); background: var(--panel2); padding: .05em .35em; }
+.qcode { background: var(--bg); border: 1px solid var(--line); color: var(--fg); font-size: .875rem; line-height: 1.55;
+  padding: .75rem 1rem; overflow-x: auto; margin: 0 0 .9rem; white-space: pre; }
+.qcode::before { content: ">>> "; color: var(--y); }
+.opts { display: grid; gap: .45rem; margin: 0 0 .9rem; padding: 0; border: 0; }
+.opts legend { margin-bottom: .45rem; }
+.opt { display: flex; gap: .7rem; align-items: flex-start; border: 1px solid var(--line); padding: .55rem .8rem; cursor: pointer; background: var(--bg); }
+.opt:hover { border-color: var(--y); }
+.opt input { margin-top: .32rem; accent-color: var(--y); flex: none; }
 .opt.correct { border-color: var(--good); background: var(--good-bg); }
 .opt.wrong { border-color: var(--bad); background: var(--bad-bg); }
 .locked .opt { cursor: default; }
-.locked .qactions { display: none; }
-.locked .opt:hover { border-color: var(--rule); }
+.locked .opt:hover { border-color: var(--line); }
 .locked .opt.correct:hover { border-color: var(--good); }
 .locked .opt.wrong:hover { border-color: var(--bad); }
 .qactions { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
-.btn { font-family: var(--sans); font-size: .95rem; font-weight: 700; background: var(--teal); color: #fff;
-  border: 0; border-radius: 8px; padding: .5rem 1rem; cursor: pointer; }
-.btn:disabled { opacity: .45; cursor: not-allowed; }
-.btn.secondary { background: transparent; color: var(--teal); border: 1px solid var(--teal); }
-.hint { font-size: .85rem; color: var(--muted); }
-.fb { margin-top: .9rem; border-radius: 8px; padding: .75rem 1rem; font-size: .975rem; }
-.fb p { margin: .3rem 0; }
-.fb.good { background: var(--good-bg); border-left: 4px solid var(--good); }
-.fb.bad { background: var(--bad-bg); border-left: 4px solid var(--bad); }
-.fb.partial { background: var(--out-bg); border-left: 4px solid var(--hl); }
+.locked .qactions { display: none; }
+.btn { font-family: var(--mono); font-size: .9rem; font-weight: 700; background: var(--y); color: #000;
+  border: 0; padding: .5rem 1rem; cursor: pointer; }
+.btn:hover { background: #FFE34D; }
+.btn:disabled { opacity: .35; cursor: not-allowed; }
+.btn.secondary { background: transparent; color: var(--y); border: 1px solid var(--y); }
+.btn.secondary:hover { background: var(--y-tint); }
+.hint { font-size: .8rem; color: var(--muted); }
+.fb { margin-top: .9rem; padding: .7rem 1rem; font-size: .925rem; border: 1px solid var(--line); }
+.fb p { margin: .35rem 0; }
+.fb.good { border-left: 3px solid var(--good); background: var(--good-bg); }
+.fb.bad { border-left: 3px solid var(--bad); background: var(--bad-bg); }
+.fb.partial { border-left: 3px solid var(--y); background: var(--y-tint); }
 .fb .verdict { font-weight: 700; }
-.build-row { display: flex; align-items: center; border: 1px solid var(--rule); border-radius: 8px; background: var(--paper); margin-bottom: .9rem; }
-.build-row span { font-family: var(--mono); color: var(--muted); padding: 0 .1rem 0 .75rem; }
-.build-row input { flex: 1; min-width: 0; border: 0; background: transparent; color: var(--ink); font-family: var(--mono); font-size: .95rem; padding: .6rem .5rem .6rem .1rem; }
+.fb.good .verdict { color: var(--good); }
+.fb.bad .verdict { color: var(--bad); }
+.fb.partial .verdict { color: var(--y); }
+.build-row { display: flex; align-items: center; border: 1px solid var(--line); background: var(--bg); margin: .3rem 0 .9rem; }
+.build-row span { color: var(--y); padding: 0 .1rem 0 .75rem; }
+.build-row input { flex: 1; min-width: 0; border: 0; background: transparent; color: var(--fg); font-family: var(--mono); font-size: .95rem; padding: .6rem .5rem .6rem .1rem; caret-color: var(--y); }
 .build-row input:focus-visible { outline: none; }
-.build-row:focus-within { outline: 3px solid var(--teal); outline-offset: 2px; }
-.cases { width: 100%; border-collapse: collapse; font-size: .9rem; margin: .6rem 0; }
-.cases th, .cases td { text-align: left; padding: .3rem .5rem; border-bottom: 1px solid var(--rule); }
-.cases td:first-child { font-family: var(--mono); white-space: pre; }
+.build-row:focus-within { border-color: var(--y); }
+.cases { width: 100%; border-collapse: collapse; font-size: .85rem; margin: .6rem 0; }
+.cases th, .cases td { text-align: left; padding: .28rem .5rem; border-bottom: 1px solid var(--line); }
+.cases th { color: var(--muted); font-weight: 400; }
+.cases td:first-child { white-space: pre; }
 .cases .ok { color: var(--good); font-weight: 700; }
 .cases .no { color: var(--bad); font-weight: 700; }
-.results { background: var(--surface); border: 2px solid var(--teal); border-radius: 12px; padding: 1.5rem; margin-top: 2rem; }
-.results h3 { margin: 0 0 .25rem; font-size: 1.4rem; }
-.big { font-size: clamp(2.2rem, 6vw, 3.2rem); font-weight: 700; line-height: 1.1; margin: .25rem 0; }
-.big small { font-size: .45em; color: var(--muted); font-weight: 400; }
-.verdict-line { font-size: 1.1rem; font-weight: 700; margin: .25rem 0 1rem; }
-.results table { border-collapse: collapse; width: 100%; font-size: .95rem; margin: .75rem 0 1rem; }
-.results th, .results td { border-bottom: 1px solid var(--rule); padding: .4rem .5rem; text-align: left; }
+.results { border: 1px solid var(--y); background: var(--panel); padding: 1.4rem 1.4rem 1.2rem; margin-top: 2rem; }
+.results h3 { margin: 0 0 .2rem; font-size: 1rem; color: var(--muted); font-weight: 400; }
+.results h3::before { content: "$ "; color: var(--y); }
+.big { font-size: clamp(2.4rem, 7vw, 3.6rem); font-weight: 700; line-height: 1.1; margin: .2rem 0; color: var(--y); }
+.big small { font-size: .38em; color: var(--muted); font-weight: 400; }
+.verdict-line { font-weight: 700; margin: .25rem 0 1rem; }
+#level-chart { width: 100%; margin: .5rem 0 1rem; }
+#level-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
 .results ul { padding-left: 1.2rem; }
+.lc-name { fill: var(--fg); font: 14px var(--mono); }
+.lc-val { fill: var(--y); font: 700 14px var(--mono); white-space: pre; }
+.lc-track { fill: var(--panel2); }
+.lc-tick { stroke: var(--bg); stroke-width: 2; }
+.lc-bar { fill: var(--y); }
+.results li { margin: .2rem 0; }
 @media print { .scorebar { position: static; } .btn { display: none; } }
 
-footer { border-top: 1px solid var(--rule); color: var(--muted); font-size: .875rem; text-align: center; padding: 2rem 1rem; }
 
-@media (max-width: 900px) {
+footer { border-top: 1px solid var(--line); color: var(--muted); font-size: .8rem; text-align: center; padding: 2rem 1rem; }
+footer::before { content: "[process completed] "; color: var(--y); }
+
+@media (max-width: 920px) {
   .hero-inner { grid-template-columns: 1fr; gap: 1.75rem; padding-top: 2rem; }
-  .layout { grid-template-columns: 1fr; gap: 1rem; }
-  nav.toc { position: static; max-height: none; border: 1px solid var(--rule); border-radius: 10px; padding: .75rem 1rem; background: var(--surface); }
+  .layout { grid-template-columns: 1fr; gap: 1.25rem; }
+  nav.toc { position: static; max-height: none; border: 1px solid var(--line); padding: .75rem 1rem; }
   nav.toc ol { columns: 2; column-gap: 1.25rem; }
   nav.toc a { break-inside: avoid; }
 }
-@media (max-width: 520px) { nav.toc ol { columns: 1; } body { font-size: 1rem; } }
+@media (max-width: 540px) { nav.toc ol { columns: 1; } body { font-size: .875rem; } .matches div { grid-template-columns: 2rem 5.5rem 1fr; } }
 @media print {
-  header.hero .tester, nav.toc, .copy { display: none; }
+  .tester, nav.toc, .copy { display: none; }
   .layout { display: block; }
   figure.cell { break-inside: avoid; }
 }
@@ -291,30 +318,33 @@ footer { border-top: 1px solid var(--rule); color: var(--muted); font-size: .875
 <header class="hero">
   <div class="hero-inner">
     <div>
-      <h1>Finding and validating text patterns with <span class="pat">\d{3}</span></h1>
-      <p>A beginner's guide to regular expressions in Python's <code>re</code> module. Every example below shows its real output, so you can see exactly what each pattern does.</p>
-      <p>Start with the tester: type a pattern and watch it highlight matches as you go. When you finish the guide, prove it with the <a href="#mastery-quiz">28-question mastery quiz</a>.</p>
+      <p class="cmd"><b>~$</b> python3 -m regex_guide</p>
+      <h1>Finding and validating text patterns<span class="cursor" aria-hidden="true"></span></h1>
+      <p>A beginner's guide to regular expressions in Python's <code>re</code> module. Every example shows its real output, so you can see exactly what each pattern does.</p>
+      <p>Start with the tester: type a pattern and every match lights up, with its <code>span</code> and <code>group()</code> listed the way Python reports them.</p>
+      <p>Finished the guide? Prove it with the <a href="#mastery-quiz">28-question mastery quiz</a>.</p>
     </div>
     <section class="tester" aria-labelledby="tester-title">
-      <h2 id="tester-title">Try a pattern</h2>
-      <label for="pat">Pattern</label>
-      <div class="pattern-row"><span aria-hidden="true">r"</span><input id="pat" value="\d+" spellcheck="false" autocomplete="off"></div>
-      <label for="txt">Text</label>
-      <textarea id="txt" spellcheck="false">Room 204, Student ID 123456, call (201) 555-1234 or email ab@pccc.edu. Code ABC-1234.</textarea>
-      <div class="result" id="res" aria-live="polite"></div>
-      <div class="status" id="status"></div>
-      <div class="chips" aria-label="Example patterns">
-        <button type="button">\d+</button><button type="button">\d{3}</button><button type="button">[A-Z]{3}-\d{4}</button>
-        <button type="button">\(\d{3}\) \d{3}-\d{4}</button><button type="button">\w+@\w+\.\w+</button><button type="button">[A-Z]\w*</button><button type="button">\s</button>
+      <div class="tbar"><span id="tester-title">re.finditer playground</span><span aria-hidden="true">tty1</span></div>
+      <div class="tbody">
+        <div class="field"><label for="pat">pattern&gt; r"</label><input id="pat" value="\d+" spellcheck="false" autocomplete="off" autocapitalize="off"></div>
+        <div class="field"><label for="txt">text&gt;</label><textarea id="txt" spellcheck="false" autocapitalize="off">Room 204, ID 123456, call (201) 555-1234, code ABC-1234.</textarea></div>
+        <svg id="strip" role="img" aria-label="The text drawn one character per cell, with matched characters highlighted"></svg>
+        <div class="status" id="status" aria-live="polite"></div>
+        <div class="matches" id="matches"></div>
+        <div class="chips" aria-label="Example patterns">
+          <button type="button">\d+</button><button type="button">\d{3}</button><button type="button">[A-Z]{3}-\d{4}</button>
+          <button type="button">\(\d{3}\) \d{3}-\d{4}</button><button type="button">[A-Z]\w*</button><button type="button">\s</button><button type="button">a*</button>
+        </div>
+        <p class="note">Runs in your browser on JavaScript's regex engine, which gives the same results as Python for everything in this guide, except that here <code>\w</code> matches ASCII letters only. Hover a match to find it in the text.</p>
       </div>
-      <p class="note">This tester runs in your browser with JavaScript's regex engine, which behaves like Python's <code>re.findall</code> for everything in this guide. One difference: here <code>\w</code> matches ASCII letters only.</p>
     </section>
   </div>
 </header>
 
 <div class="layout">
   <nav class="toc" aria-label="Sections">
-    <h2>Sections</h2>
+    <h2>$ ls sections/</h2>
     <ol>
 <li><a href="#0-introduction">0. Introduction</a></li>
 <li><a href="#1-why-do-we-need-regular-expressions">1. Why Do We Need Regular Expressions?</a></li>
@@ -431,36 +461,36 @@ Instead of writing many <code>if</code> statements, a regex describes the patter
 </tbody>
 </table></div>
 <div class="prose"><h2 id="2-import-the-re-module">2. Import the <code>re</code> Module</h2></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [1]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 
 <span class="c1"># The functions we&#39;ll use most:</span>
 <span class="c1"># re.search(), re.match(), re.fullmatch(), re.findall(), re.split(), re.sub()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;re module loaded&quot;</span><span class="p">)</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>re module loaded</pre></div></figure>
+</code></pre></div><div class="out"><span class="prompt out-label">Out[1]:</span><pre>re module loaded</pre></div></figure>
 <div class="prose"><h2 id="3-your-first-regular-expression">3. Your First Regular Expression</h2>
 <p>If a match is found, Python returns a <strong>match object</strong>. Don't worry about all of its output yet.</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;My score is 95.&quot;</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [2]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;My score is 95.&quot;</span>
 
 <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>&lt;re.Match object; span=(12, 13), match=&#x27;9&#x27;&gt;</pre></div></figure>
+</code></pre></div><div class="out"><span class="prompt out-label">Out[2]:</span><pre>&lt;re.Match object; span=(12, 13), match=&#x27;9&#x27;&gt;</pre></div></figure>
 <div class="prose"><h2 id="4-checking-whether-a-match-was-found">4. Checking Whether a Match Was Found</h2>
 <p>A match object is truthy; <code>None</code> (no match) is falsy.</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;My score is 95.&quot;</span><span class="p">,</span> <span class="s2">&quot;My score is ninety-five.&quot;</span><span class="p">]:</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [3]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;My score is 95.&quot;</span><span class="p">,</span> <span class="s2">&quot;My score is ninety-five.&quot;</span><span class="p">]:</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">text</span><span class="si">!r:</span><span class="s2">30</span><span class="si">}</span><span class="s2"> -&gt; A digit was found.&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">text</span><span class="si">!r:</span><span class="s2">30</span><span class="si">}</span><span class="s2"> -&gt; No digit was found.&quot;</span><span class="p">)</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>&#x27;My score is 95.&#x27;              -&gt; A digit was found.
+</code></pre></div><div class="out"><span class="prompt out-label">Out[3]:</span><pre>&#x27;My score is 95.&#x27;              -&gt; A digit was found.
 &#x27;My score is ninety-five.&#x27;     -&gt; No digit was found.</pre></div></figure>
 <div class="prose"><h2 id="5-why-do-we-write-r-d">5. Why Do We Write <code>r"\d"</code>?</h2>
 <p>The <code>r</code> prefix makes a <strong>raw string</strong>: backslashes are kept as-is and passed to the regex engine.</p>
 <p><strong>Important:</strong> the <code>r</code> is part of Python string syntax — it is <strong>not</strong> part of the regular expression.</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">),</span> <span class="nb">repr</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">))</span>     <span class="c1"># normal string: \n becomes ONE newline character</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [4]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">),</span> <span class="nb">repr</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">))</span>     <span class="c1"># normal string: \n becomes ONE newline character</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\n&quot;</span><span class="p">),</span> <span class="nb">repr</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\n&quot;</span><span class="p">))</span>   <span class="c1"># raw string: backslash + n, TWO characters</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>1 &#x27;\n&#x27;
+</code></pre></div><div class="out"><span class="prompt out-label">Out[4]:</span><pre>1 &#x27;\n&#x27;
 2 &#x27;\\n&#x27;</pre></div></figure>
 <div class="prose"><h2 id="6-regular-expression-vocabulary">6. Regular Expression Vocabulary</h2>
 <table>
@@ -489,13 +519,13 @@ Instead of writing many <code>if</code> statements, a regex describes the patter
 </tr>
 </tbody>
 </table></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\d</span><span class="si">{3}</span><span class="s2">&quot;</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [5]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\d</span><span class="si">{3}</span><span class="s2">&quot;</span>
 <span class="n">input_text</span> <span class="o">=</span> <span class="s2">&quot;Student ID: 123&quot;</span>
 <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">input_text</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pattern:&quot;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Input:  &quot;</span><span class="p">,</span> <span class="n">input_text</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Match:  &quot;</span><span class="p">,</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">())</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: \d{3}
+</code></pre></div><div class="out"><span class="prompt out-label">Out[5]:</span><pre>Pattern: \d{3}
 Input:   Student ID: 123
 Match:   123</pre></div></figure>
 <div class="prose"><h2 id="7-basic-regex-symbols">7. Basic Regex Symbols</h2>
@@ -543,44 +573,44 @@ Match:   123</pre></div></figure>
 </table></div>
 <div class="prose"><h2 id="8-literal-characters">8. Literal Characters</h2>
 <p>A normal character usually matches itself.</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;The cat is sleeping.&quot;</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [6]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;The cat is sleeping.&quot;</span>
 
 <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;cat&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Found cat.&quot;</span><span class="p">)</span>
 <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;dog&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No dog here.&quot;</span><span class="p">)</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Found cat.
+</code></pre></div><div class="out"><span class="prompt out-label">Out[6]:</span><pre>Found cat.
 No dog here.</pre></div></figure>
 <div class="prose"><h2 id="9-d-a-digit">9. <code>\d</code> — A Digit</h2></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Room 204&quot;</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [7]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Room 204&quot;</span>
 
 <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The text contains a digit.&quot;</span><span class="p">)</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>The text contains a digit.</pre></div></figure>
+</code></pre></div><div class="out"><span class="prompt out-label">Out[7]:</span><pre>The text contains a digit.</pre></div></figure>
 <div class="prose"><h2 id="10-d-not-a-digit">10. <code>\D</code> — Not a Digit</h2>
 <p>The opposite of <code>\d</code>. <code>findall</code> shows every character that matched.</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\D&quot;</span><span class="p">,</span> <span class="s2">&quot;A1x2!3 &quot;</span><span class="p">))</span>   <span class="c1"># letters, symbols, and the space</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>[&#x27;A&#x27;, &#x27;x&#x27;, &#x27;!&#x27;, &#x27; &#x27;]</pre></div></figure>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [8]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\D&quot;</span><span class="p">,</span> <span class="s2">&quot;A1x2!3 &quot;</span><span class="p">))</span>   <span class="c1"># letters, symbols, and the space</span>
+</code></pre></div><div class="out"><span class="prompt out-label">Out[8]:</span><pre>[&#x27;A&#x27;, &#x27;x&#x27;, &#x27;!&#x27;, &#x27; &#x27;]</pre></div></figure>
 <div class="prose"><h2 id="11-w-word-character">11. <code>\w</code> — Word Character</h2>
 <p>In Python, <code>\w</code> generally includes Unicode letters and digits, plus underscore.</p>
 <p>⚠️ <code>\w</code> does <strong>not</strong> mean "a word" — it means <strong>one</strong> word character.</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\w&quot;</span><span class="p">,</span> <span class="s2">&quot;Az7_ !-é&quot;</span><span class="p">))</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>[&#x27;A&#x27;, &#x27;z&#x27;, &#x27;7&#x27;, &#x27;_&#x27;, &#x27;é&#x27;]</pre></div></figure>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [9]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\w&quot;</span><span class="p">,</span> <span class="s2">&quot;Az7_ !-é&quot;</span><span class="p">))</span>
+</code></pre></div><div class="out"><span class="prompt out-label">Out[9]:</span><pre>[&#x27;A&#x27;, &#x27;z&#x27;, &#x27;7&#x27;, &#x27;_&#x27;, &#x27;é&#x27;]</pre></div></figure>
 <div class="prose"><h2 id="12-s-whitespace">12. <code>\s</code> — Whitespace</h2>
 <p>Spaces, tabs, and newlines.</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Hello World&quot;</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [10]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Hello World&quot;</span>
 
 <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Whitespace found.&quot;</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s&quot;</span><span class="p">,</span> <span class="s2">&quot;a b</span><span class="se">\t</span><span class="s2">c</span><span class="se">\n</span><span class="s2">d&quot;</span><span class="p">))</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Whitespace found.
+</code></pre></div><div class="out"><span class="prompt out-label">Out[10]:</span><pre>Whitespace found.
 [&#x27; &#x27;, &#x27;\t&#x27;, &#x27;\n&#x27;]</pre></div></figure>
 <div class="prose"><h2 id="13-character-classes">13. Character Classes</h2>
 <p><code>[abc]</code> means: match <strong>one</strong> character that is <code>a</code>, <code>b</code>, or <code>c</code>.</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;7&quot;</span><span class="p">]:</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [11]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;7&quot;</span><span class="p">]:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">ch</span><span class="p">,</span> <span class="s2">&quot;-&gt;&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[abc]&quot;</span><span class="p">,</span> <span class="n">ch</span><span class="p">)))</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>a -&gt; True
+</code></pre></div><div class="out"><span class="prompt out-label">Out[11]:</span><pre>a -&gt; True
 b -&gt; True
 c -&gt; True
 x -&gt; False
@@ -612,11 +642,11 @@ x -&gt; False
 </tr>
 </tbody>
 </table></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Hello World 2026&quot;</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [12]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Hello World 2026&quot;</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;lowercase:&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[a-z]&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;uppercase:&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[A-Z]&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;digits:   &quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[0-9]&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>lowercase: [&#x27;e&#x27;, &#x27;l&#x27;, &#x27;l&#x27;, &#x27;o&#x27;, &#x27;o&#x27;, &#x27;r&#x27;, &#x27;l&#x27;, &#x27;d&#x27;]
+</code></pre></div><div class="out"><span class="prompt out-label">Out[12]:</span><pre>lowercase: [&#x27;e&#x27;, &#x27;l&#x27;, &#x27;l&#x27;, &#x27;o&#x27;, &#x27;o&#x27;, &#x27;r&#x27;, &#x27;l&#x27;, &#x27;d&#x27;]
 uppercase: [&#x27;H&#x27;, &#x27;W&#x27;]
 digits:    [&#x27;2&#x27;, &#x27;0&#x27;, &#x27;2&#x27;, &#x27;6&#x27;]</pre></div></figure>
 <div class="prose"><h2 id="15-excluding-characters">15. Excluding Characters</h2>
@@ -624,10 +654,10 @@ digits:    [&#x27;2&#x27;, &#x27;0&#x27;, &#x27;2&#x27;, &#x27;6&#x27;]</pre></d
 <pre><code>[0-9]   → digit
 [^0-9]  → not a digit
 </code></pre></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;R2-D2&quot;</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [13]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;R2-D2&quot;</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[0-9]: &quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[0-9]&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[^0-9]:&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[^0-9]&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>[0-9]:  [&#x27;2&#x27;, &#x27;2&#x27;]
+</code></pre></div><div class="out"><span class="prompt out-label">Out[13]:</span><pre>[0-9]:  [&#x27;2&#x27;, &#x27;2&#x27;]
 [^0-9]: [&#x27;R&#x27;, &#x27;-&#x27;, &#x27;D&#x27;]</pre></div></figure>
 <div class="prose"><h2 id="16-quantifiers">16. Quantifiers</h2>
 <p>Quantifiers say <strong>how many times</strong> the previous item should occur.</p>
@@ -666,7 +696,7 @@ digits:    [&#x27;2&#x27;, &#x27;0&#x27;, &#x27;2&#x27;, &#x27;6&#x27;]</pre></d
 </tbody>
 </table>
 <p>The helper below tests a pattern against several values using <code>fullmatch</code> (the <strong>whole</strong> string must match). We'll reuse it throughout.</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [14]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print ✓ or ✗ for whether each value fully matches the pattern.&quot;&quot;&quot;</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pattern: </span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
@@ -675,27 +705,27 @@ digits:    [&#x27;2&#x27;, &#x27;0&#x27;, &#x27;2&#x27;, &#x27;6&#x27;]</pre></d
 </code></pre></div></figure>
 <div class="prose"><h2 id="17-zero-or-more">17. <code>*</code> — Zero or More</h2>
 <p>Notice that <strong>zero</strong> is included — the empty string matches.</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;a*&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;aa&quot;</span><span class="p">,</span> <span class="s2">&quot;aaaa&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">])</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: a*
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [15]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;a*&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;aa&quot;</span><span class="p">,</span> <span class="s2">&quot;aaaa&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">])</span>
+</code></pre></div><div class="out"><span class="prompt out-label">Out[15]:</span><pre>Pattern: a*
   ✓  &#x27;&#x27;
   ✓  &#x27;a&#x27;
   ✓  &#x27;aa&#x27;
   ✓  &#x27;aaaa&#x27;
   ✗  &#x27;b&#x27;</pre></div></figure>
 <div class="prose"><h2 id="18-one-or-more">18. <code>+</code> — One or More</h2></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;a+&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;aa&quot;</span><span class="p">,</span> <span class="s2">&quot;aaaa&quot;</span><span class="p">])</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: a+
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [16]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;a+&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;aa&quot;</span><span class="p">,</span> <span class="s2">&quot;aaaa&quot;</span><span class="p">])</span>
+</code></pre></div><div class="out"><span class="prompt out-label">Out[16]:</span><pre>Pattern: a+
   ✗  &#x27;&#x27;
   ✓  &#x27;a&#x27;
   ✓  &#x27;aa&#x27;
   ✓  &#x27;aaaa&#x27;</pre></div></figure>
 <div class="prose"><h2 id="19-zero-or-one">19. <code>?</code> — Zero or One</h2>
 <p>Useful when something is <strong>optional</strong>.</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;a?&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;aa&quot;</span><span class="p">])</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [17]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;a?&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;aa&quot;</span><span class="p">])</span>
 
 <span class="c1"># Practical: optional &#39;s&#39; — matches both spellings</span>
 <span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;colou?r&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">,</span> <span class="s2">&quot;colour&quot;</span><span class="p">,</span> <span class="s2">&quot;colouur&quot;</span><span class="p">])</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: a?
+</code></pre></div><div class="out"><span class="prompt out-label">Out[17]:</span><pre>Pattern: a?
   ✓  &#x27;&#x27;
   ✓  &#x27;a&#x27;
   ✗  &#x27;aa&#x27;
@@ -704,27 +734,27 @@ Pattern: colou?r
   ✓  &#x27;colour&#x27;
   ✗  &#x27;colouur&#x27;</pre></div></figure>
 <div class="prose"><h2 id="20-n-exactly-n-times">20. <code>{n}</code> — Exactly n Times</h2></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d</span><span class="si">{3}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;123&quot;</span><span class="p">,</span> <span class="s2">&quot;007&quot;</span><span class="p">,</span> <span class="s2">&quot;45&quot;</span><span class="p">,</span> <span class="s2">&quot;1234&quot;</span><span class="p">,</span> <span class="s2">&quot;ABC&quot;</span><span class="p">])</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: \d{3}
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [18]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d</span><span class="si">{3}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;123&quot;</span><span class="p">,</span> <span class="s2">&quot;007&quot;</span><span class="p">,</span> <span class="s2">&quot;45&quot;</span><span class="p">,</span> <span class="s2">&quot;1234&quot;</span><span class="p">,</span> <span class="s2">&quot;ABC&quot;</span><span class="p">])</span>
+</code></pre></div><div class="out"><span class="prompt out-label">Out[18]:</span><pre>Pattern: \d{3}
   ✓  &#x27;123&#x27;
   ✓  &#x27;007&#x27;
   ✗  &#x27;45&#x27;
   ✗  &#x27;1234&#x27;
   ✗  &#x27;ABC&#x27;</pre></div></figure>
 <div class="prose"><h2 id="21-n-at-least-n-times">21. <code>{n,}</code> — At Least n Times</h2></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d{3,}&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;123&quot;</span><span class="p">,</span> <span class="s2">&quot;1234&quot;</span><span class="p">,</span> <span class="s2">&quot;12345&quot;</span><span class="p">,</span> <span class="s2">&quot;12&quot;</span><span class="p">])</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: \d{3,}
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [19]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d{3,}&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;123&quot;</span><span class="p">,</span> <span class="s2">&quot;1234&quot;</span><span class="p">,</span> <span class="s2">&quot;12345&quot;</span><span class="p">,</span> <span class="s2">&quot;12&quot;</span><span class="p">])</span>
+</code></pre></div><div class="out"><span class="prompt out-label">Out[19]:</span><pre>Pattern: \d{3,}
   ✓  &#x27;123&#x27;
   ✓  &#x27;1234&#x27;
   ✓  &#x27;12345&#x27;
   ✗  &#x27;12&#x27;</pre></div></figure>
 <div class="prose"><h2 id="22-n-m-between-n-and-m-times">22. <code>{n,m}</code> — Between n and m Times</h2>
 <p>⚠️ <strong>No space after the comma.</strong> <code>\d{2,4}</code> ✓ — <code>\d{2, 4}</code> ✗</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d{2,4}&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;12&quot;</span><span class="p">,</span> <span class="s2">&quot;123&quot;</span><span class="p">,</span> <span class="s2">&quot;1234&quot;</span><span class="p">,</span> <span class="s2">&quot;12345&quot;</span><span class="p">])</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [20]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d{2,4}&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;12&quot;</span><span class="p">,</span> <span class="s2">&quot;123&quot;</span><span class="p">,</span> <span class="s2">&quot;1234&quot;</span><span class="p">,</span> <span class="s2">&quot;12345&quot;</span><span class="p">])</span>
 
 <span class="c1"># What happens with the space? Python treats &quot;{2, 4}&quot; as literal text, not a quantifier!</span>
 <span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d{2, 4}&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;12&quot;</span><span class="p">,</span> <span class="s2">&quot;1{2, 4}&quot;</span><span class="p">])</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: \d{2,4}
+</code></pre></div><div class="out"><span class="prompt out-label">Out[20]:</span><pre>Pattern: \d{2,4}
   ✗  &#x27;1&#x27;
   ✓  &#x27;12&#x27;
   ✓  &#x27;123&#x27;
@@ -737,11 +767,11 @@ Pattern: \d{2, 4}
 <p><code>(ab)+</code> → one or more occurrences of <strong><code>ab</code></strong>
 <code>ab+</code> → <code>a</code> followed by one or more <strong><code>b</code></strong></p>
 <p>These do <strong>not</strong> mean the same thing.</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="s2">&quot;abab&quot;</span><span class="p">,</span> <span class="s2">&quot;ababab&quot;</span><span class="p">,</span> <span class="s2">&quot;abb&quot;</span><span class="p">,</span> <span class="s2">&quot;abbb&quot;</span><span class="p">]</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [21]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="s2">&quot;abab&quot;</span><span class="p">,</span> <span class="s2">&quot;ababab&quot;</span><span class="p">,</span> <span class="s2">&quot;abb&quot;</span><span class="p">,</span> <span class="s2">&quot;abbb&quot;</span><span class="p">]</span>
 <span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(ab)+&quot;</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">()</span>
 <span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;ab+&quot;</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: (ab)+
+</code></pre></div><div class="out"><span class="prompt out-label">Out[21]:</span><pre>Pattern: (ab)+
   ✓  &#x27;ab&#x27;
   ✓  &#x27;abab&#x27;
   ✓  &#x27;ababab&#x27;
@@ -756,10 +786,10 @@ Pattern: ab+
   ✓  &#x27;abbb&#x27;</pre></div></figure>
 <div class="prose"><h2 id="24-or-with">24. OR With <code>|</code></h2>
 <p><code>cat|dog</code> matches either <code>cat</code> or <code>dog</code>. Parentheses make grouping clear: <code>(cat|dog)s?</code></p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;cat|dog&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;cat&quot;</span><span class="p">,</span> <span class="s2">&quot;dog&quot;</span><span class="p">,</span> <span class="s2">&quot;cow&quot;</span><span class="p">])</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [22]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;cat|dog&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;cat&quot;</span><span class="p">,</span> <span class="s2">&quot;dog&quot;</span><span class="p">,</span> <span class="s2">&quot;cow&quot;</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">()</span>
 <span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(cat|dog)s?&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;cats&quot;</span><span class="p">,</span> <span class="s2">&quot;dog&quot;</span><span class="p">,</span> <span class="s2">&quot;dogs&quot;</span><span class="p">,</span> <span class="s2">&quot;cows&quot;</span><span class="p">])</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: cat|dog
+</code></pre></div><div class="out"><span class="prompt out-label">Out[22]:</span><pre>Pattern: cat|dog
   ✓  &#x27;cat&#x27;
   ✓  &#x27;dog&#x27;
   ✗  &#x27;cow&#x27;
@@ -771,8 +801,8 @@ Pattern: (cat|dog)s?
   ✗  &#x27;cows&#x27;</pre></div></figure>
 <div class="prose"><h2 id="25-the-character">25. The <code>.</code> Character</h2>
 <p><code>.</code> means <em>almost any single character</em> — <strong>not</strong> a literal period.</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;c.t&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;cat&quot;</span><span class="p">,</span> <span class="s2">&quot;cot&quot;</span><span class="p">,</span> <span class="s2">&quot;cut&quot;</span><span class="p">,</span> <span class="s2">&quot;c9t&quot;</span><span class="p">,</span> <span class="s2">&quot;c-t&quot;</span><span class="p">,</span> <span class="s2">&quot;ct&quot;</span><span class="p">,</span> <span class="s2">&quot;coat&quot;</span><span class="p">])</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: c.t
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [23]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;c.t&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;cat&quot;</span><span class="p">,</span> <span class="s2">&quot;cot&quot;</span><span class="p">,</span> <span class="s2">&quot;cut&quot;</span><span class="p">,</span> <span class="s2">&quot;c9t&quot;</span><span class="p">,</span> <span class="s2">&quot;c-t&quot;</span><span class="p">,</span> <span class="s2">&quot;ct&quot;</span><span class="p">,</span> <span class="s2">&quot;coat&quot;</span><span class="p">])</span>
+</code></pre></div><div class="out"><span class="prompt out-label">Out[23]:</span><pre>Pattern: c.t
   ✓  &#x27;cat&#x27;
   ✓  &#x27;cot&#x27;
   ✓  &#x27;cut&#x27;
@@ -782,10 +812,10 @@ Pattern: (cat|dog)s?
   ✗  &#x27;coat&#x27;</pre></div></figure>
 <div class="prose"><h2 id="26-matching-a-literal-period">26. Matching a Literal Period</h2>
 <p>Escape it: <code>\.</code> — escaping special characters to treat them literally appears constantly in regex.</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">])</span>     <span class="c1"># unescaped: any character</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [24]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">])</span>     <span class="c1"># unescaped: any character</span>
 <span class="nb">print</span><span class="p">()</span>
 <span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\.&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">])</span>   <span class="c1"># escaped: only a real period</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: .
+</code></pre></div><div class="out"><span class="prompt out-label">Out[24]:</span><pre>Pattern: .
   ✓  &#x27;.&#x27;
   ✓  &#x27;a&#x27;
 
@@ -794,22 +824,22 @@ Pattern: \.
   ✗  &#x27;a&#x27;</pre></div></figure>
 <div class="prose"><h2 id="27-re-search">27. <code>re.search()</code></h2>
 <p>Looks for a match <strong>anywhere</strong> in the string and returns the <strong>first</strong> one.</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;My student ID is 12345.&quot;</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [25]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;My student ID is 12345.&quot;</span>
 
 <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Found:&quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">group</span><span class="p">())</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Found: 12345</pre></div></figure>
+</code></pre></div><div class="out"><span class="prompt out-label">Out[25]:</span><pre>Found: 12345</pre></div></figure>
 <div class="prose"><h2 id="28-getting-the-matched-text">28. Getting the Matched Text</h2>
 <p><code>.group()</code> returns the actual text that matched — usually more useful than printing the match object.</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="s2">&quot;My student ID is 12345.&quot;</span><span class="p">)</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [26]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="s2">&quot;My student ID is 12345.&quot;</span><span class="p">)</span>
 <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">group</span><span class="p">())</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>12345</pre></div></figure>
+</code></pre></div><div class="out"><span class="prompt out-label">Out[26]:</span><pre>12345</pre></div></figure>
 <div class="prose"><h2 id="29-finding-the-position-of-a-match">29. Finding the Position of a Match</h2>
 <p>Python uses zero-based indexing. <code>end()</code> is one past the last matched character, just like slicing.</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;My student ID is 12345.&quot;</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [27]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;My student ID is 12345.&quot;</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
@@ -817,61 +847,61 @@ Pattern: \.
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Start:&quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">start</span><span class="p">())</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;End:  &quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">end</span><span class="p">())</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Slice check:&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">start</span><span class="p">():</span><span class="n">result</span><span class="o">.</span><span class="n">end</span><span class="p">()])</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Match: 12345
+</code></pre></div><div class="out"><span class="prompt out-label">Out[27]:</span><pre>Match: 12345
 Start: 17
 End:   22
 Slice check: 12345</pre></div></figure>
 <div class="prose"><h2 id="30-re-match">30. <code>re.match()</code></h2>
 <p><code>re.match()</code> only checks at the <strong>beginning</strong> of the string.</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;My ID is 12345.&quot;</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [28]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;My ID is 12345.&quot;</span>
 
 <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>   <span class="c1"># None — the string starts with &quot;My&quot;, not a digit</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>None</pre></div></figure>
+</code></pre></div><div class="out"><span class="prompt out-label">Out[28]:</span><pre>None</pre></div></figure>
 <div class="prose"><h2 id="31-comparing-match-and-search">31. Comparing <code>match()</code> and <code>search()</code></h2>
 <pre><code>match()   → START HERE ───────────→
 search()  → ──────── SEARCH ──────→
 </code></pre></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;My ID is 12345&quot;</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [29]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;My ID is 12345&quot;</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;match: &quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;search:&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">())</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>match:  None
+</code></pre></div><div class="out"><span class="prompt out-label">Out[29]:</span><pre>match:  None
 search: 12345</pre></div></figure>
 <div class="prose"><h2 id="32-re-fullmatch">32. <code>re.fullmatch()</code></h2>
 <p>Requires the <strong>entire</strong> string to match — ideal for validation.</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="k">for</span> <span class="n">student_id</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;123456&quot;</span><span class="p">,</span> <span class="s2">&quot;12345&quot;</span><span class="p">]:</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [30]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="k">for</span> <span class="n">student_id</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;123456&quot;</span><span class="p">,</span> <span class="s2">&quot;12345&quot;</span><span class="p">]:</span>
     <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d</span><span class="si">{6}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">student_id</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">student_id</span><span class="p">,</span> <span class="s2">&quot;-&gt; Valid student ID.&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">student_id</span><span class="p">,</span> <span class="s2">&quot;-&gt; Invalid student ID.&quot;</span><span class="p">)</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>123456 -&gt; Valid student ID.
+</code></pre></div><div class="out"><span class="prompt out-label">Out[30]:</span><pre>123456 -&gt; Valid student ID.
 12345 -&gt; Invalid student ID.</pre></div></figure>
 <div class="prose"><h2 id="33-why-fullmatch-is-useful-for-validation">33. Why <code>fullmatch()</code> Is Useful for Validation</h2>
 <pre><code>search()      → find a pattern somewhere
 match()       → pattern must start at beginning
 fullmatch()   → entire string must match
 </code></pre></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\d</span><span class="si">{6}</span><span class="s2">&quot;</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [31]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\d</span><span class="si">{6}</span><span class="s2">&quot;</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;value&#39;</span><span class="si">:</span><span class="s2">22</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;search&#39;</span><span class="si">:</span><span class="s2">8</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;match&#39;</span><span class="si">:</span><span class="s2">8</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;fullmatch&#39;</span><span class="si">:</span><span class="s2">8</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;123456&quot;</span><span class="p">,</span> <span class="s2">&quot;Student ID: 123456&quot;</span><span class="p">,</span> <span class="s2">&quot;123456abc&quot;</span><span class="p">]:</span>
     <span class="n">s</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
     <span class="n">m</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
     <span class="n">f</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">!r:</span><span class="s2">22</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="si">:</span><span class="s2">8</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="si">:</span><span class="s2">8</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="si">:</span><span class="s2">8</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>value                  search   match    fullmatch
+</code></pre></div><div class="out"><span class="prompt out-label">Out[31]:</span><pre>value                  search   match    fullmatch
 &#x27;123456&#x27;               True     True     True    
 &#x27;Student ID: 123456&#x27;   True     False    False   
 &#x27;123456abc&#x27;            True     True     False   </pre></div></figure>
 <div class="prose"><h2 id="34-example-validate-a-six-digit-student-id">34. Example: Validate a Six-Digit Student ID</h2></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="c1"># student_id = input(&quot;Enter your six-digit student ID: &quot;)   # interactive version</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [32]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="c1"># student_id = input(&quot;Enter your six-digit student ID: &quot;)   # interactive version</span>
 
 <span class="k">for</span> <span class="n">student_id</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;123456&quot;</span><span class="p">,</span> <span class="s2">&quot;12345&quot;</span><span class="p">,</span> <span class="s2">&quot;ABC123&quot;</span><span class="p">]:</span>
     <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d</span><span class="si">{6}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">student_id</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">student_id</span><span class="si">!r:</span><span class="s2">10</span><span class="si">}</span><span class="s2"> Valid student ID.&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">student_id</span><span class="si">!r:</span><span class="s2">10</span><span class="si">}</span><span class="s2"> Invalid student ID.&quot;</span><span class="p">)</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>&#x27;123456&#x27;   Valid student ID.
+</code></pre></div><div class="out"><span class="prompt out-label">Out[32]:</span><pre>&#x27;123456&#x27;   Valid student ID.
 &#x27;12345&#x27;    Invalid student ID.
 &#x27;ABC123&#x27;   Invalid student ID.</pre></div></figure>
 <div class="prose"><h2 id="35-example-validate-a-phone-number">35. Example: Validate a Phone Number</h2>
@@ -880,7 +910,7 @@ fullmatch()   → entire string must match
 <pre><code class="language-python">pattern = r&quot;\(\d{3}\) \d{3}-\d{4}&quot;
 </code></pre></div>
 <div class="prose"><h2 id="36-complete-phone-number-example">36. Complete Phone Number Example</h2></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="c1"># phone = input(&quot;Enter a phone number: &quot;)   # interactive version</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [33]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="c1"># phone = input(&quot;Enter a phone number: &quot;)   # interactive version</span>
 
 <span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\(\d</span><span class="si">{3}</span><span class="s2">\) \d</span><span class="si">{3}</span><span class="s2">-\d</span><span class="si">{4}</span><span class="s2">&quot;</span>
 
@@ -889,17 +919,17 @@ fullmatch()   → entire string must match
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">phone</span><span class="si">!r:</span><span class="s2">18</span><span class="si">}</span><span class="s2"> Valid phone number.&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">phone</span><span class="si">!r:</span><span class="s2">18</span><span class="si">}</span><span class="s2"> Invalid phone number.&quot;</span><span class="p">)</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>&#x27;(201) 555-1234&#x27;   Valid phone number.
+</code></pre></div><div class="out"><span class="prompt out-label">Out[33]:</span><pre>&#x27;(201) 555-1234&#x27;   Valid phone number.
 &#x27;201-555-1234&#x27;     Invalid phone number.
 &#x27;(201)555-1234&#x27;    Invalid phone number.
 &#x27;(20) 555-1234&#x27;    Invalid phone number.</pre></div></figure>
 <div class="prose"><h2 id="37-example-validate-a-name">37. Example: Validate a Name</h2>
 <p>Rule: begins with an uppercase letter and contains only letters afterward → <code>[A-Z][a-zA-Z]*</code></p>
 <p>⚠️ This is a simplified classroom rule, <strong>not</strong> a universal definition of a valid human name (think <code>O'Brien</code>, <code>García</code>, <code>Lee-Smith</code>).</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="c1"># name = input(&quot;Enter your last name: &quot;)   # interactive version</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [34]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="c1"># name = input(&quot;Enter your last name: &quot;)   # interactive version</span>
 
 <span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[A-Z][a-zA-Z]*&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;Smith&quot;</span><span class="p">,</span> <span class="s2">&quot;Jones&quot;</span><span class="p">,</span> <span class="s2">&quot;Hussain&quot;</span><span class="p">,</span> <span class="s2">&quot;smith&quot;</span><span class="p">,</span> <span class="s2">&quot;Smith123&quot;</span><span class="p">,</span> <span class="s2">&quot;123Smith&quot;</span><span class="p">,</span> <span class="s2">&quot;O&#39;Brien&quot;</span><span class="p">])</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: [A-Z][a-zA-Z]*
+</code></pre></div><div class="out"><span class="prompt out-label">Out[34]:</span><pre>Pattern: [A-Z][a-zA-Z]*
   ✓  &#x27;Smith&#x27;
   ✓  &#x27;Jones&#x27;
   ✓  &#x27;Hussain&#x27;
@@ -909,16 +939,16 @@ fullmatch()   → entire string must match
   ✗  &quot;O&#x27;Brien&quot;</pre></div></figure>
 <div class="prose"><h2 id="38-searching-for-a-pattern-inside-text">38. Searching for a Pattern Inside Text</h2>
 <p>The program doesn't need to know <em>where</em> the number is — the regex finds it.</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;The temperature is 72 degrees.&quot;</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [35]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;The temperature is 72 degrees.&quot;</span>
 
 <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number:&quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">group</span><span class="p">())</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Number: 72</pre></div></figure>
+</code></pre></div><div class="out"><span class="prompt out-label">Out[35]:</span><pre>Number: 72</pre></div></figure>
 <div class="prose"><h2 id="39-finding-multiple-matches">39. Finding Multiple Matches</h2>
 <p><code>re.findall()</code> returns <strong>all</strong> matches as a list of <strong>strings</strong>.</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Scores: 85, 92, 78, 100&quot;</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [36]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Scores: 85, 92, 78, 100&quot;</span>
 
 <span class="n">scores</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
@@ -926,7 +956,7 @@ fullmatch()   → entire string must match
 <span class="n">scores</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">score</span><span class="p">)</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">scores</span><span class="p">]</span>   <span class="c1"># convert for math</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Average:&quot;</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">scores</span><span class="p">))</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>[&#x27;85&#x27;, &#x27;92&#x27;, &#x27;78&#x27;, &#x27;100&#x27;]
+</code></pre></div><div class="out"><span class="prompt out-label">Out[36]:</span><pre>[&#x27;85&#x27;, &#x27;92&#x27;, &#x27;78&#x27;, &#x27;100&#x27;]
 [85, 92, 78, 100]
 Average: 88.75</pre></div></figure>
 <div class="prose"><h2 id="40-splitting-with-regular-expressions">40. Splitting With Regular Expressions</h2>
@@ -935,31 +965,31 @@ Average: 88.75</pre></div></figure>
 <li><code>[,;|]</code> → comma OR semicolon OR vertical bar</li>
 <li><code>\s*</code> → zero or more whitespace characters</li>
 </ul></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;apple,banana,orange&quot;</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">))</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [37]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;apple,banana,orange&quot;</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">))</span>
 
 <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;apple, banana; orange|grape&quot;</span>
 <span class="n">items</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[,;|]\s*&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>[&#x27;apple&#x27;, &#x27;banana&#x27;, &#x27;orange&#x27;]
+</code></pre></div><div class="out"><span class="prompt out-label">Out[37]:</span><pre>[&#x27;apple&#x27;, &#x27;banana&#x27;, &#x27;orange&#x27;]
 [&#x27;apple&#x27;, &#x27;banana&#x27;, &#x27;orange&#x27;, &#x27;grape&#x27;]</pre></div></figure>
 <div class="prose"><h2 id="41-replacing-text-with-re-sub">41. Replacing Text With <code>re.sub()</code></h2>
 <pre><code class="language-python">re.sub(pattern, replacement, text)
 </code></pre></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Python is fun.&quot;</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [38]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Python is fun.&quot;</span>
 
 <span class="n">new_text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;fun&quot;</span><span class="p">,</span> <span class="s2">&quot;powerful&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">new_text</span><span class="p">)</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Python is powerful.</pre></div></figure>
+</code></pre></div><div class="out"><span class="prompt out-label">Out[38]:</span><pre>Python is powerful.</pre></div></figure>
 <div class="prose"><h2 id="42-a-practical-example-text-cleaning">42. A Practical Example — Text Cleaning</h2>
 <p>Replace one or more whitespace characters with a single space.</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Hello     Python&quot;</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [39]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Hello     Python&quot;</span>
 
 <span class="n">cleaned</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s+&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">cleaned</span><span class="p">))</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>&#x27;Hello     Python&#x27;
+</code></pre></div><div class="out"><span class="prompt out-label">Out[39]:</span><pre>&#x27;Hello     Python&#x27;
 &#x27;Hello Python&#x27;</pre></div></figure>
 <div class="prose"><h2 id="43-regex-cheat-sheet">43. Regex Cheat Sheet</h2>
 <table>
@@ -1095,13 +1125,13 @@ Average: 88.75</pre></div></figure>
 </tr>
 </tbody>
 </table></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Order 42 shipped on day 7&quot;</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [40]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Order 42 shipped on day 7&quot;</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;search:   &quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">())</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;match:    &quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;fullmatch:&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;findall:  &quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;sub:      &quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="s2">&quot;#&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>search:    42
+</code></pre></div><div class="out"><span class="prompt out-label">Out[40]:</span><pre>search:    42
 match:     None
 fullmatch: None
 findall:   [&#x27;42&#x27;, &#x27;7&#x27;]
@@ -1113,10 +1143,10 @@ sub:       Order # shipped on day #</pre></div></figure>
 \d{3}-        ... then a dash
 \d{3}-\d{2}   ... then two digits
 </code></pre></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="p">[</span><span class="sa">r</span><span class="s2">&quot;\d&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\d</span><span class="si">{3}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\d</span><span class="si">{3}</span><span class="s2">-&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\d</span><span class="si">{3}</span><span class="s2">-\d</span><span class="si">{2}</span><span class="s2">&quot;</span><span class="p">]:</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [41]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="p">[</span><span class="sa">r</span><span class="s2">&quot;\d&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\d</span><span class="si">{3}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\d</span><span class="si">{3}</span><span class="s2">-&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\d</span><span class="si">{3}</span><span class="s2">-\d</span><span class="si">{2}</span><span class="s2">&quot;</span><span class="p">]:</span>
     <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="s2">&quot;Code: 123-45&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">step</span><span class="si">:</span><span class="s2">12</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">()</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>\d           -&gt; &#x27;1&#x27;
+</code></pre></div><div class="out"><span class="prompt out-label">Out[41]:</span><pre>\d           -&gt; &#x27;1&#x27;
 \d{3}        -&gt; &#x27;123&#x27;
 \d{3}-       -&gt; &#x27;123-&#x27;
 \d{3}-\d{2}  -&gt; &#x27;123-45&#x27;</pre></div></figure>
@@ -1128,8 +1158,8 @@ sub:       Order # shipped on day #</pre></div></figure>
 |        → OR
 </code></pre>
 <p>Combine the pieces: <code>[A-Z]\d+</code> = an uppercase letter followed by one or more digits.</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[A-Z]\d+&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;A123&quot;</span><span class="p">,</span> <span class="s2">&quot;B7&quot;</span><span class="p">,</span> <span class="s2">&quot;Z9999&quot;</span><span class="p">,</span> <span class="s2">&quot;a123&quot;</span><span class="p">,</span> <span class="s2">&quot;AB12&quot;</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">])</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: [A-Z]\d+
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [42]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[A-Z]\d+&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;A123&quot;</span><span class="p">,</span> <span class="s2">&quot;B7&quot;</span><span class="p">,</span> <span class="s2">&quot;Z9999&quot;</span><span class="p">,</span> <span class="s2">&quot;a123&quot;</span><span class="p">,</span> <span class="s2">&quot;AB12&quot;</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">])</span>
+</code></pre></div><div class="out"><span class="prompt out-label">Out[42]:</span><pre>Pattern: [A-Z]\d+
   ✓  &#x27;A123&#x27;
   ✓  &#x27;B7&#x27;
   ✓  &#x27;Z9999&#x27;
@@ -1142,7 +1172,7 @@ sub:       Order # shipped on day #</pre></div></figure>
 [A-Z]{3}-           ... a hyphen
 [A-Z]{3}-\d{4}      ... four digits
 </code></pre></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="c1"># code = input(&quot;Enter product code: &quot;)   # interactive version</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [43]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="c1"># code = input(&quot;Enter product code: &quot;)   # interactive version</span>
 
 <span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;[A-Z]</span><span class="si">{3}</span><span class="s2">-\d</span><span class="si">{4}</span><span class="s2">&quot;</span>
 
@@ -1151,7 +1181,7 @@ sub:       Order # shipped on day #</pre></div></figure>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">code_value</span><span class="si">!r:</span><span class="s2">12</span><span class="si">}</span><span class="s2"> Valid product code.&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">code_value</span><span class="si">!r:</span><span class="s2">12</span><span class="si">}</span><span class="s2"> Invalid product code.&quot;</span><span class="p">)</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>&#x27;ABC-1234&#x27;   Valid product code.
+</code></pre></div><div class="out"><span class="prompt out-label">Out[43]:</span><pre>&#x27;ABC-1234&#x27;   Valid product code.
 &#x27;abc-1234&#x27;   Invalid product code.
 &#x27;AB-1234&#x27;    Invalid product code.
 &#x27;ABC1234&#x27;    Invalid product code.
@@ -1168,12 +1198,12 @@ Does it match?
 Accept    Reject
 </code></pre>
 <p>A reusable validation function:</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="k">def</span><span class="w"> </span><span class="nf">is_valid</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [44]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="k">def</span><span class="w"> </span><span class="nf">is_valid</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">is_valid</span><span class="p">(</span><span class="s2">&quot;XYZ-0001&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;[A-Z]</span><span class="si">{3}</span><span class="s2">-\d</span><span class="si">{4}</span><span class="s2">&quot;</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">is_valid</span><span class="p">(</span><span class="s2">&quot;XYZ-01&quot;</span><span class="p">,</span>   <span class="sa">r</span><span class="s2">&quot;[A-Z]</span><span class="si">{3}</span><span class="s2">-\d</span><span class="si">{4}</span><span class="s2">&quot;</span><span class="p">))</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>True
+</code></pre></div><div class="out"><span class="prompt out-label">Out[44]:</span><pre>True
 False</pre></div></figure>
 <div class="prose"><h2 id="49-regex-is-not-magic">49. Regex Is Not Magic</h2>
 <p>A regex checks <strong>format</strong>, not <strong>meaning</strong>. <code>02/31/2026</code> fits <code>\d{2}/\d{2}/\d{4}</code> — but February has no 31st.</p>
@@ -1181,7 +1211,7 @@ False</pre></div></figure>
 <p><strong>Pattern valid ≠ Data valid</strong></p>
 </blockquote>
 <p>Additional Python logic may be needed to check meaning:</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [45]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">valid_date</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d</span><span class="si">{2}</span><span class="s2">/\d</span><span class="si">{2}</span><span class="s2">/\d</span><span class="si">{4}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -1194,45 +1224,45 @@ False</pre></div></figure>
 
 <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;02/28/2026&quot;</span><span class="p">,</span> <span class="s2">&quot;02/31/2026&quot;</span><span class="p">,</span> <span class="s2">&quot;2/3/2026&quot;</span><span class="p">]:</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">d</span><span class="si">:</span><span class="s2">12</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">valid_date</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>02/28/2026   -&gt; valid
+</code></pre></div><div class="out"><span class="prompt out-label">Out[45]:</span><pre>02/28/2026   -&gt; valid
 02/31/2026   -&gt; right format, impossible date
 2/3/2026     -&gt; bad format</pre></div></figure>
 <div class="prose"><h2 id="50-common-beginner-mistakes">50. Common Beginner Mistakes</h2></div>
 <div class="prose"><p><strong>Mistake 1 — Forgetting the raw string.</strong> Prefer <code>r"\d+"</code>. Without <code>r</code>, some escapes (like <code>\b</code>) silently change meaning:</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\b</span><span class="s2">cat</span><span class="se">\b</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;a cat sat&quot;</span><span class="p">))</span>    <span class="c1"># &quot;\b&quot; became a backspace character -&gt; None</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [46]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\b</span><span class="s2">cat</span><span class="se">\b</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;a cat sat&quot;</span><span class="p">))</span>    <span class="c1"># &quot;\b&quot; became a backspace character -&gt; None</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\bcat\b&quot;</span><span class="p">,</span> <span class="s2">&quot;a cat sat&quot;</span><span class="p">))</span>   <span class="c1"># r&quot;\b&quot; is a word boundary -&gt; match</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>None
+</code></pre></div><div class="out"><span class="prompt out-label">Out[46]:</span><pre>None
 &lt;re.Match object; span=(2, 5), match=&#x27;cat&#x27;&gt;</pre></div></figure>
 <div class="prose"><p><strong>Mistake 2 — Confusing <code>search()</code> with <code>fullmatch()</code>.</strong></p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="s2">&quot;abc123xyz&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">())</span>   <span class="c1"># finds 123</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [47]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="s2">&quot;abc123xyz&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">())</span>   <span class="c1"># finds 123</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="s2">&quot;abc123xyz&quot;</span><span class="p">))</span>        <span class="c1"># None — whole string isn&#39;t digits</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>123
+</code></pre></div><div class="out"><span class="prompt out-label">Out[47]:</span><pre>123
 None</pre></div></figure>
 <div class="prose"><p><strong>Mistake 3 — Forgetting that <code>.</code> is special.</strong></p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;3.14&quot;</span><span class="p">,</span> <span class="s2">&quot;3x14&quot;</span><span class="p">))</span>    <span class="c1"># matches! . means any character</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [48]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;3.14&quot;</span><span class="p">,</span> <span class="s2">&quot;3x14&quot;</span><span class="p">))</span>    <span class="c1"># matches! . means any character</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;3\.14&quot;</span><span class="p">,</span> <span class="s2">&quot;3x14&quot;</span><span class="p">))</span>   <span class="c1"># None — only a real period</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>&lt;re.Match object; span=(0, 4), match=&#x27;3x14&#x27;&gt;
+</code></pre></div><div class="out"><span class="prompt out-label">Out[48]:</span><pre>&lt;re.Match object; span=(0, 4), match=&#x27;3x14&#x27;&gt;
 None</pre></div></figure>
 <div class="prose"><p><strong>Mistake 4 — Confusing <code>*</code> and <code>+</code>.</strong></p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="nb">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;a*&quot;</span><span class="p">,</span> <span class="s2">&quot;bbb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">()))</span>   <span class="c1"># &#39;&#39; — zero a&#39;s is a valid match!</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [49]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="nb">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;a*&quot;</span><span class="p">,</span> <span class="s2">&quot;bbb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">()))</span>   <span class="c1"># &#39;&#39; — zero a&#39;s is a valid match!</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;a+&quot;</span><span class="p">,</span> <span class="s2">&quot;bbb&quot;</span><span class="p">))</span>                 <span class="c1"># None — needs at least one</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>&#x27;&#x27;
+</code></pre></div><div class="out"><span class="prompt out-label">Out[49]:</span><pre>&#x27;&#x27;
 None</pre></div></figure>
 <div class="prose"><p><strong>Mistake 5 — Adding spaces inside <code>{}</code>.</strong> (See Section 22.)</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d{2,4}&quot;</span><span class="p">,</span> <span class="s2">&quot;123&quot;</span><span class="p">))</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [50]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d{2,4}&quot;</span><span class="p">,</span> <span class="s2">&quot;123&quot;</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d{2, 4}&quot;</span><span class="p">,</span> <span class="s2">&quot;123&quot;</span><span class="p">))</span>   <span class="c1"># None</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>&lt;re.Match object; span=(0, 3), match=&#x27;123&#x27;&gt;
+</code></pre></div><div class="out"><span class="prompt out-label">Out[50]:</span><pre>&lt;re.Match object; span=(0, 3), match=&#x27;123&#x27;&gt;
 None</pre></div></figure>
 <div class="prose"><h2 id="51-debugging-a-regular-expression">51. Debugging a Regular Expression</h2>
 <p>Don't jump straight to <code>[A-Z][a-zA-Z]{1,24}\d{2}</code>. Build it up:</p>
 <pre><code>Small pattern → Test → Add one requirement → Test again → ...
 </code></pre></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">value</span> <span class="o">=</span> <span class="s2">&quot;Smith42&quot;</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [51]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">value</span> <span class="o">=</span> <span class="s2">&quot;Smith42&quot;</span>
 <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="p">[</span><span class="sa">r</span><span class="s2">&quot;[A-Z]&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;[A-Z][a-zA-Z]+&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;[A-Z][a-zA-Z]{1,24}&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;[A-Z][a-zA-Z]{1,24}\d</span><span class="si">{2}</span><span class="s2">&quot;</span><span class="p">]:</span>
     <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
     <span class="n">full</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">step</span><span class="si">:</span><span class="s2">28</span><span class="si">}</span><span class="s2"> match: </span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">()</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="kc">None</span><span class="si">!r:</span><span class="s2">10</span><span class="si">}</span><span class="s2"> fullmatch: </span><span class="si">{</span><span class="n">full</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>[A-Z]                        match: &#x27;S&#x27;        fullmatch: False
+</code></pre></div><div class="out"><span class="prompt out-label">Out[51]:</span><pre>[A-Z]                        match: &#x27;S&#x27;        fullmatch: False
 [A-Z][a-zA-Z]+               match: &#x27;Smith&#x27;    fullmatch: False
 [A-Z][a-zA-Z]{1,24}          match: &#x27;Smith&#x27;    fullmatch: False
 [A-Z][a-zA-Z]{1,24}\d{2}     match: &#x27;Smith42&#x27;  fullmatch: True</pre></div></figure>
@@ -1244,11 +1274,11 @@ if result:
 </code></pre>
 <p>What is printed?  <strong>A.</strong> <code>Room</code> <strong>B.</strong> <code>20</code> <strong>C.</strong> <code>204</code> <strong>D.</strong> <code>Room 204</code></p>
 <p>Make your prediction, then run the cell below.</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Room 204&quot;</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [52]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Room 204&quot;</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
 <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">group</span><span class="p">())</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>204</pre></div></figure>
+</code></pre></div><div class="out"><span class="prompt out-label">Out[52]:</span><pre>204</pre></div></figure>
 <div class="prose"><details><summary><b>Answer</b></summary>
 
 **C** — `\d+` means one or more *consecutive* digits, so the match is `204`.
@@ -1259,10 +1289,10 @@ result = re.fullmatch(r&quot;\d+&quot;, text)
 print(result)
 </code></pre>
 <p><strong>A.</strong> <code>12345</code> <strong>B.</strong> A match object <strong>C.</strong> <code>None</code> <strong>D.</strong> An error</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;ID: 12345&quot;</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [53]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;ID: 12345&quot;</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>None</pre></div></figure>
+</code></pre></div><div class="out"><span class="prompt out-label">Out[53]:</span><pre>None</pre></div></figure>
 <div class="prose"><details><summary><b>Answer</b></summary>
 
 **C** — the entire string `ID: 12345` is not composed only of digits.
@@ -1274,8 +1304,8 @@ print(result)
 
 **C** — `{2,4}` means between 2 and 4 occurrences.
 </details></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[A-Z]{2,4}&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;AB&quot;</span><span class="p">,</span> <span class="s2">&quot;ABC&quot;</span><span class="p">,</span> <span class="s2">&quot;ABCD&quot;</span><span class="p">,</span> <span class="s2">&quot;ABCDE&quot;</span><span class="p">])</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: [A-Z]{2,4}
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [54]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[A-Z]{2,4}&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;AB&quot;</span><span class="p">,</span> <span class="s2">&quot;ABC&quot;</span><span class="p">,</span> <span class="s2">&quot;ABCD&quot;</span><span class="p">,</span> <span class="s2">&quot;ABCDE&quot;</span><span class="p">])</span>
+</code></pre></div><div class="out"><span class="prompt out-label">Out[54]:</span><pre>Pattern: [A-Z]{2,4}
   ✗  &#x27;A&#x27;
   ✓  &#x27;AB&#x27;
   ✓  &#x27;ABC&#x27;
@@ -1283,13 +1313,13 @@ print(result)
   ✗  &#x27;ABCDE&#x27;</pre></div></figure>
 <div class="prose"><h2 id="55-practice-build-the-pattern">55. ✏️ Practice: Build the Pattern</h2>
 <p>Create a regex for <strong>exactly five digits</strong>. Replace <code>None</code> with your pattern, then run.</p></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">my_pattern</span> <span class="o">=</span> <span class="kc">None</span>   <span class="c1"># TODO: your pattern here, e.g. r&quot;...&quot;</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [55]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="n">my_pattern</span> <span class="o">=</span> <span class="kc">None</span>   <span class="c1"># TODO: your pattern here, e.g. r&quot;...&quot;</span>
 
 <span class="k">if</span> <span class="n">my_pattern</span><span class="p">:</span>
     <span class="n">test</span><span class="p">(</span><span class="n">my_pattern</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;12345&quot;</span><span class="p">,</span> <span class="s2">&quot;1234&quot;</span><span class="p">,</span> <span class="s2">&quot;123456&quot;</span><span class="p">,</span> <span class="s2">&quot;12a45&quot;</span><span class="p">])</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fill in my_pattern first!&quot;</span><span class="p">)</span>
-</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Fill in my_pattern first!</pre></div></figure>
+</code></pre></div><div class="out"><span class="prompt out-label">Out[55]:</span><pre>Fill in my_pattern first!</pre></div></figure>
 <div class="prose"><details><summary><b>Solution</b></summary>
 
 
@@ -1305,7 +1335,7 @@ print(result)
 <li>Extract every hashtag from <code>"Loving #Python and #DataScience at #PCCC"</code> using <code>findall</code></li>
 <li>Collapse any run of <code>!</code> into a single <code>!</code> using <code>sub</code></li>
 </ol></div>
-<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="c1"># 1. ZIP code</span>
+<figure class="cell"><div class="code"><span class="prompt" aria-hidden="true">In [56]:</span><button class="copy" type="button" aria-label="Copy code">copy</button><pre><code><span class="c1"># 1. ZIP code</span>
 <span class="c1"># test(r&quot;...&quot;, [&quot;07102&quot;, &quot;07102-1234&quot;, &quot;0710&quot;, &quot;07102-12&quot;])</span>
 
 <span class="c1"># 2. Course code</span>
@@ -1394,7 +1424,8 @@ print(re.sub(r&quot;!+&quot;, &quot;!&quot;, &quot;Wow!!! Amazing!!&quot;))
   <div class="scorebar" role="status" aria-live="polite">
     <span><strong id="sb-score">0</strong> / 68 points</span>
     <span id="sb-progress">0 of 28 answered</span>
-    <div class="sb-track" aria-hidden="true"><div class="sb-fill" id="sb-fill"></div></div>
+    <span class="sb-legend" aria-hidden="true"><span><i style="background:var(--good)"></i>correct</span><span><i style="background:var(--y)"></i>partial</span><span><i style="background:var(--bad)"></i>missed</span></span>
+    <svg id="sb-seg" role="img" aria-label="Progress by question. Select a segment to jump to that question."></svg>
   </div>
   <ol class="questions" id="questions"></ol>
   <div class="results" id="results" tabindex="-1"></div>
@@ -1402,60 +1433,154 @@ print(re.sub(r&quot;!+&quot;, &quot;!&quot;, &quot;Wow!!! Amazing!!&quot;))
 
   </main>
 </div>
-<footer>Regular expressions in Python — a beginner's guide</footer>
+<footer>Regular expressions in Python: a beginner's guide</footer>
 
 <script>
 (function () {
-  // wrap tables for horizontal scroll
   document.querySelectorAll('.prose table').forEach(t => {
+    if (t.parentElement.classList.contains('table-wrap')) return;
     const w = document.createElement('div'); w.className = 'table-wrap';
     t.parentNode.insertBefore(w, t); w.appendChild(t);
   });
 
-  // copy buttons
   document.querySelectorAll('.copy').forEach(btn => {
     btn.addEventListener('click', async () => {
       const code = btn.parentElement.querySelector('pre').innerText;
-      try { await navigator.clipboard.writeText(code); btn.textContent = 'Copied'; }
-      catch (e) { btn.textContent = 'Select & copy'; }
-      setTimeout(() => btn.textContent = 'Copy', 1500);
+      try { await navigator.clipboard.writeText(code); btn.textContent = 'copied'; }
+      catch (e) { btn.textContent = 'select & copy'; }
+      setTimeout(() => btn.textContent = 'copy', 1500);
     });
   });
 
-  // live tester
+  // ---------- live tester ----------
   const pat = document.getElementById('pat'), txt = document.getElementById('txt');
-  const res = document.getElementById('res'), status = document.getElementById('status');
+  const status = document.getElementById('status'), list = document.getElementById('matches');
+  const strip = document.getElementById('strip');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hasD3 = typeof d3 !== 'undefined';
   const esc = s => s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-  function run() {
-    const text = txt.value; status.classList.remove('err');
-    if (!pat.value) { res.innerHTML = esc(text); status.textContent = 'Type a pattern to begin.'; return; }
-    let re;
-    try { re = new RegExp(pat.value, 'g'); }
-    catch (e) { res.innerHTML = esc(text); status.textContent = 'That pattern is incomplete: ' + e.message.replace(/^Invalid regular expression: /, ''); status.classList.add('err'); return; }
-    let out = '', last = 0, n = 0, m;
+  const pyRepr = s => "'" + s.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n').replace(/\t/g, '\\t') + "'";
+
+  function findMatches(src, text) {
+    const re = new RegExp(src, 'g'), out = [];
+    let m;
     while ((m = re.exec(text)) !== null) {
-      if (m[0] === '') { re.lastIndex++; continue; }
-      out += esc(text.slice(last, m.index)) + '<mark>' + esc(m[0]) + '</mark>';
-      last = m.index + m[0].length; n++;
+      out.push({ start: m.index, end: m.index + m[0].length, text: m[0] });
+      if (m[0] === '') re.lastIndex++;
+      if (out.length > 500) break;
     }
-    out += esc(text.slice(last));
-    res.innerHTML = out || '&nbsp;';
-    status.textContent = n === 0 ? 'No matches.' : n + (n === 1 ? ' match' : ' matches');
+    return out;
+  }
+
+  let hoverIdx = -1;
+  function drawStrip(text, matches) {
+    if (!hasD3) {
+      strip.style.display = 'none';
+      let html = '', last = 0;
+      matches.filter(m => m.end > m.start).forEach(m => { html += esc(text.slice(last, m.start)) + '<mark>' + esc(m.text) + '</mark>'; last = m.end; });
+      let fb = document.querySelector('.fallback');
+      if (!fb) { fb = document.createElement('div'); fb.className = 'fallback'; strip.after(fb); }
+      fb.innerHTML = html + esc(text.slice(last));
+      return;
+    }
+    const W = strip.clientWidth || 520, cw = 13, ch = 22, rowGap = 14;
+    const perRow = Math.max(8, Math.floor(W / cw));
+    const owner = new Array(text.length).fill(-1);
+    matches.forEach((m, k) => { for (let j = m.start; j < m.end; j++) owner[j] = k; });
+    const cells = [...text].map((c, i) => ({ i, c, row: Math.floor(i / perRow), col: i % perRow, k: owner[i] }));
+    const rows = Math.max(1, Math.ceil(text.length / perRow));
+    const H = rows * (ch + rowGap);
+    const svg = d3.select(strip).attr('viewBox', '0 0 ' + W + ' ' + H).attr('height', H);
+    const t = svg.transition().duration(reduce ? 0 : 180);
+    const fill = d => d.k < 0 ? '#111' : (hoverIdx >= 0 && d.k !== hoverIdx ? '#5C4D00' : 'var(--y)');
+
+    svg.selectAll('g.cell').data(cells, d => d.i).join(
+      enter => {
+        const g = enter.append('g').attr('class', 'cell');
+        g.append('rect').attr('width', cw - 1).attr('height', ch).style('fill', '#111');
+        g.append('text').attr('x', (cw - 1) / 2).attr('y', ch / 2);
+        return g;
+      },
+      update => update,
+      exit => exit.remove()
+    )
+      .attr('transform', d => 'translate(' + (d.col * cw) + ',' + (d.row * (ch + rowGap)) + ')')
+      .call(g => g.select('rect').transition(t).style('fill', fill))
+      .call(g => g.select('text')
+        .text(d => d.c === ' ' ? '·' : d.c === '\n' ? '↵' : d.c === '\t' ? '→' : d.c)
+        .style('fill', d => d.k >= 0 ? '#000' : (/\s/.test(d.c) ? '#4A4A4A' : 'var(--fg)'))
+        .style('font-weight', d => d.k >= 0 ? 700 : 400));
+
+    // index ticks every 5 characters under each row
+    const ticks = cells.filter(d => d.i % 5 === 0);
+    svg.selectAll('text.tick').data(ticks, d => d.i).join('text').attr('class', 'tick')
+      .attr('x', d => d.col * cw + (cw - 1) / 2).attr('y', d => d.row * (ch + rowGap) + ch + 7)
+      .style('fill', '#5E5B53').style('font-size', '9px').text(d => d.i);
+
+    // markers for empty matches (zero-width)
+    const empties = matches.map((m, k) => ({ m, k })).filter(o => o.m.end === o.m.start);
+    svg.selectAll('rect.zero').data(empties, d => d.m.start).join('rect').attr('class', 'zero')
+      .attr('x', d => (d.m.start % perRow) * cw - 2).attr('y', d => Math.floor(d.m.start / perRow) * (ch + rowGap) - 2)
+      .attr('width', 2).attr('height', ch + 4).style('fill', 'var(--y)');
+  }
+
+  function drawList(matches) {
+    hoverIdx = -1;
+    if (!matches.length) { list.innerHTML = ''; return; }
+    let h = '<div class="hd"><span>#</span><span>span</span><span>group()</span></div>';
+    matches.slice(0, 200).forEach((m, k) => {
+      h += '<div data-k="' + k + '"><span>' + k + '</span><span>(' + m.start + ', ' + m.end + ')</span><span>' + esc(pyRepr(m.text)) + '</span></div>';
+    });
+    list.innerHTML = h;
+    list.querySelectorAll('div[data-k]').forEach(row => {
+      row.addEventListener('mouseenter', () => { hoverIdx = +row.dataset.k; row.classList.add('on'); run(true); });
+      row.addEventListener('mouseleave', () => { hoverIdx = -1; row.classList.remove('on'); run(true); });
+    });
+  }
+
+  let last = [];
+  function run(keepList) {
+    const text = txt.value; status.classList.remove('err');
+    let matches = [];
+    if (pat.value) {
+      try { matches = findMatches(pat.value, text); }
+      catch (e) {
+        status.textContent = 're.error: ' + e.message.replace(/^Invalid regular expression: \/.*\/[a-z]*: /, '');
+        status.classList.add('err'); drawStrip(text, []); list.innerHTML = ''; return;
+      }
+    }
+    drawStrip(text, matches);
+    if (keepList === true) return;
+    last = matches;
+    const empty = matches.filter(m => m.end === m.start).length;
+    status.textContent = !pat.value ? 'Type a pattern to begin.' :
+      matches.length === 0 ? 'No matches.  re.findall(...) → []' :
+      matches.length + (matches.length === 1 ? ' match' : ' matches') + (empty ? ' (' + empty + ' empty, shown as thin bars)' : '');
+    drawList(matches);
   }
   pat.addEventListener('input', run); txt.addEventListener('input', run);
   document.querySelectorAll('.chips button').forEach(b => b.addEventListener('click', () => { pat.value = b.textContent; run(); pat.focus(); }));
+  let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => run(true), 120); });
   run();
 
-  // highlight current section in TOC
+  // ---------- TOC highlight: last heading scrolled past ----------
   const links = [...document.querySelectorAll('nav.toc a')];
-  const map = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) {
-      links.forEach(a => a.classList.remove('active'));
-      const a = map.get(e.target.id); if (a) a.classList.add('active');
-    } });
-  }, { rootMargin: '0px 0px -75% 0px' });
-  document.querySelectorAll('.prose h2[id]').forEach(h => obs.observe(h));
+  const heads = links.map(a => document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean);
+  let ticking = false;
+  function spy() {
+    ticking = false;
+    let cur = -1;
+    heads.forEach((h, i) => { if (h.getBoundingClientRect().top < 140) cur = i; });
+    links.forEach((a, i) => a.classList.toggle('active', i === cur));
+    const act = links[cur];
+    const nav = document.querySelector('nav.toc');
+    if (act && getComputedStyle(nav).position === 'sticky') {
+      const r = act.getBoundingClientRect(), nr = nav.getBoundingClientRect();
+      if (r.top < nr.top || r.bottom > nr.bottom) nav.scrollTop += r.top - nr.top - nr.height / 3;
+    }
+  }
+  window.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(spy); } }, { passive: true });
+  spy();
 })();
 </script>
 <script>
@@ -1523,7 +1648,8 @@ print(re.sub(r&quot;!+&quot;, &quot;!&quot;, &quot;Wow!!! Amazing!!&quot;))
 
   function finish(i, li, earned) {
     state[i] = { done: true, earned };
-    li.classList.add('locked');
+    const max = LEVELS[QS[i].level][1];
+    li.classList.add('locked', earned >= max ? 'st-good' : earned > 0 ? 'st-part' : 'st-bad');
     li.querySelectorAll('input, button').forEach(el => el.disabled = true);
     update();
   }
@@ -1608,7 +1734,7 @@ print(re.sub(r&quot;!+&quot;, &quot;!&quot;, &quot;Wow!!! Amazing!!&quot;))
     const done = state.filter(x => x.done).length;
     document.getElementById('sb-score').textContent = score;
     document.getElementById('sb-progress').textContent = done + ' of ' + QS.length + ' answered';
-    document.getElementById('sb-fill').style.width = (100 * done / QS.length) + '%';
+    drawSegments();
     renderResults(score, done);
   }
 
@@ -1621,25 +1747,23 @@ print(re.sub(r&quot;!+&quot;, &quot;!&quot;, &quot;Wow!!! Amazing!!&quot;))
     else if (pct >= 75) verdict = 'Strong. Review the questions you missed, then retake.';
     else if (pct >= 50) verdict = 'Developing. Revisit the sections linked below before retaking.';
     else verdict = 'Not there yet. Work back through the guide with the tester open, then retake.';
-    let rows = '';
-    Object.keys(LEVELS).forEach(lv => {
+    const levelData = Object.keys(LEVELS).map(lv => {
       const idx = QS.map((q, i) => q.level == lv ? i : -1).filter(i => i >= 0);
-      if (!idx.length) return;
-      const got = idx.reduce((s, i) => s + state[i].earned, 0), max = idx.length * LEVELS[lv][1];
-      rows += '<tr><td>Level ' + lv + ': ' + LEVELS[lv][0] + '</td><td>' + got + ' / ' + max + '</td></tr>';
-    });
+      return { name: 'Level ' + lv + ': ' + LEVELS[lv][0], got: idx.reduce((s, i) => s + state[i].earned, 0), max: idx.length * LEVELS[lv][1] };
+    }).filter(d => d.max);
     const missed = QS.map((q, i) => ({ q, i })).filter(({ q, i }) => state[i].done && state[i].earned < LEVELS[q.level][1]);
     let h = '<h3>Your results</h3>' +
       '<div class="big">' + score + ' <small>/ ' + TOTAL + ' points (' + pct + '%)</small></div>';
     if (left) h += '<p class="hint">' + left + (left === 1 ? ' question is' : ' questions are') + ' still unanswered and count as zero until you check them.</p>';
     if (done) h += '<p class="verdict-line">' + verdict + '</p>';
-    h += '<table><thead><tr><th>Section</th><th>Points</th></tr></thead><tbody>' + rows + '<tr><th>Total</th><th>' + score + ' / ' + TOTAL + '</th></tr></tbody></table>';
+    h += '<div id="level-chart" role="img" aria-label="' + esc(levelData.map(d => d.name + ', ' + d.got + ' of ' + d.max + ' points').join('; ')) + '"></div>';
     if (missed.length) {
       h += '<p><strong>Questions to review:</strong></p><ul>' + missed.map(({ q, i }) =>
         '<li><a href="#q' + (i + 1) + '">Question ' + (i + 1) + '</a> (' + state[i].earned + ' of ' + LEVELS[q.level][1] + '): ' + esc(clip(plain(q.q.split('\n')[0]) + (q.code ? ' ' + q.code.split('\n')[0] : ''), 100)) + '</li>').join('') + '</ul>';
     }
     h += '<button class="btn secondary" type="button" id="retake">Retake quiz</button>';
     box.innerHTML = h;
+    drawLevelChart(levelData);
     document.getElementById('retake').addEventListener('click', () => {
       if (done && !confirm('Clear all answers and start over?')) return;
       state.forEach((_, i) => state[i] = { done: false, earned: 0 });
@@ -1648,6 +1772,65 @@ print(re.sub(r&quot;!+&quot;, &quot;!&quot;, &quot;Wow!!! Amazing!!&quot;))
     });
   }
 
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hasD3 = typeof d3 !== 'undefined';
+  const COLORS = { todo: 'var(--line)', good: 'var(--good)', part: 'var(--y)', bad: 'var(--bad)' };
+  function status(i) {
+    if (!state[i].done) return 'todo';
+    const max = LEVELS[QS[i].level][1];
+    return state[i].earned >= max ? 'good' : state[i].earned > 0 ? 'part' : 'bad';
+  }
+
+  function drawSegments() {
+    if (!hasD3) return;
+    const svg = d3.select('#sb-seg');
+    const W = svg.node().clientWidth || 600, H = 16, gap = 3, levelGap = 10;
+    const breaks = QS.filter((q, i) => i > 0 && q.level !== QS[i - 1].level).length;
+    const w = (W - gap * (QS.length - 1) - (levelGap - gap) * breaks) / QS.length;
+    let x = 0;
+    const data = QS.map((q, i) => {
+      if (i > 0) x += w + (q.level !== QS[i - 1].level ? levelGap : gap);
+      return { i, x, st: status(i), q };
+    });
+    svg.selectAll('rect').data(data, d => d.i).join(
+      enter => enter.append('rect').attr('tabindex', 0).attr('y', 0).attr('height', H)
+        .style('fill', COLORS.todo)
+        .on('click', (e, d) => document.getElementById('q' + (d.i + 1)).scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }))
+        .on('keydown', (e, d) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.dispatchEvent(new MouseEvent('click')); } })
+        .call(sel => sel.append('title')),
+      update => update
+    )
+      .attr('x', d => d.x).attr('width', Math.max(w, 1))
+      .call(sel => sel.select('title').text(d => 'Question ' + (d.i + 1) + ': ' +
+        (d.st === 'todo' ? 'not answered' : state[d.i].earned + ' of ' + LEVELS[d.q.level][1] + ' points')))
+      .transition().duration(reduce ? 0 : 350)
+      .style('fill', d => COLORS[d.st]);
+  }
+
+  function drawLevelChart(data) {
+    const el = document.getElementById('level-chart');
+    if (!hasD3) {
+      el.innerHTML = '<pre>' + data.map(d => d.name.padEnd(34) + d.got + ' / ' + d.max).join('\n') + '</pre>';
+      return;
+    }
+    const W = 640, row = 46, H = data.length * row;
+    const svg = d3.select(el).append('svg').attr('viewBox', '0 0 ' + W + ' ' + H).attr('aria-hidden', 'true');
+    const x = d3.scaleLinear().domain([0, 1]).range([0, W]);
+    const g = svg.selectAll('g').data(data).join('g').attr('transform', (d, i) => 'translate(0,' + (i * row) + ')');
+    g.append('text').attr('x', 0).attr('y', 14).attr('class', 'lc-name').text(d => d.name);
+    g.append('text').attr('x', W).attr('y', 14).attr('text-anchor', 'end').attr('class', 'lc-val')
+      .text(d => d.got + ' / ' + d.max + '  ' + Math.round(100 * d.got / d.max) + '%');
+    g.append('rect').attr('y', 22).attr('height', 12).attr('width', W).attr('class', 'lc-track');
+    // tick marks every 25%
+    g.selectAll('line').data([.25, .5, .75]).join('line')
+      .attr('x1', x).attr('x2', x).attr('y1', 22).attr('y2', 34).attr('class', 'lc-tick');
+    g.append('rect').attr('y', 22).attr('height', 12).attr('class', 'lc-bar')
+      .attr('width', 0)
+      .transition().duration(reduce ? 0 : 700).ease(d3.easeCubicOut)
+      .attr('width', d => x(d.got / d.max));
+  }
+
+  window.addEventListener('resize', () => drawSegments());
   render();
 })();
 
