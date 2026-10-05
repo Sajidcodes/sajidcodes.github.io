@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Finding and Validating Text Patterns — Regular Expressions in Python</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #F4F6FA;
+  --surface: #FFFFFF;
+  --ink: #1B2333;
+  --muted: #5A6578;
+  --rule: #D9DFEA;
+  --teal: #0F6E74;
+  --hl: #FFE45C;
+  --hl-ink: #1B2333;
+  --code-bg: #1C2230;
+  --out-bg: #EEF1F6;
+  --sans: "Atkinson Hyperlegible", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #12161F; --surface: #1A1F2B; --ink: #E3E8F1; --muted: #9AA5B8;
+    --rule: #2C3343; --teal: #5CC4C9; --code-bg: #0E1219; --out-bg: #1F2533;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #12161F; --surface: #1A1F2B; --ink: #E3E8F1; --muted: #9AA5B8;
+  --rule: #2C3343; --teal: #5CC4C9; --code-bg: #0E1219; --out-bg: #1F2533;
+}
+*, *::before, *::after { box-sizing: inherit; }
+html { scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 16px); scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans);
+  font-size: 1.0625rem; line-height: 1.6; }
+a { color: var(--teal); }
+:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; border-radius: 3px; }
+
+/* ---------- hero with live tester ---------- */
+header.hero { border-bottom: 1px solid var(--rule); background: var(--surface); }
+.hero-inner { max-width: 1180px; margin: 0 auto; padding: 3rem 1.5rem 2.5rem;
+  display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.1fr); gap: 3rem; align-items: start; }
+.hero h1 { font-size: clamp(2rem, 4.2vw, 3.1rem); line-height: 1.08; margin: 0 0 1rem; letter-spacing: -0.01em; }
+.hero h1 .pat { font-family: var(--mono); font-weight: 600; font-size: 0.82em; display: inline-block;
+  background: var(--hl); color: var(--hl-ink); padding: 0 .25em; border-radius: 4px; }
+.hero p { color: var(--muted); max-width: 34em; margin: 0 0 .75rem; }
+.tester { background: var(--paper); border: 1px solid var(--rule); border-radius: 12px; padding: 1.25rem; }
+.tester h2 { font-size: 1.05rem; margin: 0 0 .9rem; }
+.tester label { display: block; font-size: .875rem; color: var(--muted); margin: .6rem 0 .3rem; }
+.tester input, .tester textarea { width: 100%; font-family: var(--mono); font-size: .95rem; color: var(--ink);
+  background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: .6rem .75rem; }
+.tester textarea { resize: vertical; min-height: 4.5rem; line-height: 1.5; }
+.pattern-row { display: flex; align-items: center; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; }
+.pattern-row span { font-family: var(--mono); color: var(--muted); padding-left: .75rem; }
+.pattern-row input { border: 0; background: transparent; padding-left: .15rem; }
+.hero p code { font-family: var(--mono); font-size: .9em; }
+.pattern-row:focus-within { outline: 3px solid var(--teal); outline-offset: 2px; }
+.pattern-row input:focus-visible { outline: none; }
+.result { margin-top: .9rem; font-family: var(--mono); font-size: .95rem; background: var(--surface);
+  border: 1px solid var(--rule); border-radius: 8px; padding: .75rem; white-space: pre-wrap; word-break: break-word; min-height: 3rem; }
+.result mark { background: var(--hl); color: var(--hl-ink); border-radius: 3px; padding: 0 1px; }
+.status { font-size: .875rem; color: var(--muted); margin-top: .5rem; }
+.status.err { color: #C2410C; }
+.chips { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .8rem; }
+.chips button { font-family: var(--mono); font-size: .8rem; background: var(--surface); color: var(--ink);
+  border: 1px solid var(--rule); border-radius: 999px; padding: .25rem .65rem; cursor: pointer; }
+.chips button:hover { border-color: var(--teal); }
+.note { font-size: .8rem; color: var(--muted); margin-top: .75rem; }
+
+/* ---------- layout ---------- */
+.layout { max-width: 1180px; margin: 0 auto; padding: 2rem 1.5rem 5rem;
+  display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 3rem; }
+nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 1rem); align-self: start;
+  max-height: calc(100vh - 2rem); overflow-y: auto; font-size: .875rem; padding-right: .5rem; }
+nav.toc h2 { font-size: .95rem; margin: 0 0 .6rem; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; }
+nav.toc a { display: block; color: var(--muted); text-decoration: none; padding: .2rem 0 .2rem .7rem;
+  border-left: 2px solid var(--rule); line-height: 1.35; }
+nav.toc a:hover { color: var(--ink); }
+nav.toc a.active { color: var(--teal); border-left-color: var(--teal); font-weight: 700; }
+main { max-width: 760px; }
+
+/* ---------- prose ---------- */
+.prose h2 { font-size: 1.6rem; line-height: 1.2; margin: 3.25rem 0 .75rem; padding-top: 1.25rem; border-top: 1px solid var(--rule); }
+.prose:first-child h2 { margin-top: 0; border-top: 0; padding-top: 0; }
+.prose h3 { font-size: 1.2rem; margin: 2rem 0 .5rem; }
+.prose p, .prose li { max-width: 68ch; }
+.prose code { font-family: var(--mono); font-size: .88em; background: var(--out-bg); padding: .1em .35em; border-radius: 4px; }
+.prose pre { background: var(--out-bg); border-radius: 8px; padding: .9rem 1rem; overflow-x: auto; line-height: 1.45; }
+.prose pre code { background: none; padding: 0; font-size: .875rem; }
+.prose blockquote { margin: 1rem 0; padding: .6rem 1rem; border-left: 4px solid var(--hl); background: var(--surface); border-radius: 0 8px 8px 0; }
+.prose blockquote p { margin: .25rem 0; }
+.table-wrap { overflow-x: auto; margin: 1rem 0; }
+.prose table { border-collapse: collapse; background: var(--surface); font-size: .95rem; min-width: 60%; }
+.prose th, .prose td { border: 1px solid var(--rule); padding: .45rem .8rem; text-align: left; vertical-align: top; }
+.prose th { background: var(--out-bg); }
+.prose details { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: .6rem 1rem; margin: 1rem 0; }
+.prose summary { cursor: pointer; color: var(--teal); }
+.prose details[open] summary { margin-bottom: .5rem; }
+
+/* ---------- code cells ---------- */
+figure.cell { margin: 1.25rem 0 1.5rem; border-radius: 10px; overflow: hidden; border: 1px solid var(--rule); }
+.code { position: relative; background: var(--code-bg); }
+.code pre { margin: 0; padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--mono); font-size: .875rem;
+  line-height: 1.55; color: #E6EDF3; background: var(--code-bg); }
+.copy { position: absolute; top: .5rem; right: .5rem; font-family: var(--sans); font-size: .75rem;
+  background: rgba(255,255,255,.08); color: #C9D3E1; border: 1px solid rgba(255,255,255,.15); border-radius: 6px;
+  padding: .2rem .55rem; cursor: pointer; opacity: .8; }
+.copy:hover { opacity: 1; }
+.out { background: var(--out-bg); border-top: 1px solid var(--rule); padding: .7rem 1.1rem .9rem; }
+.out-label { display: block; font-size: .75rem; color: var(--muted); margin-bottom: .25rem; }
+.out pre { margin: 0; font-family: var(--mono); font-size: .875rem; line-height: 1.5; overflow-x: auto; white-space: pre; }
+pre { line-height: 125%; }
+td.linenos .normal { color: #6e7681; background-color: #0d1117; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #6e7681; background-color: #0d1117; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #e6edf3; background-color: #6e7681; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #e6edf3; background-color: #6e7681; padding-left: 5px; padding-right: 5px; }
+.code pre .hll { background-color: #6e7681 }
+.code pre { background: #0d1117; color: #E6EDF3 }
+.code pre .c { color: #8B949E; font-style: italic } /* Comment */
+.code pre .err { color: #F85149 } /* Error */
+.code pre .esc { color: #E6EDF3 } /* Escape */
+.code pre .g { color: #E6EDF3 } /* Generic */
+.code pre .k { color: #FF7B72 } /* Keyword */
+.code pre .l { color: #A5D6FF } /* Literal */
+.code pre .n { color: #E6EDF3 } /* Name */
+.code pre .o { color: #FF7B72; font-weight: bold } /* Operator */
+.code pre .x { color: #E6EDF3 } /* Other */
+.code pre .p { color: #E6EDF3 } /* Punctuation */
+.code pre .ch { color: #8B949E; font-style: italic } /* Comment.Hashbang */
+.code pre .cm { color: #8B949E; font-style: italic } /* Comment.Multiline */
+.code pre .cp { color: #8B949E; font-weight: bold; font-style: italic } /* Comment.Preproc */
+.code pre .cpf { color: #8B949E; font-style: italic } /* Comment.PreprocFile */
+.code pre .c1 { color: #8B949E; font-style: italic } /* Comment.Single */
+.code pre .cs { color: #8B949E; font-weight: bold; font-style: italic } /* Comment.Special */
+.code pre .gd { color: #FFA198; background-color: #490202 } /* Generic.Deleted */
+.code pre .ge { color: #E6EDF3; font-style: italic } /* Generic.Emph */
+.code pre .ges { color: #E6EDF3; font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.code pre .gr { color: #FFA198 } /* Generic.Error */
+.code pre .gh { color: #79C0FF; font-weight: bold } /* Generic.Heading */
+.code pre .gi { color: #56D364; background-color: #0F5323 } /* Generic.Inserted */
+.code pre .go { color: #8B949E } /* Generic.Output */
+.code pre .gp { color: #8B949E } /* Generic.Prompt */
+.code pre .gs { color: #E6EDF3; font-weight: bold } /* Generic.Strong */
+.code pre .gu { color: #79C0FF } /* Generic.Subheading */
+.code pre .gt { color: #FF7B72 } /* Generic.Traceback */
+.code pre .g-Underline { color: #E6EDF3; text-decoration: underline } /* Generic.Underline */
+.code pre .kc { color: #79C0FF } /* Keyword.Constant */
+.code pre .kd { color: #FF7B72 } /* Keyword.Declaration */
+.code pre .kn { color: #FF7B72 } /* Keyword.Namespace */
+.code pre .kp { color: #79C0FF } /* Keyword.Pseudo */
+.code pre .kr { color: #FF7B72 } /* Keyword.Reserved */
+.code pre .kt { color: #FF7B72 } /* Keyword.Type */
+.code pre .ld { color: #79C0FF } /* Literal.Date */
+.code pre .m { color: #A5D6FF } /* Literal.Number */
+.code pre .s { color: #A5D6FF } /* Literal.String */
+.code pre .na { color: #E6EDF3 } /* Name.Attribute */
+.code pre .nb { color: #E6EDF3 } /* Name.Builtin */
+.code pre .nc { color: #F0883E; font-weight: bold } /* Name.Class */
+.code pre .no { color: #79C0FF; font-weight: bold } /* Name.Constant */
+.code pre .nd { color: #D2A8FF; font-weight: bold } /* Name.Decorator */
+.code pre .ni { color: #FFA657 } /* Name.Entity */
+.code pre .ne { color: #F0883E; font-weight: bold } /* Name.Exception */
+.code pre .nf { color: #D2A8FF; font-weight: bold } /* Name.Function */
+.code pre .nl { color: #79C0FF; font-weight: bold } /* Name.Label */
+.code pre .nn { color: #FF7B72 } /* Name.Namespace */
+.code pre .nx { color: #E6EDF3 } /* Name.Other */
+.code pre .py { color: #79C0FF } /* Name.Property */
+.code pre .nt { color: #7EE787 } /* Name.Tag */
+.code pre .nv { color: #79C0FF } /* Name.Variable */
+.code pre .ow { color: #FF7B72; font-weight: bold } /* Operator.Word */
+.code pre .pm { color: #E6EDF3 } /* Punctuation.Marker */
+.code pre .w { color: #6E7681 } /* Text.Whitespace */
+.code pre .mb { color: #A5D6FF } /* Literal.Number.Bin */
+.code pre .mf { color: #A5D6FF } /* Literal.Number.Float */
+.code pre .mh { color: #A5D6FF } /* Literal.Number.Hex */
+.code pre .mi { color: #A5D6FF } /* Literal.Number.Integer */
+.code pre .mo { color: #A5D6FF } /* Literal.Number.Oct */
+.code pre .sa { color: #79C0FF } /* Literal.String.Affix */
+.code pre .sb { color: #A5D6FF } /* Literal.String.Backtick */
+.code pre .sc { color: #A5D6FF } /* Literal.String.Char */
+.code pre .dl { color: #79C0FF } /* Literal.String.Delimiter */
+.code pre .sd { color: #A5D6FF } /* Literal.String.Doc */
+.code pre .s2 { color: #A5D6FF } /* Literal.String.Double */
+.code pre .se { color: #79C0FF } /* Literal.String.Escape */
+.code pre .sh { color: #79C0FF } /* Literal.String.Heredoc */
+.code pre .si { color: #A5D6FF } /* Literal.String.Interpol */
+.code pre .sx { color: #A5D6FF } /* Literal.String.Other */
+.code pre .sr { color: #79C0FF } /* Literal.String.Regex */
+.code pre .s1 { color: #A5D6FF } /* Literal.String.Single */
+.code pre .ss { color: #A5D6FF } /* Literal.String.Symbol */
+.code pre .bp { color: #E6EDF3 } /* Name.Builtin.Pseudo */
+.code pre .fm { color: #D2A8FF; font-weight: bold } /* Name.Function.Magic */
+.code pre .vc { color: #79C0FF } /* Name.Variable.Class */
+.code pre .vg { color: #79C0FF } /* Name.Variable.Global */
+.code pre .vi { color: #79C0FF } /* Name.Variable.Instance */
+.code pre .vm { color: #79C0FF } /* Name.Variable.Magic */
+.code pre .il { color: #A5D6FF } /* Literal.Number.Integer.Long */
+.code pre { background: var(--code-bg); }
+
+
+:root { --good: #15803D; --good-bg: #E8F6EC; --bad: #B42318; --bad-bg: #FDECEA; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --good: #4ADE80; --good-bg: #13291C; --bad: #F87171; --bad-bg: #2E1517; } }
+:root[data-theme="dark"] { --good: #4ADE80; --good-bg: #13291C; --bad: #F87171; --bad-bg: #2E1517; }
+.quiz { margin-top: 1rem; }
+.scorebar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface);
+  border: 1px solid var(--rule); border-radius: 10px; padding: .7rem 1rem; margin: 1.5rem 0;
+  display: flex; flex-wrap: wrap; align-items: center; gap: .4rem 1.25rem; font-size: .95rem; }
+.scorebar strong { font-size: 1.15rem; }
+#sb-progress { color: var(--muted); }
+.sb-track { flex: 1 1 100%; height: 6px; background: var(--out-bg); border-radius: 99px; overflow: hidden; }
+.sb-fill { height: 100%; width: 0; background: var(--teal); transition: width .3s ease; }
+@media (prefers-reduced-motion: reduce) { .sb-fill { transition: none; } }
+.questions { list-style: none; margin: 0; padding: 0; counter-reset: q; }
+.qcard { background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; padding: 1.25rem 1.25rem 1.1rem; margin: 0 0 1.25rem; }
+.qhead { display: flex; justify-content: space-between; gap: 1rem; font-size: .85rem; color: var(--muted); margin-bottom: .5rem; }
+.qnum { font-weight: 700; color: var(--ink); }
+.qtext { margin: 0 0 .75rem; }
+.qcard code, .results code { font-family: var(--mono); font-size: .88em; background: var(--out-bg); padding: .08em .35em; border-radius: 4px; }
+.qcode { background: var(--code-bg); color: #E6EDF3; font-family: var(--mono); font-size: .875rem; line-height: 1.5;
+  padding: .8rem 1rem; border-radius: 8px; overflow-x: auto; margin: 0 0 .9rem; white-space: pre; }
+.opts { display: grid; gap: .5rem; margin: 0 0 .9rem; padding: 0; border: 0; }
+.opt { display: flex; gap: .65rem; align-items: flex-start; border: 1px solid var(--rule); border-radius: 8px;
+  padding: .6rem .8rem; cursor: pointer; background: var(--paper); }
+.opt:hover { border-color: var(--teal); }
+.opt input { margin-top: .3rem; accent-color: var(--teal); flex: none; }
+.opt.correct { border-color: var(--good); background: var(--good-bg); }
+.opt.wrong { border-color: var(--bad); background: var(--bad-bg); }
+.locked .opt { cursor: default; }
+.locked .qactions { display: none; }
+.locked .opt:hover { border-color: var(--rule); }
+.locked .opt.correct:hover { border-color: var(--good); }
+.locked .opt.wrong:hover { border-color: var(--bad); }
+.qactions { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
+.btn { font-family: var(--sans); font-size: .95rem; font-weight: 700; background: var(--teal); color: #fff;
+  border: 0; border-radius: 8px; padding: .5rem 1rem; cursor: pointer; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.secondary { background: transparent; color: var(--teal); border: 1px solid var(--teal); }
+.hint { font-size: .85rem; color: var(--muted); }
+.fb { margin-top: .9rem; border-radius: 8px; padding: .75rem 1rem; font-size: .975rem; }
+.fb p { margin: .3rem 0; }
+.fb.good { background: var(--good-bg); border-left: 4px solid var(--good); }
+.fb.bad { background: var(--bad-bg); border-left: 4px solid var(--bad); }
+.fb.partial { background: var(--out-bg); border-left: 4px solid var(--hl); }
+.fb .verdict { font-weight: 700; }
+.build-row { display: flex; align-items: center; border: 1px solid var(--rule); border-radius: 8px; background: var(--paper); margin-bottom: .9rem; }
+.build-row span { font-family: var(--mono); color: var(--muted); padding: 0 .1rem 0 .75rem; }
+.build-row input { flex: 1; min-width: 0; border: 0; background: transparent; color: var(--ink); font-family: var(--mono); font-size: .95rem; padding: .6rem .5rem .6rem .1rem; }
+.build-row input:focus-visible { outline: none; }
+.build-row:focus-within { outline: 3px solid var(--teal); outline-offset: 2px; }
+.cases { width: 100%; border-collapse: collapse; font-size: .9rem; margin: .6rem 0; }
+.cases th, .cases td { text-align: left; padding: .3rem .5rem; border-bottom: 1px solid var(--rule); }
+.cases td:first-child { font-family: var(--mono); white-space: pre; }
+.cases .ok { color: var(--good); font-weight: 700; }
+.cases .no { color: var(--bad); font-weight: 700; }
+.results { background: var(--surface); border: 2px solid var(--teal); border-radius: 12px; padding: 1.5rem; margin-top: 2rem; }
+.results h3 { margin: 0 0 .25rem; font-size: 1.4rem; }
+.big { font-size: clamp(2.2rem, 6vw, 3.2rem); font-weight: 700; line-height: 1.1; margin: .25rem 0; }
+.big small { font-size: .45em; color: var(--muted); font-weight: 400; }
+.verdict-line { font-size: 1.1rem; font-weight: 700; margin: .25rem 0 1rem; }
+.results table { border-collapse: collapse; width: 100%; font-size: .95rem; margin: .75rem 0 1rem; }
+.results th, .results td { border-bottom: 1px solid var(--rule); padding: .4rem .5rem; text-align: left; }
+.results ul { padding-left: 1.2rem; }
+@media print { .scorebar { position: static; } .btn { display: none; } }
+
+footer { border-top: 1px solid var(--rule); color: var(--muted); font-size: .875rem; text-align: center; padding: 2rem 1rem; }
+
+@media (max-width: 900px) {
+  .hero-inner { grid-template-columns: 1fr; gap: 1.75rem; padding-top: 2rem; }
+  .layout { grid-template-columns: 1fr; gap: 1rem; }
+  nav.toc { position: static; max-height: none; border: 1px solid var(--rule); border-radius: 10px; padding: .75rem 1rem; background: var(--surface); }
+  nav.toc ol { columns: 2; column-gap: 1.25rem; }
+  nav.toc a { break-inside: avoid; }
+}
+@media (max-width: 520px) { nav.toc ol { columns: 1; } body { font-size: 1rem; } }
+@media print {
+  header.hero .tester, nav.toc, .copy { display: none; }
+  .layout { display: block; }
+  figure.cell { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="hero-inner">
+    <div>
+      <h1>Finding and validating text patterns with <span class="pat">\d{3}</span></h1>
+      <p>A beginner's guide to regular expressions in Python's <code>re</code> module. Every example below shows its real output, so you can see exactly what each pattern does.</p>
+      <p>Start with the tester: type a pattern and watch it highlight matches as you go. When you finish the guide, prove it with the <a href="#mastery-quiz">28-question mastery quiz</a>.</p>
+    </div>
+    <section class="tester" aria-labelledby="tester-title">
+      <h2 id="tester-title">Try a pattern</h2>
+      <label for="pat">Pattern</label>
+      <div class="pattern-row"><span aria-hidden="true">r"</span><input id="pat" value="\d+" spellcheck="false" autocomplete="off"></div>
+      <label for="txt">Text</label>
+      <textarea id="txt" spellcheck="false">Room 204, Student ID 123456, call (201) 555-1234 or email ab@pccc.edu. Code ABC-1234.</textarea>
+      <div class="result" id="res" aria-live="polite"></div>
+      <div class="status" id="status"></div>
+      <div class="chips" aria-label="Example patterns">
+        <button type="button">\d+</button><button type="button">\d{3}</button><button type="button">[A-Z]{3}-\d{4}</button>
+        <button type="button">\(\d{3}\) \d{3}-\d{4}</button><button type="button">\w+@\w+\.\w+</button><button type="button">[A-Z]\w*</button><button type="button">\s</button>
+      </div>
+      <p class="note">This tester runs in your browser with JavaScript's regex engine, which behaves like Python's <code>re.findall</code> for everything in this guide. One difference: here <code>\w</code> matches ASCII letters only.</p>
+    </section>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc" aria-label="Sections">
+    <h2>Sections</h2>
+    <ol>
+<li><a href="#0-introduction">0. Introduction</a></li>
+<li><a href="#1-why-do-we-need-regular-expressions">1. Why Do We Need Regular Expressions?</a></li>
+<li><a href="#2-import-the-re-module">2. Import the re Module</a></li>
+<li><a href="#3-your-first-regular-expression">3. Your First Regular Expression</a></li>
+<li><a href="#4-checking-whether-a-match-was-found">4. Checking Whether a Match Was Found</a></li>
+<li><a href="#5-why-do-we-write-r-d">5. Why Do We Write r&quot;\d&quot;?</a></li>
+<li><a href="#6-regular-expression-vocabulary">6. Regular Expression Vocabulary</a></li>
+<li><a href="#7-basic-regex-symbols">7. Basic Regex Symbols</a></li>
+<li><a href="#8-literal-characters">8. Literal Characters</a></li>
+<li><a href="#9-d-a-digit">9. \d — A Digit</a></li>
+<li><a href="#10-d-not-a-digit">10. \D — Not a Digit</a></li>
+<li><a href="#11-w-word-character">11. \w — Word Character</a></li>
+<li><a href="#12-s-whitespace">12. \s — Whitespace</a></li>
+<li><a href="#13-character-classes">13. Character Classes</a></li>
+<li><a href="#14-character-ranges">14. Character Ranges</a></li>
+<li><a href="#15-excluding-characters">15. Excluding Characters</a></li>
+<li><a href="#16-quantifiers">16. Quantifiers</a></li>
+<li><a href="#17-zero-or-more">17. * — Zero or More</a></li>
+<li><a href="#18-one-or-more">18. + — One or More</a></li>
+<li><a href="#19-zero-or-one">19. ? — Zero or One</a></li>
+<li><a href="#20-n-exactly-n-times">20. {n} — Exactly n Times</a></li>
+<li><a href="#21-n-at-least-n-times">21. {n,} — At Least n Times</a></li>
+<li><a href="#22-n-m-between-n-and-m-times">22. {n,m} — Between n and m Times</a></li>
+<li><a href="#23-grouping-with-parentheses">23. Grouping With Parentheses</a></li>
+<li><a href="#24-or-with">24. OR With |</a></li>
+<li><a href="#25-the-character">25. The . Character</a></li>
+<li><a href="#26-matching-a-literal-period">26. Matching a Literal Period</a></li>
+<li><a href="#27-re-search">27. re.search()</a></li>
+<li><a href="#28-getting-the-matched-text">28. Getting the Matched Text</a></li>
+<li><a href="#29-finding-the-position-of-a-match">29. Finding the Position of a Match</a></li>
+<li><a href="#30-re-match">30. re.match()</a></li>
+<li><a href="#31-comparing-match-and-search">31. Comparing match() and search()</a></li>
+<li><a href="#32-re-fullmatch">32. re.fullmatch()</a></li>
+<li><a href="#33-why-fullmatch-is-useful-for-validation">33. Why fullmatch() Is Useful for Validation</a></li>
+<li><a href="#34-example-validate-a-six-digit-student-id">34. Example: Validate a Six-Digit Student ID</a></li>
+<li><a href="#35-example-validate-a-phone-number">35. Example: Validate a Phone Number</a></li>
+<li><a href="#36-complete-phone-number-example">36. Complete Phone Number Example</a></li>
+<li><a href="#37-example-validate-a-name">37. Example: Validate a Name</a></li>
+<li><a href="#38-searching-for-a-pattern-inside-text">38. Searching for a Pattern Inside Text</a></li>
+<li><a href="#39-finding-multiple-matches">39. Finding Multiple Matches</a></li>
+<li><a href="#40-splitting-with-regular-expressions">40. Splitting With Regular Expressions</a></li>
+<li><a href="#41-replacing-text-with-re-sub">41. Replacing Text With re.sub()</a></li>
+<li><a href="#42-a-practical-example-text-cleaning">42. A Practical Example — Text Cleaning</a></li>
+<li><a href="#43-regex-cheat-sheet">43. Regex Cheat Sheet</a></li>
+<li><a href="#44-the-five-functions-to-remember">44. The Five Functions to Remember</a></li>
+<li><a href="#45-a-useful-mental-model-build-left-to-right">45. A Useful Mental Model — Build Left to Right</a></li>
+<li><a href="#46-think-of-regex-as-a-language">46. Think of Regex as a Language</a></li>
+<li><a href="#47-a-more-complex-example-product-code-abc-1234">47. A More Complex Example — Product Code ABC-1234</a></li>
+<li><a href="#48-regex-and-validation">48. Regex and Validation</a></li>
+<li><a href="#49-regex-is-not-magic">49. Regex Is Not Magic</a></li>
+<li><a href="#50-common-beginner-mistakes">50. Common Beginner Mistakes</a></li>
+<li><a href="#51-debugging-a-regular-expression">51. Debugging a Regular Expression</a></li>
+<li><a href="#52-practice-predict-the-match">52. ✏️ Practice: Predict the Match</a></li>
+<li><a href="#53-practice-search-vs-fullmatch">53. ✏️ Practice: search() vs fullmatch()</a></li>
+<li><a href="#54-practice-quantifiers">54. ✏️ Practice: Quantifiers</a></li>
+<li><a href="#55-practice-build-the-pattern">55. ✏️ Practice: Build the Pattern</a></li>
+<li><a href="#56-final-checklist">56. Final Checklist</a></li>
+<li><a href="#57-the-big-picture">57. The Big Picture</a></li>
+<li><a href="#mastery-quiz">Mastery quiz</a></li>
+    </ol>
+  </nav>
+  <main>
+<div class="prose"><h2 id="0-introduction">0. Introduction</h2>
+<p>Programs often need to determine whether text follows a pattern:</p>
+<ul>
+<li>a value contains only digits</li>
+<li>a username follows a particular format</li>
+<li>a phone number has the expected structure</li>
+<li>an email address appears in a piece of text</li>
+<li>a value contains exactly 5 digits</li>
+</ul>
+<p>A <strong>regular expression</strong> (regex) is a pattern that describes what text we are looking for.</p>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Meaning</th>
+<th>Matches</th>
+<th>Doesn't match</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>\d</code></td>
+<td>one digit</td>
+<td><code>0</code>, <code>5</code>, <code>9</code></td>
+<td><code>a</code></td>
+</tr>
+<tr>
+<td><code>\d{3}</code></td>
+<td>exactly three digits</td>
+<td><code>123</code>, <code>007</code></td>
+<td><code>12</code>, <code>abc</code></td>
+</tr>
+</tbody>
+</table>
+<p>Python provides regex tools through the built-in <strong><code>re</code></strong> module.</p></div>
+<div class="prose"><h2 id="1-why-do-we-need-regular-expressions">1. Why Do We Need Regular Expressions?</h2>
+<p>A program asks for a 6-digit student ID. Users might enter <code>123456</code>, <code>123</code>, <code>ABC123</code>, or <code>12-3456</code>.
+Instead of writing many <code>if</code> statements, a regex describes the pattern directly: <code>r"\d{6}"</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Normal string thinking</th>
+<th>Regex thinking</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>"What characters are here?"</em></td>
+<td><em>"Does this text follow this pattern?"</em></td>
+</tr>
+</tbody>
+</table></div>
+<div class="prose"><h2 id="2-import-the-re-module">2. Import the <code>re</code> Module</h2></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+
+<span class="c1"># The functions we&#39;ll use most:</span>
+<span class="c1"># re.search(), re.match(), re.fullmatch(), re.findall(), re.split(), re.sub()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;re module loaded&quot;</span><span class="p">)</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>re module loaded</pre></div></figure>
+<div class="prose"><h2 id="3-your-first-regular-expression">3. Your First Regular Expression</h2>
+<p>If a match is found, Python returns a <strong>match object</strong>. Don't worry about all of its output yet.</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;My score is 95.&quot;</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>&lt;re.Match object; span=(12, 13), match=&#x27;9&#x27;&gt;</pre></div></figure>
+<div class="prose"><h2 id="4-checking-whether-a-match-was-found">4. Checking Whether a Match Was Found</h2>
+<p>A match object is truthy; <code>None</code> (no match) is falsy.</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;My score is 95.&quot;</span><span class="p">,</span> <span class="s2">&quot;My score is ninety-five.&quot;</span><span class="p">]:</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">text</span><span class="si">!r:</span><span class="s2">30</span><span class="si">}</span><span class="s2"> -&gt; A digit was found.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">text</span><span class="si">!r:</span><span class="s2">30</span><span class="si">}</span><span class="s2"> -&gt; No digit was found.&quot;</span><span class="p">)</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>&#x27;My score is 95.&#x27;              -&gt; A digit was found.
+&#x27;My score is ninety-five.&#x27;     -&gt; No digit was found.</pre></div></figure>
+<div class="prose"><h2 id="5-why-do-we-write-r-d">5. Why Do We Write <code>r"\d"</code>?</h2>
+<p>The <code>r</code> prefix makes a <strong>raw string</strong>: backslashes are kept as-is and passed to the regex engine.</p>
+<p><strong>Important:</strong> the <code>r</code> is part of Python string syntax — it is <strong>not</strong> part of the regular expression.</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">),</span> <span class="nb">repr</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">))</span>     <span class="c1"># normal string: \n becomes ONE newline character</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\n&quot;</span><span class="p">),</span> <span class="nb">repr</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\n&quot;</span><span class="p">))</span>   <span class="c1"># raw string: backslash + n, TWO characters</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>1 &#x27;\n&#x27;
+2 &#x27;\\n&#x27;</pre></div></figure>
+<div class="prose"><h2 id="6-regular-expression-vocabulary">6. Regular Expression Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Pattern</strong></td>
+<td>the rule describing what we want</td>
+<td><code>r"\d{3}"</code></td>
+</tr>
+<tr>
+<td><strong>Input text</strong></td>
+<td>the string we're examining</td>
+<td><code>"Student ID: 123"</code></td>
+</tr>
+<tr>
+<td><strong>Match</strong></td>
+<td>the part of the input that satisfies the pattern</td>
+<td><code>123</code></td>
+</tr>
+</tbody>
+</table></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\d</span><span class="si">{3}</span><span class="s2">&quot;</span>
+<span class="n">input_text</span> <span class="o">=</span> <span class="s2">&quot;Student ID: 123&quot;</span>
+<span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">input_text</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pattern:&quot;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Input:  &quot;</span><span class="p">,</span> <span class="n">input_text</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Match:  &quot;</span><span class="p">,</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">())</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: \d{3}
+Input:   Student ID: 123
+Match:   123</pre></div></figure>
+<div class="prose"><h2 id="7-basic-regex-symbols">7. Basic Regex Symbols</h2>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>a</code></td>
+<td>the literal character <code>a</code></td>
+</tr>
+<tr>
+<td><code>.</code></td>
+<td>any character except newline</td>
+</tr>
+<tr>
+<td><code>\d</code></td>
+<td>a digit</td>
+</tr>
+<tr>
+<td><code>\D</code></td>
+<td>a non-digit</td>
+</tr>
+<tr>
+<td><code>\w</code></td>
+<td>a word character</td>
+</tr>
+<tr>
+<td><code>\W</code></td>
+<td>a non-word character</td>
+</tr>
+<tr>
+<td><code>\s</code></td>
+<td>whitespace</td>
+</tr>
+<tr>
+<td><code>\S</code></td>
+<td>non-whitespace</td>
+</tr>
+</tbody>
+</table></div>
+<div class="prose"><h2 id="8-literal-characters">8. Literal Characters</h2>
+<p>A normal character usually matches itself.</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;The cat is sleeping.&quot;</span>
+
+<span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;cat&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Found cat.&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;dog&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No dog here.&quot;</span><span class="p">)</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Found cat.
+No dog here.</pre></div></figure>
+<div class="prose"><h2 id="9-d-a-digit">9. <code>\d</code> — A Digit</h2></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Room 204&quot;</span>
+
+<span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The text contains a digit.&quot;</span><span class="p">)</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>The text contains a digit.</pre></div></figure>
+<div class="prose"><h2 id="10-d-not-a-digit">10. <code>\D</code> — Not a Digit</h2>
+<p>The opposite of <code>\d</code>. <code>findall</code> shows every character that matched.</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\D&quot;</span><span class="p">,</span> <span class="s2">&quot;A1x2!3 &quot;</span><span class="p">))</span>   <span class="c1"># letters, symbols, and the space</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>[&#x27;A&#x27;, &#x27;x&#x27;, &#x27;!&#x27;, &#x27; &#x27;]</pre></div></figure>
+<div class="prose"><h2 id="11-w-word-character">11. <code>\w</code> — Word Character</h2>
+<p>In Python, <code>\w</code> generally includes Unicode letters and digits, plus underscore.</p>
+<p>⚠️ <code>\w</code> does <strong>not</strong> mean "a word" — it means <strong>one</strong> word character.</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\w&quot;</span><span class="p">,</span> <span class="s2">&quot;Az7_ !-é&quot;</span><span class="p">))</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>[&#x27;A&#x27;, &#x27;z&#x27;, &#x27;7&#x27;, &#x27;_&#x27;, &#x27;é&#x27;]</pre></div></figure>
+<div class="prose"><h2 id="12-s-whitespace">12. <code>\s</code> — Whitespace</h2>
+<p>Spaces, tabs, and newlines.</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Hello World&quot;</span>
+
+<span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Whitespace found.&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s&quot;</span><span class="p">,</span> <span class="s2">&quot;a b</span><span class="se">\t</span><span class="s2">c</span><span class="se">\n</span><span class="s2">d&quot;</span><span class="p">))</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Whitespace found.
+[&#x27; &#x27;, &#x27;\t&#x27;, &#x27;\n&#x27;]</pre></div></figure>
+<div class="prose"><h2 id="13-character-classes">13. Character Classes</h2>
+<p><code>[abc]</code> means: match <strong>one</strong> character that is <code>a</code>, <code>b</code>, or <code>c</code>.</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;7&quot;</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">ch</span><span class="p">,</span> <span class="s2">&quot;-&gt;&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[abc]&quot;</span><span class="p">,</span> <span class="n">ch</span><span class="p">)))</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>a -&gt; True
+b -&gt; True
+c -&gt; True
+x -&gt; False
+7 -&gt; False</pre></div></figure>
+<div class="prose"><h2 id="14-character-ranges">14. Character Ranges</h2>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[a-z]</code></td>
+<td>lowercase letter a–z</td>
+</tr>
+<tr>
+<td><code>[A-Z]</code></td>
+<td>uppercase letter A–Z</td>
+</tr>
+<tr>
+<td><code>[0-9]</code></td>
+<td>digit 0–9</td>
+</tr>
+<tr>
+<td><code>[a-zA-Z]</code></td>
+<td>any ASCII letter</td>
+</tr>
+</tbody>
+</table></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Hello World 2026&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;lowercase:&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[a-z]&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;uppercase:&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[A-Z]&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;digits:   &quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[0-9]&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>lowercase: [&#x27;e&#x27;, &#x27;l&#x27;, &#x27;l&#x27;, &#x27;o&#x27;, &#x27;o&#x27;, &#x27;r&#x27;, &#x27;l&#x27;, &#x27;d&#x27;]
+uppercase: [&#x27;H&#x27;, &#x27;W&#x27;]
+digits:    [&#x27;2&#x27;, &#x27;0&#x27;, &#x27;2&#x27;, &#x27;6&#x27;]</pre></div></figure>
+<div class="prose"><h2 id="15-excluding-characters">15. Excluding Characters</h2>
+<p>A caret <code>^</code> at the <strong>start</strong> of a class means <em>not these characters</em>.</p>
+<pre><code>[0-9]   → digit
+[^0-9]  → not a digit
+</code></pre></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;R2-D2&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[0-9]: &quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[0-9]&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[^0-9]:&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[^0-9]&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>[0-9]:  [&#x27;2&#x27;, &#x27;2&#x27;]
+[^0-9]: [&#x27;R&#x27;, &#x27;-&#x27;, &#x27;D&#x27;]</pre></div></figure>
+<div class="prose"><h2 id="16-quantifiers">16. Quantifiers</h2>
+<p>Quantifiers say <strong>how many times</strong> the previous item should occur.</p>
+<table>
+<thead>
+<tr>
+<th>Quantifier</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>*</code></td>
+<td>zero or more</td>
+</tr>
+<tr>
+<td><code>+</code></td>
+<td>one or more</td>
+</tr>
+<tr>
+<td><code>?</code></td>
+<td>zero or one</td>
+</tr>
+<tr>
+<td><code>{n}</code></td>
+<td>exactly n</td>
+</tr>
+<tr>
+<td><code>{n,}</code></td>
+<td>at least n</td>
+</tr>
+<tr>
+<td><code>{n,m}</code></td>
+<td>between n and m</td>
+</tr>
+</tbody>
+</table>
+<p>The helper below tests a pattern against several values using <code>fullmatch</code> (the <strong>whole</strong> string must match). We'll reuse it throughout.</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print ✓ or ✗ for whether each value fully matches the pattern.&quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pattern: </span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+        <span class="n">mark</span> <span class="o">=</span> <span class="s2">&quot;✓&quot;</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;✗&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">mark</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">v</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></figure>
+<div class="prose"><h2 id="17-zero-or-more">17. <code>*</code> — Zero or More</h2>
+<p>Notice that <strong>zero</strong> is included — the empty string matches.</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;a*&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;aa&quot;</span><span class="p">,</span> <span class="s2">&quot;aaaa&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">])</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: a*
+  ✓  &#x27;&#x27;
+  ✓  &#x27;a&#x27;
+  ✓  &#x27;aa&#x27;
+  ✓  &#x27;aaaa&#x27;
+  ✗  &#x27;b&#x27;</pre></div></figure>
+<div class="prose"><h2 id="18-one-or-more">18. <code>+</code> — One or More</h2></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;a+&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;aa&quot;</span><span class="p">,</span> <span class="s2">&quot;aaaa&quot;</span><span class="p">])</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: a+
+  ✗  &#x27;&#x27;
+  ✓  &#x27;a&#x27;
+  ✓  &#x27;aa&#x27;
+  ✓  &#x27;aaaa&#x27;</pre></div></figure>
+<div class="prose"><h2 id="19-zero-or-one">19. <code>?</code> — Zero or One</h2>
+<p>Useful when something is <strong>optional</strong>.</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;a?&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;aa&quot;</span><span class="p">])</span>
+
+<span class="c1"># Practical: optional &#39;s&#39; — matches both spellings</span>
+<span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;colou?r&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">,</span> <span class="s2">&quot;colour&quot;</span><span class="p">,</span> <span class="s2">&quot;colouur&quot;</span><span class="p">])</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: a?
+  ✓  &#x27;&#x27;
+  ✓  &#x27;a&#x27;
+  ✗  &#x27;aa&#x27;
+Pattern: colou?r
+  ✓  &#x27;color&#x27;
+  ✓  &#x27;colour&#x27;
+  ✗  &#x27;colouur&#x27;</pre></div></figure>
+<div class="prose"><h2 id="20-n-exactly-n-times">20. <code>{n}</code> — Exactly n Times</h2></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d</span><span class="si">{3}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;123&quot;</span><span class="p">,</span> <span class="s2">&quot;007&quot;</span><span class="p">,</span> <span class="s2">&quot;45&quot;</span><span class="p">,</span> <span class="s2">&quot;1234&quot;</span><span class="p">,</span> <span class="s2">&quot;ABC&quot;</span><span class="p">])</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: \d{3}
+  ✓  &#x27;123&#x27;
+  ✓  &#x27;007&#x27;
+  ✗  &#x27;45&#x27;
+  ✗  &#x27;1234&#x27;
+  ✗  &#x27;ABC&#x27;</pre></div></figure>
+<div class="prose"><h2 id="21-n-at-least-n-times">21. <code>{n,}</code> — At Least n Times</h2></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d{3,}&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;123&quot;</span><span class="p">,</span> <span class="s2">&quot;1234&quot;</span><span class="p">,</span> <span class="s2">&quot;12345&quot;</span><span class="p">,</span> <span class="s2">&quot;12&quot;</span><span class="p">])</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: \d{3,}
+  ✓  &#x27;123&#x27;
+  ✓  &#x27;1234&#x27;
+  ✓  &#x27;12345&#x27;
+  ✗  &#x27;12&#x27;</pre></div></figure>
+<div class="prose"><h2 id="22-n-m-between-n-and-m-times">22. <code>{n,m}</code> — Between n and m Times</h2>
+<p>⚠️ <strong>No space after the comma.</strong> <code>\d{2,4}</code> ✓ — <code>\d{2, 4}</code> ✗</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d{2,4}&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;12&quot;</span><span class="p">,</span> <span class="s2">&quot;123&quot;</span><span class="p">,</span> <span class="s2">&quot;1234&quot;</span><span class="p">,</span> <span class="s2">&quot;12345&quot;</span><span class="p">])</span>
+
+<span class="c1"># What happens with the space? Python treats &quot;{2, 4}&quot; as literal text, not a quantifier!</span>
+<span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d{2, 4}&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;12&quot;</span><span class="p">,</span> <span class="s2">&quot;1{2, 4}&quot;</span><span class="p">])</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: \d{2,4}
+  ✗  &#x27;1&#x27;
+  ✓  &#x27;12&#x27;
+  ✓  &#x27;123&#x27;
+  ✓  &#x27;1234&#x27;
+  ✗  &#x27;12345&#x27;
+Pattern: \d{2, 4}
+  ✗  &#x27;12&#x27;
+  ✓  &#x27;1{2, 4}&#x27;</pre></div></figure>
+<div class="prose"><h2 id="23-grouping-with-parentheses">23. Grouping With Parentheses</h2>
+<p><code>(ab)+</code> → one or more occurrences of <strong><code>ab</code></strong>
+<code>ab+</code> → <code>a</code> followed by one or more <strong><code>b</code></strong></p>
+<p>These do <strong>not</strong> mean the same thing.</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="s2">&quot;abab&quot;</span><span class="p">,</span> <span class="s2">&quot;ababab&quot;</span><span class="p">,</span> <span class="s2">&quot;abb&quot;</span><span class="p">,</span> <span class="s2">&quot;abbb&quot;</span><span class="p">]</span>
+<span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(ab)+&quot;</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;ab+&quot;</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: (ab)+
+  ✓  &#x27;ab&#x27;
+  ✓  &#x27;abab&#x27;
+  ✓  &#x27;ababab&#x27;
+  ✗  &#x27;abb&#x27;
+  ✗  &#x27;abbb&#x27;
+
+Pattern: ab+
+  ✓  &#x27;ab&#x27;
+  ✗  &#x27;abab&#x27;
+  ✗  &#x27;ababab&#x27;
+  ✓  &#x27;abb&#x27;
+  ✓  &#x27;abbb&#x27;</pre></div></figure>
+<div class="prose"><h2 id="24-or-with">24. OR With <code>|</code></h2>
+<p><code>cat|dog</code> matches either <code>cat</code> or <code>dog</code>. Parentheses make grouping clear: <code>(cat|dog)s?</code></p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;cat|dog&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;cat&quot;</span><span class="p">,</span> <span class="s2">&quot;dog&quot;</span><span class="p">,</span> <span class="s2">&quot;cow&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(cat|dog)s?&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;cats&quot;</span><span class="p">,</span> <span class="s2">&quot;dog&quot;</span><span class="p">,</span> <span class="s2">&quot;dogs&quot;</span><span class="p">,</span> <span class="s2">&quot;cows&quot;</span><span class="p">])</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: cat|dog
+  ✓  &#x27;cat&#x27;
+  ✓  &#x27;dog&#x27;
+  ✗  &#x27;cow&#x27;
+
+Pattern: (cat|dog)s?
+  ✓  &#x27;cats&#x27;
+  ✓  &#x27;dog&#x27;
+  ✓  &#x27;dogs&#x27;
+  ✗  &#x27;cows&#x27;</pre></div></figure>
+<div class="prose"><h2 id="25-the-character">25. The <code>.</code> Character</h2>
+<p><code>.</code> means <em>almost any single character</em> — <strong>not</strong> a literal period.</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;c.t&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;cat&quot;</span><span class="p">,</span> <span class="s2">&quot;cot&quot;</span><span class="p">,</span> <span class="s2">&quot;cut&quot;</span><span class="p">,</span> <span class="s2">&quot;c9t&quot;</span><span class="p">,</span> <span class="s2">&quot;c-t&quot;</span><span class="p">,</span> <span class="s2">&quot;ct&quot;</span><span class="p">,</span> <span class="s2">&quot;coat&quot;</span><span class="p">])</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: c.t
+  ✓  &#x27;cat&#x27;
+  ✓  &#x27;cot&#x27;
+  ✓  &#x27;cut&#x27;
+  ✓  &#x27;c9t&#x27;
+  ✓  &#x27;c-t&#x27;
+  ✗  &#x27;ct&#x27;
+  ✗  &#x27;coat&#x27;</pre></div></figure>
+<div class="prose"><h2 id="26-matching-a-literal-period">26. Matching a Literal Period</h2>
+<p>Escape it: <code>\.</code> — escaping special characters to treat them literally appears constantly in regex.</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">])</span>     <span class="c1"># unescaped: any character</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\.&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">])</span>   <span class="c1"># escaped: only a real period</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: .
+  ✓  &#x27;.&#x27;
+  ✓  &#x27;a&#x27;
+
+Pattern: \.
+  ✓  &#x27;.&#x27;
+  ✗  &#x27;a&#x27;</pre></div></figure>
+<div class="prose"><h2 id="27-re-search">27. <code>re.search()</code></h2>
+<p>Looks for a match <strong>anywhere</strong> in the string and returns the <strong>first</strong> one.</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;My student ID is 12345.&quot;</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Found:&quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">group</span><span class="p">())</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Found: 12345</pre></div></figure>
+<div class="prose"><h2 id="28-getting-the-matched-text">28. Getting the Matched Text</h2>
+<p><code>.group()</code> returns the actual text that matched — usually more useful than printing the match object.</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="s2">&quot;My student ID is 12345.&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">group</span><span class="p">())</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>12345</pre></div></figure>
+<div class="prose"><h2 id="29-finding-the-position-of-a-match">29. Finding the Position of a Match</h2>
+<p>Python uses zero-based indexing. <code>end()</code> is one past the last matched character, just like slicing.</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;My student ID is 12345.&quot;</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Match:&quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">group</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Start:&quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">start</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;End:  &quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">end</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Slice check:&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">start</span><span class="p">():</span><span class="n">result</span><span class="o">.</span><span class="n">end</span><span class="p">()])</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Match: 12345
+Start: 17
+End:   22
+Slice check: 12345</pre></div></figure>
+<div class="prose"><h2 id="30-re-match">30. <code>re.match()</code></h2>
+<p><code>re.match()</code> only checks at the <strong>beginning</strong> of the string.</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;My ID is 12345.&quot;</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>   <span class="c1"># None — the string starts with &quot;My&quot;, not a digit</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>None</pre></div></figure>
+<div class="prose"><h2 id="31-comparing-match-and-search">31. Comparing <code>match()</code> and <code>search()</code></h2>
+<pre><code>match()   → START HERE ───────────→
+search()  → ──────── SEARCH ──────→
+</code></pre></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;My ID is 12345&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;match: &quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;search:&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">())</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>match:  None
+search: 12345</pre></div></figure>
+<div class="prose"><h2 id="32-re-fullmatch">32. <code>re.fullmatch()</code></h2>
+<p>Requires the <strong>entire</strong> string to match — ideal for validation.</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="k">for</span> <span class="n">student_id</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;123456&quot;</span><span class="p">,</span> <span class="s2">&quot;12345&quot;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d</span><span class="si">{6}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">student_id</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">student_id</span><span class="p">,</span> <span class="s2">&quot;-&gt; Valid student ID.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">student_id</span><span class="p">,</span> <span class="s2">&quot;-&gt; Invalid student ID.&quot;</span><span class="p">)</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>123456 -&gt; Valid student ID.
+12345 -&gt; Invalid student ID.</pre></div></figure>
+<div class="prose"><h2 id="33-why-fullmatch-is-useful-for-validation">33. Why <code>fullmatch()</code> Is Useful for Validation</h2>
+<pre><code>search()      → find a pattern somewhere
+match()       → pattern must start at beginning
+fullmatch()   → entire string must match
+</code></pre></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\d</span><span class="si">{6}</span><span class="s2">&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;value&#39;</span><span class="si">:</span><span class="s2">22</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;search&#39;</span><span class="si">:</span><span class="s2">8</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;match&#39;</span><span class="si">:</span><span class="s2">8</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;fullmatch&#39;</span><span class="si">:</span><span class="s2">8</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;123456&quot;</span><span class="p">,</span> <span class="s2">&quot;Student ID: 123456&quot;</span><span class="p">,</span> <span class="s2">&quot;123456abc&quot;</span><span class="p">]:</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">!r:</span><span class="s2">22</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="si">:</span><span class="s2">8</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="si">:</span><span class="s2">8</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="si">:</span><span class="s2">8</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>value                  search   match    fullmatch
+&#x27;123456&#x27;               True     True     True    
+&#x27;Student ID: 123456&#x27;   True     False    False   
+&#x27;123456abc&#x27;            True     True     False   </pre></div></figure>
+<div class="prose"><h2 id="34-example-validate-a-six-digit-student-id">34. Example: Validate a Six-Digit Student ID</h2></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="c1"># student_id = input(&quot;Enter your six-digit student ID: &quot;)   # interactive version</span>
+
+<span class="k">for</span> <span class="n">student_id</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;123456&quot;</span><span class="p">,</span> <span class="s2">&quot;12345&quot;</span><span class="p">,</span> <span class="s2">&quot;ABC123&quot;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d</span><span class="si">{6}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">student_id</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">student_id</span><span class="si">!r:</span><span class="s2">10</span><span class="si">}</span><span class="s2"> Valid student ID.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">student_id</span><span class="si">!r:</span><span class="s2">10</span><span class="si">}</span><span class="s2"> Invalid student ID.&quot;</span><span class="p">)</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>&#x27;123456&#x27;   Valid student ID.
+&#x27;12345&#x27;    Invalid student ID.
+&#x27;ABC123&#x27;   Invalid student ID.</pre></div></figure>
+<div class="prose"><h2 id="35-example-validate-a-phone-number">35. Example: Validate a Phone Number</h2>
+<p>Required format: <code>(201) 555-1234</code></p>
+<p>Parentheses are special in regex, so we escape them: <code>\(</code> and <code>\)</code>.</p>
+<pre><code class="language-python">pattern = r&quot;\(\d{3}\) \d{3}-\d{4}&quot;
+</code></pre></div>
+<div class="prose"><h2 id="36-complete-phone-number-example">36. Complete Phone Number Example</h2></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="c1"># phone = input(&quot;Enter a phone number: &quot;)   # interactive version</span>
+
+<span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\(\d</span><span class="si">{3}</span><span class="s2">\) \d</span><span class="si">{3}</span><span class="s2">-\d</span><span class="si">{4}</span><span class="s2">&quot;</span>
+
+<span class="k">for</span> <span class="n">phone</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;(201) 555-1234&quot;</span><span class="p">,</span> <span class="s2">&quot;201-555-1234&quot;</span><span class="p">,</span> <span class="s2">&quot;(201)555-1234&quot;</span><span class="p">,</span> <span class="s2">&quot;(20) 555-1234&quot;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">phone</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">phone</span><span class="si">!r:</span><span class="s2">18</span><span class="si">}</span><span class="s2"> Valid phone number.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">phone</span><span class="si">!r:</span><span class="s2">18</span><span class="si">}</span><span class="s2"> Invalid phone number.&quot;</span><span class="p">)</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>&#x27;(201) 555-1234&#x27;   Valid phone number.
+&#x27;201-555-1234&#x27;     Invalid phone number.
+&#x27;(201)555-1234&#x27;    Invalid phone number.
+&#x27;(20) 555-1234&#x27;    Invalid phone number.</pre></div></figure>
+<div class="prose"><h2 id="37-example-validate-a-name">37. Example: Validate a Name</h2>
+<p>Rule: begins with an uppercase letter and contains only letters afterward → <code>[A-Z][a-zA-Z]*</code></p>
+<p>⚠️ This is a simplified classroom rule, <strong>not</strong> a universal definition of a valid human name (think <code>O'Brien</code>, <code>García</code>, <code>Lee-Smith</code>).</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="c1"># name = input(&quot;Enter your last name: &quot;)   # interactive version</span>
+
+<span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[A-Z][a-zA-Z]*&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;Smith&quot;</span><span class="p">,</span> <span class="s2">&quot;Jones&quot;</span><span class="p">,</span> <span class="s2">&quot;Hussain&quot;</span><span class="p">,</span> <span class="s2">&quot;smith&quot;</span><span class="p">,</span> <span class="s2">&quot;Smith123&quot;</span><span class="p">,</span> <span class="s2">&quot;123Smith&quot;</span><span class="p">,</span> <span class="s2">&quot;O&#39;Brien&quot;</span><span class="p">])</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: [A-Z][a-zA-Z]*
+  ✓  &#x27;Smith&#x27;
+  ✓  &#x27;Jones&#x27;
+  ✓  &#x27;Hussain&#x27;
+  ✗  &#x27;smith&#x27;
+  ✗  &#x27;Smith123&#x27;
+  ✗  &#x27;123Smith&#x27;
+  ✗  &quot;O&#x27;Brien&quot;</pre></div></figure>
+<div class="prose"><h2 id="38-searching-for-a-pattern-inside-text">38. Searching for a Pattern Inside Text</h2>
+<p>The program doesn't need to know <em>where</em> the number is — the regex finds it.</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;The temperature is 72 degrees.&quot;</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number:&quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">group</span><span class="p">())</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Number: 72</pre></div></figure>
+<div class="prose"><h2 id="39-finding-multiple-matches">39. Finding Multiple Matches</h2>
+<p><code>re.findall()</code> returns <strong>all</strong> matches as a list of <strong>strings</strong>.</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Scores: 85, 92, 78, 100&quot;</span>
+
+<span class="n">scores</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
+
+<span class="n">scores</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">score</span><span class="p">)</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">scores</span><span class="p">]</span>   <span class="c1"># convert for math</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Average:&quot;</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">scores</span><span class="p">))</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>[&#x27;85&#x27;, &#x27;92&#x27;, &#x27;78&#x27;, &#x27;100&#x27;]
+[85, 92, 78, 100]
+Average: 88.75</pre></div></figure>
+<div class="prose"><h2 id="40-splitting-with-regular-expressions">40. Splitting With Regular Expressions</h2>
+<p><code>str.split()</code> handles one separator; <code>re.split()</code> handles several.</p>
+<ul>
+<li><code>[,;|]</code> → comma OR semicolon OR vertical bar</li>
+<li><code>\s*</code> → zero or more whitespace characters</li>
+</ul></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;apple,banana,orange&quot;</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">))</span>
+
+<span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;apple, banana; orange|grape&quot;</span>
+<span class="n">items</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[,;|]\s*&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>[&#x27;apple&#x27;, &#x27;banana&#x27;, &#x27;orange&#x27;]
+[&#x27;apple&#x27;, &#x27;banana&#x27;, &#x27;orange&#x27;, &#x27;grape&#x27;]</pre></div></figure>
+<div class="prose"><h2 id="41-replacing-text-with-re-sub">41. Replacing Text With <code>re.sub()</code></h2>
+<pre><code class="language-python">re.sub(pattern, replacement, text)
+</code></pre></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Python is fun.&quot;</span>
+
+<span class="n">new_text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;fun&quot;</span><span class="p">,</span> <span class="s2">&quot;powerful&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">new_text</span><span class="p">)</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Python is powerful.</pre></div></figure>
+<div class="prose"><h2 id="42-a-practical-example-text-cleaning">42. A Practical Example — Text Cleaning</h2>
+<p>Replace one or more whitespace characters with a single space.</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Hello     Python&quot;</span>
+
+<span class="n">cleaned</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s+&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">cleaned</span><span class="p">))</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>&#x27;Hello     Python&#x27;
+&#x27;Hello Python&#x27;</pre></div></figure>
+<div class="prose"><h2 id="43-regex-cheat-sheet">43. Regex Cheat Sheet</h2>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.</code></td>
+<td>any character except newline</td>
+</tr>
+<tr>
+<td><code>\d</code></td>
+<td>digit</td>
+</tr>
+<tr>
+<td><code>\D</code></td>
+<td>non-digit</td>
+</tr>
+<tr>
+<td><code>\w</code></td>
+<td>word character</td>
+</tr>
+<tr>
+<td><code>\W</code></td>
+<td>non-word character</td>
+</tr>
+<tr>
+<td><code>\s</code></td>
+<td>whitespace</td>
+</tr>
+<tr>
+<td><code>\S</code></td>
+<td>non-whitespace</td>
+</tr>
+<tr>
+<td><code>[abc]</code></td>
+<td>a, b, or c</td>
+</tr>
+<tr>
+<td><code>[^abc]</code></td>
+<td>anything except a, b, or c</td>
+</tr>
+<tr>
+<td><code>[a-z]</code></td>
+<td>lowercase ASCII letter</td>
+</tr>
+<tr>
+<td><code>[A-Z]</code></td>
+<td>uppercase ASCII letter</td>
+</tr>
+<tr>
+<td><code>[0-9]</code></td>
+<td>digit</td>
+</tr>
+<tr>
+<td><code>*</code></td>
+<td>zero or more</td>
+</tr>
+<tr>
+<td><code>+</code></td>
+<td>one or more</td>
+</tr>
+<tr>
+<td><code>?</code></td>
+<td>zero or one</td>
+</tr>
+<tr>
+<td><code>{n}</code></td>
+<td>exactly n</td>
+</tr>
+<tr>
+<td><code>{n,}</code></td>
+<td>at least n</td>
+</tr>
+<tr>
+<td><code>{n,m}</code></td>
+<td>between n and m</td>
+</tr>
+<tr>
+<td><code>(...)</code></td>
+<td>group</td>
+</tr>
+<tr>
+<td><code>\|</code></td>
+<td>OR</td>
+</tr>
+<tr>
+<td><code>\.</code></td>
+<td>literal period</td>
+</tr>
+<tr>
+<td><code>\(</code></td>
+<td>literal <code>(</code></td>
+</tr>
+<tr>
+<td><code>\)</code></td>
+<td>literal <code>)</code></td>
+</tr>
+</tbody>
+</table></div>
+<div class="prose"><h2 id="44-the-five-functions-to-remember">44. The Five Functions to Remember</h2>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>re.search(pattern, text)</code></td>
+<td>find a pattern anywhere</td>
+</tr>
+<tr>
+<td><code>re.match(pattern, text)</code></td>
+<td>look for a pattern at the beginning</td>
+</tr>
+<tr>
+<td><code>re.fullmatch(pattern, text)</code></td>
+<td>require the entire string to match</td>
+</tr>
+<tr>
+<td><code>re.findall(pattern, text)</code></td>
+<td>find all matches</td>
+</tr>
+<tr>
+<td><code>re.sub(pattern, replacement, text)</code></td>
+<td>replace matches</td>
+</tr>
+</tbody>
+</table></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Order 42 shipped on day 7&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;search:   &quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;match:    &quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;fullmatch:&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;findall:  &quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;sub:      &quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="s2">&quot;#&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>search:    42
+match:     None
+fullmatch: None
+findall:   [&#x27;42&#x27;, &#x27;7&#x27;]
+sub:       Order # shipped on day #</pre></div></figure>
+<div class="prose"><h2 id="45-a-useful-mental-model-build-left-to-right">45. A Useful Mental Model — Build Left to Right</h2>
+<p>Goal: <em>exactly three digits, a dash, then two digits.</em></p>
+<pre><code>\d            one digit
+\d{3}         three digits
+\d{3}-        ... then a dash
+\d{3}-\d{2}   ... then two digits
+</code></pre></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="p">[</span><span class="sa">r</span><span class="s2">&quot;\d&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\d</span><span class="si">{3}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\d</span><span class="si">{3}</span><span class="s2">-&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\d</span><span class="si">{3}</span><span class="s2">-\d</span><span class="si">{2}</span><span class="s2">&quot;</span><span class="p">]:</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="s2">&quot;Code: 123-45&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">step</span><span class="si">:</span><span class="s2">12</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">()</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>\d           -&gt; &#x27;1&#x27;
+\d{3}        -&gt; &#x27;123&#x27;
+\d{3}-       -&gt; &#x27;123-&#x27;
+\d{3}-\d{2}  -&gt; &#x27;123-45&#x27;</pre></div></figure>
+<div class="prose"><h2 id="46-think-of-regex-as-a-language">46. Think of Regex as a Language</h2>
+<pre><code>\d       → digit
++        → one or more
+{3}      → exactly three
+[ABC]    → A, B, or C
+|        → OR
+</code></pre>
+<p>Combine the pieces: <code>[A-Z]\d+</code> = an uppercase letter followed by one or more digits.</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[A-Z]\d+&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;A123&quot;</span><span class="p">,</span> <span class="s2">&quot;B7&quot;</span><span class="p">,</span> <span class="s2">&quot;Z9999&quot;</span><span class="p">,</span> <span class="s2">&quot;a123&quot;</span><span class="p">,</span> <span class="s2">&quot;AB12&quot;</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">])</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: [A-Z]\d+
+  ✓  &#x27;A123&#x27;
+  ✓  &#x27;B7&#x27;
+  ✓  &#x27;Z9999&#x27;
+  ✗  &#x27;a123&#x27;
+  ✗  &#x27;AB12&#x27;
+  ✗  &#x27;A&#x27;</pre></div></figure>
+<div class="prose"><h2 id="47-a-more-complex-example-product-code-abc-1234">47. A More Complex Example — Product Code <code>ABC-1234</code></h2>
+<p>Requirements: three uppercase letters, a hyphen, four digits.</p>
+<pre><code>[A-Z]{3}            three uppercase letters
+[A-Z]{3}-           ... a hyphen
+[A-Z]{3}-\d{4}      ... four digits
+</code></pre></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="c1"># code = input(&quot;Enter product code: &quot;)   # interactive version</span>
+
+<span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;[A-Z]</span><span class="si">{3}</span><span class="s2">-\d</span><span class="si">{4}</span><span class="s2">&quot;</span>
+
+<span class="k">for</span> <span class="n">code_value</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;ABC-1234&quot;</span><span class="p">,</span> <span class="s2">&quot;abc-1234&quot;</span><span class="p">,</span> <span class="s2">&quot;AB-1234&quot;</span><span class="p">,</span> <span class="s2">&quot;ABC1234&quot;</span><span class="p">,</span> <span class="s2">&quot;ABC-12345&quot;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">code_value</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">code_value</span><span class="si">!r:</span><span class="s2">12</span><span class="si">}</span><span class="s2"> Valid product code.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">code_value</span><span class="si">!r:</span><span class="s2">12</span><span class="si">}</span><span class="s2"> Invalid product code.&quot;</span><span class="p">)</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>&#x27;ABC-1234&#x27;   Valid product code.
+&#x27;abc-1234&#x27;   Invalid product code.
+&#x27;AB-1234&#x27;    Invalid product code.
+&#x27;ABC1234&#x27;    Invalid product code.
+&#x27;ABC-12345&#x27;  Invalid product code.</pre></div></figure>
+<div class="prose"><h2 id="48-regex-and-validation">48. Regex and Validation</h2>
+<pre><code>User input
+     ↓
+Regex pattern
+     ↓
+Does it match?
+   ↙       ↘
+ YES       NO
+  ↓         ↓
+Accept    Reject
+</code></pre>
+<p>A reusable validation function:</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="k">def</span><span class="w"> </span><span class="nf">is_valid</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">is_valid</span><span class="p">(</span><span class="s2">&quot;XYZ-0001&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;[A-Z]</span><span class="si">{3}</span><span class="s2">-\d</span><span class="si">{4}</span><span class="s2">&quot;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">is_valid</span><span class="p">(</span><span class="s2">&quot;XYZ-01&quot;</span><span class="p">,</span>   <span class="sa">r</span><span class="s2">&quot;[A-Z]</span><span class="si">{3}</span><span class="s2">-\d</span><span class="si">{4}</span><span class="s2">&quot;</span><span class="p">))</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>True
+False</pre></div></figure>
+<div class="prose"><h2 id="49-regex-is-not-magic">49. Regex Is Not Magic</h2>
+<p>A regex checks <strong>format</strong>, not <strong>meaning</strong>. <code>02/31/2026</code> fits <code>\d{2}/\d{2}/\d{4}</code> — but February has no 31st.</p>
+<blockquote>
+<p><strong>Pattern valid ≠ Data valid</strong></p>
+</blockquote>
+<p>Additional Python logic may be needed to check meaning:</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">valid_date</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d</span><span class="si">{2}</span><span class="s2">/\d</span><span class="si">{2}</span><span class="s2">/\d</span><span class="si">{4}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;bad format&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;%m/</span><span class="si">%d</span><span class="s2">/%Y&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;valid&quot;</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;right format, impossible date&quot;</span>
+
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;02/28/2026&quot;</span><span class="p">,</span> <span class="s2">&quot;02/31/2026&quot;</span><span class="p">,</span> <span class="s2">&quot;2/3/2026&quot;</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">d</span><span class="si">:</span><span class="s2">12</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">valid_date</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>02/28/2026   -&gt; valid
+02/31/2026   -&gt; right format, impossible date
+2/3/2026     -&gt; bad format</pre></div></figure>
+<div class="prose"><h2 id="50-common-beginner-mistakes">50. Common Beginner Mistakes</h2></div>
+<div class="prose"><p><strong>Mistake 1 — Forgetting the raw string.</strong> Prefer <code>r"\d+"</code>. Without <code>r</code>, some escapes (like <code>\b</code>) silently change meaning:</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\b</span><span class="s2">cat</span><span class="se">\b</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;a cat sat&quot;</span><span class="p">))</span>    <span class="c1"># &quot;\b&quot; became a backspace character -&gt; None</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\bcat\b&quot;</span><span class="p">,</span> <span class="s2">&quot;a cat sat&quot;</span><span class="p">))</span>   <span class="c1"># r&quot;\b&quot; is a word boundary -&gt; match</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>None
+&lt;re.Match object; span=(2, 5), match=&#x27;cat&#x27;&gt;</pre></div></figure>
+<div class="prose"><p><strong>Mistake 2 — Confusing <code>search()</code> with <code>fullmatch()</code>.</strong></p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="s2">&quot;abc123xyz&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">())</span>   <span class="c1"># finds 123</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="s2">&quot;abc123xyz&quot;</span><span class="p">))</span>        <span class="c1"># None — whole string isn&#39;t digits</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>123
+None</pre></div></figure>
+<div class="prose"><p><strong>Mistake 3 — Forgetting that <code>.</code> is special.</strong></p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;3.14&quot;</span><span class="p">,</span> <span class="s2">&quot;3x14&quot;</span><span class="p">))</span>    <span class="c1"># matches! . means any character</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;3\.14&quot;</span><span class="p">,</span> <span class="s2">&quot;3x14&quot;</span><span class="p">))</span>   <span class="c1"># None — only a real period</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>&lt;re.Match object; span=(0, 4), match=&#x27;3x14&#x27;&gt;
+None</pre></div></figure>
+<div class="prose"><p><strong>Mistake 4 — Confusing <code>*</code> and <code>+</code>.</strong></p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="nb">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;a*&quot;</span><span class="p">,</span> <span class="s2">&quot;bbb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">()))</span>   <span class="c1"># &#39;&#39; — zero a&#39;s is a valid match!</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;a+&quot;</span><span class="p">,</span> <span class="s2">&quot;bbb&quot;</span><span class="p">))</span>                 <span class="c1"># None — needs at least one</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>&#x27;&#x27;
+None</pre></div></figure>
+<div class="prose"><p><strong>Mistake 5 — Adding spaces inside <code>{}</code>.</strong> (See Section 22.)</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d{2,4}&quot;</span><span class="p">,</span> <span class="s2">&quot;123&quot;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d{2, 4}&quot;</span><span class="p">,</span> <span class="s2">&quot;123&quot;</span><span class="p">))</span>   <span class="c1"># None</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>&lt;re.Match object; span=(0, 3), match=&#x27;123&#x27;&gt;
+None</pre></div></figure>
+<div class="prose"><h2 id="51-debugging-a-regular-expression">51. Debugging a Regular Expression</h2>
+<p>Don't jump straight to <code>[A-Z][a-zA-Z]{1,24}\d{2}</code>. Build it up:</p>
+<pre><code>Small pattern → Test → Add one requirement → Test again → ...
+</code></pre></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">value</span> <span class="o">=</span> <span class="s2">&quot;Smith42&quot;</span>
+<span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="p">[</span><span class="sa">r</span><span class="s2">&quot;[A-Z]&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;[A-Z][a-zA-Z]+&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;[A-Z][a-zA-Z]{1,24}&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;[A-Z][a-zA-Z]{1,24}\d</span><span class="si">{2}</span><span class="s2">&quot;</span><span class="p">]:</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="n">full</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">step</span><span class="si">:</span><span class="s2">28</span><span class="si">}</span><span class="s2"> match: </span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">()</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="kc">None</span><span class="si">!r:</span><span class="s2">10</span><span class="si">}</span><span class="s2"> fullmatch: </span><span class="si">{</span><span class="n">full</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>[A-Z]                        match: &#x27;S&#x27;        fullmatch: False
+[A-Z][a-zA-Z]+               match: &#x27;Smith&#x27;    fullmatch: False
+[A-Z][a-zA-Z]{1,24}          match: &#x27;Smith&#x27;    fullmatch: False
+[A-Z][a-zA-Z]{1,24}\d{2}     match: &#x27;Smith42&#x27;  fullmatch: True</pre></div></figure>
+<div class="prose"><h2 id="52-practice-predict-the-match">52. ✏️ Practice: Predict the Match</h2>
+<pre><code class="language-python">text = &quot;Room 204&quot;
+result = re.search(r&quot;\d+&quot;, text)
+if result:
+    print(result.group())
+</code></pre>
+<p>What is printed?  <strong>A.</strong> <code>Room</code> <strong>B.</strong> <code>20</code> <strong>C.</strong> <code>204</code> <strong>D.</strong> <code>Room 204</code></p>
+<p>Make your prediction, then run the cell below.</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Room 204&quot;</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">group</span><span class="p">())</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>204</pre></div></figure>
+<div class="prose"><details><summary><b>Answer</b></summary>
+
+**C** — `\d+` means one or more *consecutive* digits, so the match is `204`.
+</details></div>
+<div class="prose"><h2 id="53-practice-search-vs-fullmatch">53. ✏️ Practice: <code>search()</code> vs <code>fullmatch()</code></h2>
+<pre><code class="language-python">text = &quot;ID: 12345&quot;
+result = re.fullmatch(r&quot;\d+&quot;, text)
+print(result)
+</code></pre>
+<p><strong>A.</strong> <code>12345</code> <strong>B.</strong> A match object <strong>C.</strong> <code>None</code> <strong>D.</strong> An error</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;ID: 12345&quot;</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>None</pre></div></figure>
+<div class="prose"><details><summary><b>Answer</b></summary>
+
+**C** — the entire string `ID: 12345` is not composed only of digits.
+</details></div>
+<div class="prose"><h2 id="54-practice-quantifiers">54. ✏️ Practice: Quantifiers</h2>
+<p>What does <code>[A-Z]{2,4}</code> mean?</p>
+<p><strong>A.</strong> Exactly 2 uppercase letters <strong>B.</strong> At least 4 uppercase letters <strong>C.</strong> Between 2 and 4 uppercase letters <strong>D.</strong> 2 uppercase letters followed by 4 digits</p>
+<details><summary><b>Answer</b></summary>
+
+**C** — `{2,4}` means between 2 and 4 occurrences.
+</details></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">test</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[A-Z]{2,4}&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;AB&quot;</span><span class="p">,</span> <span class="s2">&quot;ABC&quot;</span><span class="p">,</span> <span class="s2">&quot;ABCD&quot;</span><span class="p">,</span> <span class="s2">&quot;ABCDE&quot;</span><span class="p">])</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Pattern: [A-Z]{2,4}
+  ✗  &#x27;A&#x27;
+  ✓  &#x27;AB&#x27;
+  ✓  &#x27;ABC&#x27;
+  ✓  &#x27;ABCD&#x27;
+  ✗  &#x27;ABCDE&#x27;</pre></div></figure>
+<div class="prose"><h2 id="55-practice-build-the-pattern">55. ✏️ Practice: Build the Pattern</h2>
+<p>Create a regex for <strong>exactly five digits</strong>. Replace <code>None</code> with your pattern, then run.</p></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="n">my_pattern</span> <span class="o">=</span> <span class="kc">None</span>   <span class="c1"># TODO: your pattern here, e.g. r&quot;...&quot;</span>
+
+<span class="k">if</span> <span class="n">my_pattern</span><span class="p">:</span>
+    <span class="n">test</span><span class="p">(</span><span class="n">my_pattern</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;12345&quot;</span><span class="p">,</span> <span class="s2">&quot;1234&quot;</span><span class="p">,</span> <span class="s2">&quot;123456&quot;</span><span class="p">,</span> <span class="s2">&quot;12a45&quot;</span><span class="p">])</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fill in my_pattern first!&quot;</span><span class="p">)</span>
+</code></pre></div><div class="out"><span class="out-label">Output</span><pre>Fill in my_pattern first!</pre></div></figure>
+<div class="prose"><details><summary><b>Solution</b></summary>
+
+
+<pre><code class="language-python">my_pattern = r&quot;\d{5}&quot;
+</code></pre>
+
+</details></div>
+<div class="prose"><h3 id="extra-challenges">🧪 Extra Challenges</h3>
+<p>Write a pattern for each, then test it with <code>test(pattern, [...])</code>:</p>
+<ol>
+<li>A US ZIP code: 5 digits, optionally followed by <code>-</code> and 4 digits (<code>07102</code>, <code>07102-1234</code>)</li>
+<li>A course code like <code>CIS-108</code> or <code>CIS-105</code> (3 uppercase letters, hyphen, 3 digits)</li>
+<li>Extract every hashtag from <code>"Loving #Python and #DataScience at #PCCC"</code> using <code>findall</code></li>
+<li>Collapse any run of <code>!</code> into a single <code>!</code> using <code>sub</code></li>
+</ol></div>
+<figure class="cell"><div class="code"><button class="copy" type="button" aria-label="Copy code">Copy</button><pre><code><span class="c1"># 1. ZIP code</span>
+<span class="c1"># test(r&quot;...&quot;, [&quot;07102&quot;, &quot;07102-1234&quot;, &quot;0710&quot;, &quot;07102-12&quot;])</span>
+
+<span class="c1"># 2. Course code</span>
+<span class="c1"># test(r&quot;...&quot;, [&quot;CIS-108&quot;, &quot;CIS-105&quot;, &quot;cis-108&quot;, &quot;CIS108&quot;])</span>
+
+<span class="c1"># 3. Hashtags</span>
+<span class="c1"># print(re.findall(r&quot;...&quot;, &quot;Loving #Python and #DataScience at #PCCC&quot;))</span>
+
+<span class="c1"># 4. Collapse !!!</span>
+<span class="c1"># print(re.sub(r&quot;...&quot;, &quot;!&quot;, &quot;Wow!!! Amazing!!&quot;))</span>
+</code></pre></div></figure>
+<div class="prose"><details><summary><b>Solutions</b></summary>
+
+
+<pre><code class="language-python">test(r&quot;\d{5}(-\d{4})?&quot;, [&quot;07102&quot;, &quot;07102-1234&quot;, &quot;0710&quot;, &quot;07102-12&quot;])
+test(r&quot;[A-Z]{3}-\d{3}&quot;, [&quot;CIS-108&quot;, &quot;CIS-105&quot;, &quot;cis-108&quot;, &quot;CIS108&quot;])
+print(re.findall(r&quot;#\w+&quot;, &quot;Loving #Python and #DataScience at #PCCC&quot;))
+print(re.sub(r&quot;!+&quot;, &quot;!&quot;, &quot;Wow!!! Amazing!!&quot;))
+</code></pre>
+
+</details></div>
+<div class="prose"><h2 id="56-final-checklist">56. Final Checklist</h2>
+<p><strong>Regex basics</strong>
+- [ ] What a regular expression, pattern, and match are
+- [ ] <code>\d</code>, <code>\w</code>, <code>\s</code> (and their opposites)
+- [ ] Character classes, <code>[A-Z]</code>, <code>[^...]</code></p>
+<p><strong>Quantifiers</strong>
+- [ ] <code>*</code> <code>+</code> <code>?</code> <code>{n}</code> <code>{n,}</code> <code>{n,m}</code></p>
+<p><strong>Python functions</strong>
+- [ ] <code>re.search()</code> <code>re.match()</code> <code>re.fullmatch()</code> <code>re.findall()</code> <code>re.sub()</code></p>
+<p><strong>Practical skills</strong>
+- [ ] Find a pattern in text
+- [ ] Validate an input format
+- [ ] Extract matching text / find multiple matches
+- [ ] Replace matching text
+- [ ] Build a regex one piece at a time</p></div>
+<div class="prose"><h2 id="57-the-big-picture">57. The Big Picture</h2>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Regex</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Does this string contain a digit?</td>
+<td><code>\d</code></td>
+</tr>
+<tr>
+<td>Does it contain at least three digits?</td>
+<td><code>\d{3,}</code></td>
+</tr>
+<tr>
+<td>Is the entire string exactly six digits?</td>
+<td><code>re.fullmatch(r"\d{6}", text)</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code>                 TEXT
+                  │
+                  ▼
+             REGEX PATTERN
+                  │
+                  ▼
+              DOES IT
+               MATCH?
+              /       \
+            YES        NO
+             │          │
+             ▼          ▼
+          Accept      Reject
+</code></pre>
+<p>Once you understand that model, regular expressions become much less mysterious.</p></div>
+
+<section class="quiz" id="quiz" aria-labelledby="quiz-title">
+  <div class="prose">
+    <h2 id="mastery-quiz"><span id="quiz-title">Mastery quiz</span></h2>
+    <p>28 questions, 68 points. The questions get harder as you go, and the later ones are designed to catch half-understood ideas: greedy quantifiers, empty matches, operator precedence, and what <code>findall</code> does with groups. Work them out on paper before you check, without running code.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Section</th><th>Questions</th><th>Points each</th><th>Subtotal</th></tr></thead>
+      <tbody><tr><td>Level 1: Foundations</td><td>5</td><td>1</td><td>5</td></tr><tr><td>Level 2: Applied reasoning</td><td>10</td><td>2</td><td>20</td></tr><tr><td>Level 3: Traps and edge cases</td><td>9</td><td>3</td><td>27</td></tr><tr><td>Level 4: Build the pattern</td><td>4</td><td>4</td><td>16</td></tr><tr><th>Total</th><th>28</th><th></th><th>68</th></tr></tbody>
+    </table></div>
+    <p>Each question can be checked once. Pattern-building questions are tested against valid and invalid inputs. Partial credit is the share of valid inputs you accept multiplied by the share of invalid inputs you reject, so a pattern that matches nothing (or everything) earns zero. 90% or above demonstrates mastery.</p>
+  </div>
+  <div class="scorebar" role="status" aria-live="polite">
+    <span><strong id="sb-score">0</strong> / 68 points</span>
+    <span id="sb-progress">0 of 28 answered</span>
+    <div class="sb-track" aria-hidden="true"><div class="sb-fill" id="sb-fill"></div></div>
+  </div>
+  <ol class="questions" id="questions"></ol>
+  <div class="results" id="results" tabindex="-1"></div>
+</section>
+
+  </main>
+</div>
+<footer>Regular expressions in Python — a beginner's guide</footer>
+
+<script>
+(function () {
+  // wrap tables for horizontal scroll
+  document.querySelectorAll('.prose table').forEach(t => {
+    const w = document.createElement('div'); w.className = 'table-wrap';
+    t.parentNode.insertBefore(w, t); w.appendChild(t);
+  });
+
+  // copy buttons
+  document.querySelectorAll('.copy').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const code = btn.parentElement.querySelector('pre').innerText;
+      try { await navigator.clipboard.writeText(code); btn.textContent = 'Copied'; }
+      catch (e) { btn.textContent = 'Select & copy'; }
+      setTimeout(() => btn.textContent = 'Copy', 1500);
+    });
+  });
+
+  // live tester
+  const pat = document.getElementById('pat'), txt = document.getElementById('txt');
+  const res = document.getElementById('res'), status = document.getElementById('status');
+  const esc = s => s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  function run() {
+    const text = txt.value; status.classList.remove('err');
+    if (!pat.value) { res.innerHTML = esc(text); status.textContent = 'Type a pattern to begin.'; return; }
+    let re;
+    try { re = new RegExp(pat.value, 'g'); }
+    catch (e) { res.innerHTML = esc(text); status.textContent = 'That pattern is incomplete: ' + e.message.replace(/^Invalid regular expression: /, ''); status.classList.add('err'); return; }
+    let out = '', last = 0, n = 0, m;
+    while ((m = re.exec(text)) !== null) {
+      if (m[0] === '') { re.lastIndex++; continue; }
+      out += esc(text.slice(last, m.index)) + '<mark>' + esc(m[0]) + '</mark>';
+      last = m.index + m[0].length; n++;
+    }
+    out += esc(text.slice(last));
+    res.innerHTML = out || '&nbsp;';
+    status.textContent = n === 0 ? 'No matches.' : n + (n === 1 ? ' match' : ' matches');
+  }
+  pat.addEventListener('input', run); txt.addEventListener('input', run);
+  document.querySelectorAll('.chips button').forEach(b => b.addEventListener('click', () => { pat.value = b.textContent; run(); pat.focus(); }));
+  run();
+
+  // highlight current section in TOC
+  const links = [...document.querySelectorAll('nav.toc a')];
+  const map = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) {
+      links.forEach(a => a.classList.remove('active'));
+      const a = map.get(e.target.id); if (a) a.classList.add('active');
+    } });
+  }, { rootMargin: '0px 0px -75% 0px' });
+  document.querySelectorAll('.prose h2[id]').forEach(h => obs.observe(h));
+})();
+</script>
+<script>
+
+(function () {
+  const LEVELS = {"1": ["Foundations", 1], "2": ["Applied reasoning", 2], "3": ["Traps and edge cases", 3], "4": ["Build the pattern", 4]};
+  const QS = [{"level": 1, "type": "mc", "q": "Used with `re.fullmatch`, which pattern accepts `\"007\"` but rejects `\"0007\"`?", "options": [{"t": "`\\d+`", "fb": "`+` means one or more, with no upper limit, so `\\d+` happily accepts `0007` too."}, {"t": "`\\d{3}`", "ok": true, "fb": "`{3}` means exactly three. Leading zeros are still digits, so `007` passes and `0007` (four digits) fails."}, {"t": "`\\d{3,}`", "fb": "`{3,}` means *at least* three, so four digits are also accepted."}, {"t": "`\\d{2,4}`", "fb": "`{2,4}` allows two, three, or four digits, so `0007` is accepted."}]}, {"level": 1, "type": "mc", "q": "What does this print?", "code": "print(re.findall(r\"[^0-9]\", \"R2-D2\"))", "options": [{"t": "`['2', '2']`", "fb": "That's the result for `[0-9]`. The caret `^` at the start of a class *negates* it."}, {"t": "`['R', 'D']`", "fb": "Close, but the hyphen is also a non-digit. `[^0-9]` matches *any* character that isn't a digit, letters or not."}, {"t": "`['R', '-', 'D']`", "ok": true, "fb": "`[^0-9]` matches one character that is not a digit: `R`, `-`, and `D`."}, {"t": "`['R2', 'D2']`", "fb": "A character class matches exactly one character, and the digits are excluded anyway."}]}, {"level": 1, "type": "mc", "q": "What does `re.fullmatch(r\"a*\", \"\")` return?", "options": [{"t": "`None`", "fb": "`*` means *zero* or more. Zero `a` characters is a perfectly valid match for the empty string."}, {"t": "A match object whose `.group()` is `''`", "ok": true, "fb": "Zero repetitions is allowed by `*`, so the empty string fully matches. This is the key difference from `a+`."}, {"t": "A `re.error` exception", "fb": "`a*` is a valid pattern; nothing here is malformed."}, {"t": "A match object whose `.group()` is `'a'`", "fb": "The match can't contain text that isn't in the input. The input is empty."}]}, {"level": 1, "type": "mc", "q": "In Python's `re` module, which of these characters is **not** matched by `\\w`?", "options": [{"t": "`_`", "fb": "Underscore is explicitly included in `\\w`."}, {"t": "`7`", "fb": "Digits are word characters."}, {"t": "`é`", "fb": "Python's `\\w` is Unicode-aware for `str` patterns, so accented letters count as word characters."}, {"t": "`-`", "ok": true, "fb": "The hyphen is punctuation, not a letter, digit, or underscore."}]}, {"level": 1, "type": "mc", "q": "What is the result?", "code": "result = re.match(r\"\\d+\", \"ID 42\")", "options": [{"t": "`result.group()` is `'42'`", "fb": "That's what `re.search` would give. `re.match` only tries at position 0."}, {"t": "`result` is `None`", "ok": true, "fb": "The string begins with `I`, not a digit, and `re.match` doesn't look further along."}, {"t": "`result.group()` is `'ID 42'`", "fb": "`\\d+` can only ever match digits."}, {"t": "It raises an error", "fb": "No match is not an error; the functions return `None`."}]}, {"level": 2, "type": "mc", "q": "What does this print?", "code": "print(re.findall(r\"\\d+\", \"a1b22c333\"))", "options": [{"t": "`['1', '2', '2', '3', '3', '3']`", "fb": "That's the result for `\\d` (one digit). `+` keeps consuming consecutive digits into one match."}, {"t": "`['1', '22', '333']`", "ok": true, "fb": "Each run of consecutive digits is one match, and `findall` returns them as strings."}, {"t": "`[1, 22, 333]`", "fb": "`findall` always returns strings. You'd need `int()` to convert."}, {"t": "`['333']`", "fb": "`findall` returns *all* non-overlapping matches, not just the longest."}]}, {"level": 2, "type": "mc", "q": "What does this print?", "code": "print(re.findall(r\"\\d{3}\", \"12345678\"))", "options": [{"t": "`['123', '234', '345', '456', '567', '678']`", "fb": "Matches don't overlap. After `123` is consumed, scanning resumes at `4`."}, {"t": "`['123', '456', '78']`", "fb": "`{3}` means exactly three; the leftover `78` has only two digits, so it can't match."}, {"t": "`['123', '456']`", "ok": true, "fb": "Matches are non-overlapping and scanned left to right: `123`, then `456`. `78` is too short."}, {"t": "`['12345678']`", "fb": "`{3}` caps each match at exactly three digits."}]}, {"level": 2, "type": "mc", "q": "What does this print? Look carefully at the spaces.", "code": "print(re.split(r\"[,;]\\s*\", \"a, b;c ,d\"))", "options": [{"t": "`['a', 'b', 'c', 'd']`", "fb": "`\\s*` only consumes whitespace *after* the separator. The space *before* the comma in `c ,d` stays attached to `c`."}, {"t": "`['a', ' b', 'c ', 'd']`", "fb": "The space after the first comma is consumed by `\\s*`, so `b` has no leading space."}, {"t": "`['a', 'b', 'c ', 'd']`", "ok": true, "fb": "The pattern is separator *then* optional whitespace. Whitespace before a separator isn't part of the pattern."}, {"t": "`['a, b', 'c ,d']`", "fb": "Both `,` and `;` are in the class, so both act as separators."}]}, {"level": 2, "type": "mc", "q": "What is the value of `s`?", "code": "s = re.sub(r\"\\s+\", \"-\", \"  hi  there \")", "options": [{"t": "`'hi-there'`", "fb": "`re.sub` doesn't strip; leading and trailing whitespace runs are matches too."}, {"t": "`'--hi--there-'`", "fb": "`\\s+` treats each *run* of whitespace as a single match, so two spaces become one `-`."}, {"t": "`'-hi-there-'`", "ok": true, "fb": "Three whitespace runs (start, middle, end) each become one `-`."}, {"t": "`'-hi-there'`", "fb": "The trailing space is also a whitespace run and gets replaced."}]}, {"level": 2, "type": "mc", "q": "Which pattern, with `re.fullmatch`, accepts exactly `(201) 555-1234`?", "options": [{"t": "`(\\d{3}) \\d{3}-\\d{4}`", "fb": "Unescaped parentheses create a *group*; they don't match literal `(` `)` characters. This accepts `201 555-1234` instead."}, {"t": "`\\(\\d{3}\\) \\d{3}-\\d{4}`", "ok": true, "fb": "Escaping with `\\(` and `\\)` makes them literal, and the space, `-`, and digit counts all line up."}, {"t": "`\\(\\d{3}\\)\\d{3}-\\d{4}`", "fb": "This is missing the space after `)`, so it would require `(201)555-1234`."}, {"t": "`\\(\\d{3}\\) \\d{3}.\\d{4}`", "fb": "`.` accepts any character, so this also accepts `(201) 555x1234`. It isn't *exactly* the format."}]}, {"level": 2, "type": "mc", "q": "What does `re.fullmatch(r\"c.t\", \"c\\nt\")` return? (The middle character is a newline.)", "options": [{"t": "A match, because `.` matches any character", "fb": "`.` matches any character *except newline* by default."}, {"t": "`None`", "ok": true, "fb": "By default `.` excludes `\\n`, so there's nothing to match the middle character."}, {"t": "A match, because `\\n` is whitespace", "fb": "Whitespace-ness doesn't matter here; `.` specifically excludes newline."}, {"t": "An error", "fb": "Newlines in input are fine; there's just no match."}]}, {"level": 2, "type": "mc", "q": "What does this print?", "code": "print(re.search(r\"\\d{2,4}\", \"123456\").group())", "options": [{"t": "`12`", "fb": "Quantifiers are *greedy*: they take as many repetitions as allowed, up to 4 here."}, {"t": "`1234`", "ok": true, "fb": "`{2,4}` is greedy, so it grabs the maximum of 4 digits at the first position where a match is possible."}, {"t": "`123456`", "fb": "`{2,4}` caps the match at four characters; `search` doesn't require the whole string."}, {"t": "`None`", "fb": "`search` doesn't need the whole string to match; any two to four consecutive digits will do."}]}, {"level": 2, "type": "mc", "q": "Which string is fully matched by `ab+` but **not** by `(ab)+`?", "options": [{"t": "`ab`", "fb": "Both patterns accept `ab`: one `b` for `ab+`, one `ab` for `(ab)+`."}, {"t": "`abab`", "fb": "It's the other way round: `(ab)+` accepts this, but `ab+` can't, because after the `b`s it can't go back to `a`."}, {"t": "`abb`", "ok": true, "fb": "`ab+` repeats only the `b`. `(ab)+` repeats the pair, so it can't produce two `b`s in a row."}, {"t": "`a`", "fb": "Neither accepts it; both need at least one `b`."}]}, {"level": 2, "type": "mc", "q": "Which string is fully matched by the pattern `r\"\\d{2, 4}\"` (note the space)?", "options": [{"t": "`12`", "fb": "With the space, `{2, 4}` is not a valid quantifier, so Python treats it as literal text."}, {"t": "`1234`", "fb": "The quantifier isn't recognised because of the space, so this doesn't repeat `\\d`."}, {"t": "`1{2, 4}`", "ok": true, "fb": "Python silently reads `{2, 4}` as the literal characters `{`, `2`, `,`, ` `, `4`, `}` after one digit. No error, just a wrong pattern."}, {"t": "Nothing; it raises `re.error`", "fb": "That would be kinder, but Python doesn't raise here. That's why this mistake is so sneaky."}]}, {"level": 2, "type": "mc", "q": "`m = re.search(r\"\\d+\", \"ab 12 cd 345\")`. What is `(m.start(), m.end())`?", "options": [{"t": "`(3, 4)`", "fb": "`end()` is one past the last matched character, and `12` covers indices 3 and 4."}, {"t": "`(3, 5)`", "ok": true, "fb": "`12` starts at index 3, and `end()` is exclusive, like slicing: `text[3:5] == '12'`."}, {"t": "`(9, 12)`", "fb": "`search` returns the *first* match, which is `12`, not `345`."}, {"t": "`(2, 4)`", "fb": "Indices are zero-based: `a`=0, `b`=1, space=2, `1`=3."}]}, {"level": 3, "type": "mc", "q": "What do these two calls return?", "code": "re.fullmatch(r\"cat|dogs?\", \"cats\")\nre.search(r\"cat|dogs?\", \"cats\")", "options": [{"t": "Both match `cats`", "fb": "`|` has the lowest precedence, so `s?` only belongs to `dog`. The alternatives are `cat` and `dogs?`."}, {"t": "`None`, then a match of `cat`", "ok": true, "fb": "The alternatives are `cat` or `dogs?`. Neither is exactly `cats`, but `search` finds `cat` inside it. To fix it, write `(cat|dog)s?`."}, {"t": "Both return `None`", "fb": "`search` doesn't need the whole string, and `cat` appears inside `cats`."}, {"t": "A match of `cats`, then `None`", "fb": "Anything `fullmatch` accepts, `search` would find too. This combination is impossible."}]}, {"level": 3, "type": "mc", "q": "What does this print?", "code": "print(re.findall(r\"a*\", \"baa\"))", "options": [{"t": "`['aa']`", "fb": "`a*` can also match zero characters, so `findall` reports empty matches at positions where no `a` is present."}, {"t": "`['', 'aa', '']`", "ok": true, "fb": "At index 0 (`b`), it matches empty. Then `aa`. Then empty at the end of the string. This is why `a+` is usually what you want."}, {"t": "`['', 'a', 'a', '']`", "fb": "`*` is greedy, so it takes both `a`s in one match."}, {"t": "`['b', 'aa']`", "fb": "`a*` can never match `b`."}]}, {"level": 3, "type": "mc", "q": "What does this print?", "code": "print(re.findall(r\"(ab)+\", \"ababab xab\"))", "options": [{"t": "`['ababab', 'ab']`", "fb": "That's the full match text. When a pattern contains a group, `findall` returns the *group's* text instead."}, {"t": "`['ab', 'ab']`", "ok": true, "fb": "With one group, `findall` returns what the group captured. A repeated group keeps only its *last* repetition, so `ababab` yields `ab`."}, {"t": "`['ab', 'ab', 'ab', 'ab']`", "fb": "`(ab)+` makes one match of `ababab`, not three. The count is two matches total."}, {"t": "`[('ab',), ('ab',)]`", "fb": "Tuples are only returned when there are two or more groups."}]}, {"level": 3, "type": "mc", "q": "What does this print?", "code": "print(re.sub(r\"(ab)+\", \"X\", \"abababa ab\"))", "options": [{"t": "`XXXa X`", "fb": "`(ab)+` is greedy and consumes all three `ab`s in a single match, so there's one replacement."}, {"t": "`Xa X`", "ok": true, "fb": "`ababab` is one match, replaced by `X`; the trailing `a` can't match; then `ab` becomes `X`."}, {"t": "`X X`", "fb": "The lone `a` after `ababab` isn't followed by `b`, so it isn't part of any match and stays."}, {"t": "`abababa ab`", "fb": "There are clear matches here; `sub` replaces every one of them."}]}, {"level": 3, "type": "mc", "q": "A student writes this. What prints?", "code": "print(re.search(\"\\bcat\\b\", \"a cat sat\"))", "options": [{"t": "`<re.Match object; span=(2, 5), match='cat'>`", "fb": "Without the `r` prefix, Python turns `\\b` into a backspace character *before* the regex engine sees it."}, {"t": "`None`", "ok": true, "fb": "In a normal string, `\\b` is the backspace character (`\\x08`). The text contains no backspaces, so there's no match. With `r\"\\bcat\\b\"` it would match."}, {"t": "`re.error: bad escape`", "fb": "The escape is valid Python; it just means something different from what the student intended."}, {"t": "`<re.Match object; span=(0, 9), ...>`", "fb": "Even if `\\b` worked, the match would only be `cat`."}]}, {"level": 3, "type": "mc", "q": "How many of these strings does `re.fullmatch(r\"3.14\", s)` accept?\n`\"3.14\"`, `\"3x14\"`, `\"3..14\"`, `\"314\"`", "options": [{"t": "1", "fb": "`.` is a wildcard, so it accepts `x` as well as a real period."}, {"t": "2", "ok": true, "fb": "`3.14` and `3x14`. `.` must match exactly one character, so `3..14` (two) and `314` (zero) fail. Use `3\\.14` for a literal period."}, {"t": "3", "fb": "`.` matches exactly one character, so `3..14` has one too many."}, {"t": "4", "fb": "`314` has nothing between `3` and `1` for `.` to match."}]}, {"level": 3, "type": "mc", "q": "What does this print?", "code": "print(re.findall(r\"[A-Z][a-z]*\", \"McDonald OBrien\"))", "options": [{"t": "`['McDonald', 'OBrien']`", "fb": "`[a-z]*` stops at the next uppercase letter, which then starts a new match."}, {"t": "`['Mc', 'Donald', 'O', 'Brien']`", "ok": true, "fb": "Each match is one capital followed by lowercase letters. `O` is followed by `B`, so it's a match by itself (`*` allows zero lowercase letters)."}, {"t": "`['Mc', 'Donald', 'Brien']`", "fb": "`[a-z]*` allows *zero* lowercase letters, so a lone `O` is a valid match."}, {"t": "`['M', 'D', 'O', 'B']`", "fb": "`*` is greedy, so it keeps taking lowercase letters after each capital."}]}, {"level": 3, "type": "multi", "q": "Select **every** pattern that, with `re.fullmatch` on ASCII input, accepts exactly the same strings as `\\d`.", "options": [{"t": "`[0-9]`", "ok": true, "fb": "One ASCII digit, identical to `\\d` on ASCII input."}, {"t": "`[^\\D]`", "ok": true, "fb": "Not a non-digit is a digit. Double negation inside a class is legal."}, {"t": "`\\d{1}`", "ok": true, "fb": "`{1}` means exactly once, which is the same as no quantifier."}, {"t": "`[0-9]+`", "fb": "`+` accepts `55` too, so the set of accepted strings is larger."}, {"t": "`[0123456789]`", "ok": true, "fb": "Listing all ten digits is the long way of writing `[0-9]`."}]}, {"level": 3, "type": "mc", "q": "A form validates dates with `re.fullmatch(r\"\\d{2}/\\d{2}/\\d{4}\", s)`. Which statement is most accurate?", "options": [{"t": "It correctly rejects `02/31/2026`", "fb": "`31` is two digits, so it fits the shape. Regex can't know February has 28 or 29 days."}, {"t": "It verifies format only, so `99/99/0000` passes and real-date checks need separate logic", "ok": true, "fb": "Pattern valid ≠ data valid. Use the regex for shape, then something like `datetime.strptime` for meaning."}, {"t": "It also accepts `2/3/2026`", "fb": "`\\d{2}` requires exactly two digits, so single-digit months and days are rejected."}, {"t": "Switching to `re.search` would make it stricter", "fb": "`search` is *looser*: it would accept `Due: 02/03/2026!` because it only needs the pattern somewhere."}]}, {"level": 4, "type": "build", "q": "Write a pattern for a US ZIP code: five digits, optionally followed by a hyphen and four more digits.", "accept": ["07102", "10001", "07102-1234"], "reject": ["0710", "071021", "07102-12", "071021234", "07102-", "abcde", "07102 1234"], "solution": "\\d{5}(-\\d{4})?", "explain": "Group the optional part so `?` applies to the hyphen *and* the four digits together. Without the group, `\\d{5}-?\\d{4}?` doesn't work the way it reads."}, {"level": 4, "type": "build", "q": "Write a pattern for a course code: 2 to 4 uppercase letters, a hyphen, exactly 3 digits, and optionally one trailing uppercase letter (e.g. `CIS-108`, `MATH-151`, `CS-101H`).", "accept": ["CIS-108", "MATH-151", "CS-101H", "CIS-105"], "reject": ["cis-108", "CIS108", "C-108", "COMPS-108", "CIS-1080", "CIS-108h", "CIS-108HH", "CIS-10"], "solution": "[A-Z]{2,4}-\\d{3}[A-Z]?", "explain": "Build it left to right: `[A-Z]{2,4}`, then `-`, then `\\d{3}`, then an optional `[A-Z]?`."}, {"level": 4, "type": "build", "q": "Write a pattern for 24-hour time `HH:MM`: hours `00`–`23`, minutes `00`–`59`, always two digits each.", "accept": ["00:00", "09:30", "19:59", "23:59", "12:05"], "reject": ["24:00", "9:30", "12:60", "23:5", "2a:00", "29:00", "12-30", "123:00"], "solution": "([01]\\d|2[0-3]):[0-5]\\d", "explain": "Hours can't be one character class: `00`–`19` is `[01]\\d`, and `20`–`23` is `2[0-3]`. Combine them with `|` inside a group. Minutes are simpler: `[0-5]\\d`."}, {"level": 4, "type": "build", "q": "Write a pattern for a username: 5 to 12 characters total, made of ASCII letters, digits, and underscores. It must **start with a letter** and must **not end with an underscore**.", "accept": ["sajid", "Data_Sci1", "a1234", "python_rules", "Ab_c9"], "reject": ["1user", "_user", "user_", "abcd", "abcdefghijklm", "us er", "user-name", "ab_c_"], "solution": "[A-Za-z][A-Za-z0-9_]{3,10}[A-Za-z0-9]", "explain": "Split the length into first + middle + last: 1 + (3 to 10) + 1 gives 5 to 12. The first and last characters get their own, stricter classes."}];
+  const TOTAL = QS.reduce((s, q) => s + LEVELS[q.level][1], 0);
+  const state = QS.map(() => ({ done: false, earned: 0 }));
+  const list = document.getElementById('questions');
+
+  const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  function fmt(s) {
+    // escape, then `code`, **bold**, newlines
+    let out = '', parts = s.split('`');
+    parts.forEach((p, i) => { out += i % 2 ? '<code>' + esc(p) + '</code>' : esc(p).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*([^*]+)\*/g, '<em>$1</em>'); });
+    return out.replace(/\n/g, '<br>');
+  }
+  const plain = s => s.replace(/[`*]/g, '');
+  const clip = (s, n) => s.length > n ? s.slice(0, s.lastIndexOf(' ', n)) + '…' : s;
+  const ptsLabel = n => n + (n === 1 ? ' point' : ' points');
+  const round5 = x => Math.round(x * 2) / 2;
+
+  function render() {
+    list.innerHTML = '';
+    QS.forEach((q, i) => {
+      const pts = LEVELS[q.level][1];
+      const li = document.createElement('li');
+      li.className = 'qcard'; li.id = 'q' + (i + 1);
+      let h = '<div class="qhead"><span class="qnum">Question ' + (i + 1) + ' of ' + QS.length + '</span>' +
+              '<span>Level ' + q.level + ': ' + LEVELS[q.level][0] + ' · ' + ptsLabel(pts) + '</span></div>' +
+              '<p class="qtext">' + fmt(q.q) + '</p>';
+      if (q.code) h += '<pre class="qcode">' + esc(q.code) + '</pre>';
+      if (q.type === 'build') {
+        h += '<label class="hint" for="b' + i + '">Your pattern</label>' +
+             '<div class="build-row"><span aria-hidden="true">r"</span><input id="b' + i + '" spellcheck="false" autocomplete="off" placeholder="type your regex"><span aria-hidden="true" style="padding-right:.75rem">"</span></div>' +
+             '<div class="qactions"><button class="btn" type="button" data-act="check">Submit pattern</button>' +
+             '<span class="hint">Checked with fullmatch against ' + (q.accept.length + q.reject.length) + ' test cases, shown after you submit.</span></div>';
+      } else {
+        const type = q.type === 'multi' ? 'checkbox' : 'radio';
+        h += '<fieldset class="opts"><legend class="hint">' + (q.type === 'multi' ? 'Select all that apply.' : 'Choose one.') + '</legend>';
+        q.options.forEach((o, j) => {
+          h += '<label class="opt"><input type="' + type + '" name="q' + i + '" value="' + j + '"><span>' + fmt(o.t) + '</span></label>';
+        });
+        h += '</fieldset><div class="qactions"><button class="btn" type="button" data-act="check" disabled>Check answer</button></div>';
+      }
+      h += '<div class="fbwrap" aria-live="polite"></div>';
+      li.innerHTML = h;
+      list.appendChild(li);
+
+      const btn = li.querySelector('[data-act="check"]');
+      if (q.type === 'build') {
+        const inp = li.querySelector('input');
+        inp.addEventListener('keydown', e => { if (e.key === 'Enter') btn.click(); });
+        btn.addEventListener('click', () => gradeBuild(q, i, li));
+      } else {
+        li.querySelectorAll('input').forEach(inp => inp.addEventListener('change', () => {
+          btn.disabled = !li.querySelector('input:checked');
+        }));
+        btn.addEventListener('click', () => gradeChoice(q, i, li));
+      }
+    });
+    update();
+  }
+
+  function finish(i, li, earned) {
+    state[i] = { done: true, earned };
+    li.classList.add('locked');
+    li.querySelectorAll('input, button').forEach(el => el.disabled = true);
+    update();
+  }
+
+  function gradeChoice(q, i, li) {
+    const pts = LEVELS[q.level][1];
+    const chosen = [...li.querySelectorAll('input:checked')].map(x => +x.value);
+    if (!chosen.length) return;
+    const correctIdx = q.options.map((o, j) => o.ok ? j : -1).filter(j => j >= 0);
+    const labels = li.querySelectorAll('.opt');
+    q.options.forEach((o, j) => {
+      if (o.ok) labels[j].classList.add('correct');
+      else if (chosen.includes(j)) labels[j].classList.add('wrong');
+    });
+    const right = chosen.length === correctIdx.length && chosen.every(j => q.options[j].ok);
+    let html;
+    if (right) {
+      const why = q.type === 'multi' ? 'All the right options and none of the wrong ones.' : q.options[chosen[0]].fb;
+      html = '<div class="fb good"><p class="verdict">Correct: +' + ptsLabel(pts) + '</p><p>' + fmt(why) + '</p></div>';
+    } else if (q.type === 'multi') {
+      html = '<div class="fb bad"><p class="verdict">Not quite: 0 of ' + ptsLabel(pts) + '</p>';
+      chosen.filter(j => !q.options[j].ok).forEach(j => {
+        html += '<p><strong>You selected ' + fmt(q.options[j].t) + ', which is wrong.</strong> ' + fmt(q.options[j].fb) + '</p>';
+      });
+      correctIdx.filter(j => !chosen.includes(j)).forEach(j => {
+        html += '<p><strong>You missed ' + fmt(q.options[j].t) + '.</strong> ' + fmt(q.options[j].fb) + '</p>';
+      });
+      html += '<p class="hint">This question is all-or-nothing: every correct option and no incorrect ones.</p></div>';
+    } else {
+      const c = q.options[correctIdx[0]], w = q.options[chosen[0]];
+      html = '<div class="fb bad"><p class="verdict">Not quite: 0 of ' + ptsLabel(pts) + '</p>' +
+             '<p><strong>Why ' + fmt(w.t) + ' is wrong:</strong> ' + fmt(w.fb) + '</p>' +
+             '<p><strong>The answer is ' + fmt(c.t) + '.</strong> ' + fmt(c.fb) + '</p></div>';
+    }
+    li.querySelector('.fbwrap').innerHTML = html;
+    finish(i, li, right ? pts : 0);
+  }
+
+  function gradeBuild(q, i, li) {
+    const pts = LEVELS[q.level][1];
+    const inp = li.querySelector('input');
+    let p = inp.value.trim();
+    const m = p.match(/^r?["'](.*)["']$/); if (m) p = m[1];
+    const wrap = li.querySelector('.fbwrap');
+    if (!p) { wrap.innerHTML = '<div class="fb bad"><p>Type a pattern first. Submitting is only counted once a pattern compiles.</p></div>'; return; }
+    let re;
+    try { re = new RegExp('^(?:' + p + ')$'); }
+    catch (e) {
+      wrap.innerHTML = '<div class="fb bad"><p class="verdict">That pattern doesn\'t compile, so it wasn\'t submitted.</p><p>' +
+        esc(e.message.replace(/^Invalid regular expression: /, '')) + '. Check for unbalanced parentheses or brackets, then try again.</p></div>';
+      return;
+    }
+    const cases = q.accept.map(s => [s, true]).concat(q.reject.map(s => [s, false]));
+    let pass = 0, rows = '';
+    cases.forEach(([s, want]) => {
+      const got = re.test(s), ok = got === want; if (ok) pass++;
+      rows += '<tr><td>' + esc(JSON.stringify(s)) + '</td><td>' + (want ? 'accept' : 'reject') + '</td><td>' + (got ? 'accepted' : 'rejected') +
+              '</td><td class="' + (ok ? 'ok' : 'no') + '">' + (ok ? '✓' : '✗') + '</td></tr>';
+    });
+    const accOk = q.accept.filter(x => re.test(x)).length / q.accept.length;
+    const rejOk = q.reject.filter(x => !re.test(x)).length / q.reject.length;
+    const earned = round5(pts * accOk * rejOk);
+    const cls = pass === cases.length ? 'good' : (pass === 0 ? 'bad' : 'partial');
+    const verdict = pass === cases.length ? 'All ' + cases.length + ' cases pass: +' + ptsLabel(pts)
+                  : pass + ' of ' + cases.length + ' cases pass: +' + earned + ' of ' + ptsLabel(pts);
+    let html = '<div class="fb ' + cls + '"><p class="verdict">' + verdict + '</p>';
+    if (pass < cases.length) {
+      const fa = cases.filter(([s, w]) => w && !re.test(s)).length, fr = cases.filter(([s, w]) => !w && re.test(s)).length;
+      const tips = [];
+      if (fa) tips.push(fa + ' valid ' + (fa === 1 ? 'value was' : 'values were') + ' rejected, so your pattern is too strict somewhere');
+      if (fr) tips.push(fr + ' invalid ' + (fr === 1 ? 'value was' : 'values were') + ' accepted, so your pattern is too loose somewhere');
+      html += '<p>' + tips.join('; ') + '.</p>';
+    }
+    html += '<div class="table-wrap"><table class="cases"><thead><tr><th>Input</th><th>Should</th><th>Yours</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+            '<p><strong>One correct answer:</strong> <code>r"' + esc(q.solution) + '"</code></p><p>' + fmt(q.explain) + '</p></div>';
+    wrap.innerHTML = html;
+    finish(i, li, earned);
+  }
+
+  function update() {
+    const score = state.reduce((s, x) => s + x.earned, 0);
+    const done = state.filter(x => x.done).length;
+    document.getElementById('sb-score').textContent = score;
+    document.getElementById('sb-progress').textContent = done + ' of ' + QS.length + ' answered';
+    document.getElementById('sb-fill').style.width = (100 * done / QS.length) + '%';
+    renderResults(score, done);
+  }
+
+  function renderResults(score, done) {
+    const box = document.getElementById('results');
+    const pct = Math.round(100 * score / TOTAL);
+    const left = QS.length - done;
+    let verdict;
+    if (pct >= 90) verdict = 'Mastery demonstrated. You can read and write these patterns reliably.';
+    else if (pct >= 75) verdict = 'Strong. Review the questions you missed, then retake.';
+    else if (pct >= 50) verdict = 'Developing. Revisit the sections linked below before retaking.';
+    else verdict = 'Not there yet. Work back through the guide with the tester open, then retake.';
+    let rows = '';
+    Object.keys(LEVELS).forEach(lv => {
+      const idx = QS.map((q, i) => q.level == lv ? i : -1).filter(i => i >= 0);
+      if (!idx.length) return;
+      const got = idx.reduce((s, i) => s + state[i].earned, 0), max = idx.length * LEVELS[lv][1];
+      rows += '<tr><td>Level ' + lv + ': ' + LEVELS[lv][0] + '</td><td>' + got + ' / ' + max + '</td></tr>';
+    });
+    const missed = QS.map((q, i) => ({ q, i })).filter(({ q, i }) => state[i].done && state[i].earned < LEVELS[q.level][1]);
+    let h = '<h3>Your results</h3>' +
+      '<div class="big">' + score + ' <small>/ ' + TOTAL + ' points (' + pct + '%)</small></div>';
+    if (left) h += '<p class="hint">' + left + (left === 1 ? ' question is' : ' questions are') + ' still unanswered and count as zero until you check them.</p>';
+    if (done) h += '<p class="verdict-line">' + verdict + '</p>';
+    h += '<table><thead><tr><th>Section</th><th>Points</th></tr></thead><tbody>' + rows + '<tr><th>Total</th><th>' + score + ' / ' + TOTAL + '</th></tr></tbody></table>';
+    if (missed.length) {
+      h += '<p><strong>Questions to review:</strong></p><ul>' + missed.map(({ q, i }) =>
+        '<li><a href="#q' + (i + 1) + '">Question ' + (i + 1) + '</a> (' + state[i].earned + ' of ' + LEVELS[q.level][1] + '): ' + esc(clip(plain(q.q.split('\n')[0]) + (q.code ? ' ' + q.code.split('\n')[0] : ''), 100)) + '</li>').join('') + '</ul>';
+    }
+    h += '<button class="btn secondary" type="button" id="retake">Retake quiz</button>';
+    box.innerHTML = h;
+    document.getElementById('retake').addEventListener('click', () => {
+      if (done && !confirm('Clear all answers and start over?')) return;
+      state.forEach((_, i) => state[i] = { done: false, earned: 0 });
+      render();
+      document.getElementById('mastery-quiz').scrollIntoView();
+    });
+  }
+
+  render();
+})();
+
+</script>
+</body>
+</html>
