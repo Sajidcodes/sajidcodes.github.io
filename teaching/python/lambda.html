@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lambda Functions in Python | Sajid Codes</title>
+<meta name="description" content="A short, visual lesson on Python lambda functions and sorting with key=.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>λ</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F7FA; --surface:#FFFFFF; --ink:#16243A; --text:#36445A; --muted:#6B788C;
+  --line:#D9DFE8; --key:#F2C14E; --key-soft:#FCEFC7; --out:#2E7D78; --code-bg:#1E2A3D; --code-text:#E6EBF2;
+  --k-kw:#F2C14E; --k-str:#9FD8A4; --k-num:#F49E8C; --k-com:#8291A8;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#111A27; --surface:#18233A; --ink:#EEF2F8; --text:#C5CEDB; --muted:#8E9AAE;
+    --line:#2A3850; --key-soft:#3D3418; --out:#6CC3BC; --code-bg:#0C1320;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#111A27; --surface:#18233A; --ink:#EEF2F8; --text:#C5CEDB; --muted:#8E9AAE;
+  --line:#2A3850; --key-soft:#3D3418; --out:#6CC3BC; --code-bg:#0C1320;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px); scroll-behavior:smooth}
+body{margin:0; background:var(--paper); color:var(--text);
+  font:1.0625rem/1.65 "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif}
+main{max-width:46rem; margin:0 auto; padding:2.5rem 1.25rem 5rem}
+h1,h2,h3{color:var(--ink); line-height:1.2; margin:0}
+h1{font-size:clamp(2.2rem,6vw,3.2rem); letter-spacing:-.01em}
+h2{font-size:1.6rem; margin-top:3.5rem; display:flex; gap:.75rem; align-items:baseline}
+h2 .n{font-family:"JetBrains Mono",ui-monospace,monospace; font-size:1rem; color:var(--muted); font-weight:400}
+h3{font-size:1.15rem; margin-top:2rem}
+p{margin:.9rem 0}
+a{color:var(--out)}
+code{font-family:"JetBrains Mono",ui-monospace,Consolas,monospace; font-size:.9em}
+p code, li code, td code{background:var(--key-soft); color:var(--ink); padding:.1em .35em; border-radius:4px}
+:focus-visible{outline:3px solid var(--key); outline-offset:2px}
+
+.lede{font-size:1.25rem; color:var(--ink); margin-top:1rem; max-width:36rem}
+.back{font-size:.95rem; color:var(--muted); text-decoration:none}
+.back:hover{color:var(--ink)}
+
+/* hero sorter */
+.sorter{margin-top:2.25rem; background:var(--surface); border:1px solid var(--line); border-radius:14px; overflow:hidden}
+.sorter-head{padding:1rem 1.1rem .4rem}
+.sorter-head p{margin:0; color:var(--muted); font-size:.95rem}
+.chips{display:flex; flex-wrap:wrap; gap:.5rem; padding:.6rem 1.1rem 1rem}
+.chip{font:600 .82rem/1 "JetBrains Mono",ui-monospace,monospace; border:1.5px solid var(--line); background:transparent;
+  color:var(--ink); padding:.6rem .75rem; border-radius:999px; cursor:pointer}
+.chip:hover{border-color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--ink); color:var(--paper); border-color:var(--ink)}
+.call{margin:0; padding:.8rem 1.1rem; background:var(--code-bg); color:var(--code-text); font-size:.9rem; overflow-x:auto; white-space:pre}
+.tablewrap{overflow-x:auto}
+table{width:100%; border-collapse:collapse; font-size:.98rem}
+th,td{text-align:left; padding:.55rem 1.1rem; border-bottom:1px solid var(--line)}
+th{font-size:.85rem; color:var(--muted); font-weight:700}
+td.num, th.num{text-align:right; font-variant-numeric:tabular-nums}
+td.keycell{font-family:"JetBrains Mono",ui-monospace,monospace; font-size:.88rem; background:var(--key-soft); color:var(--ink); white-space:nowrap}
+th.keycol{color:var(--ink)}
+tbody tr:last-child td{border-bottom:0}
+tr.moved td{animation:flash .6s ease-out}
+@keyframes flash{from{background:var(--key)}}
+@media (prefers-reduced-motion: reduce){tr.moved td{animation:none} html{scroll-behavior:auto}}
+
+/* callouts */
+.big{border-left:4px solid var(--key); padding:.4rem 0 .4rem 1rem; font-size:1.15rem; color:var(--ink); margin:1.5rem 0}
+.warn{background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:.9rem 1.1rem}
+
+/* code blocks */
+.code{position:relative; margin:1.1rem 0; border-radius:10px; overflow:hidden; background:var(--code-bg)}
+.code pre{margin:0; padding:1rem 1.1rem; overflow-x:auto; color:var(--code-text); font-size:.9rem; line-height:1.55}
+.code .copy{position:absolute; top:.5rem; right:.5rem; font:600 .75rem "Atkinson Hyperlegible",sans-serif; color:var(--code-text);
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); border-radius:6px; padding:.3rem .55rem; cursor:pointer}
+.code .copy:hover{background:rgba(255,255,255,.16)}
+.out{border-top:1px dashed rgba(255,255,255,.18)}
+.out pre{color:#BFE6E2; font-size:.85rem}
+.out::before{content:"Output"; display:block; padding:.6rem 1.1rem 0; font-size:.75rem; color:var(--k-com); font-family:"Atkinson Hyperlegible",sans-serif}
+.kw{color:var(--k-kw)} .st{color:var(--k-str)} .nu{color:var(--k-num)} .cm{color:var(--k-com); font-style:italic}
+
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:.75rem}
+.grid2 .code{margin:0}
+.grid2 h3{margin:0 0 .4rem; font-size:.95rem; color:var(--muted)}
+@media (max-width:600px){.grid2{grid-template-columns:1fr}}
+
+.ref{background:var(--surface); border:1px solid var(--line); border-radius:12px}
+.ref td:first-child{color:var(--ink); white-space:nowrap}
+
+/* practice */
+.task{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:1rem 1.1rem; margin:1rem 0}
+.task p{margin:.2rem 0 .6rem}
+.task strong{color:var(--ink)}
+details summary{cursor:pointer; color:var(--out); font-weight:700; width:max-content}
+details[open] summary{margin-bottom:.4rem}
+ol.exit li{margin:.5rem 0}
+footer{margin-top:4rem; padding-top:1.5rem; border-top:1px solid var(--line); color:var(--muted); font-size:.95rem}
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="/">Sajid Codes</a>
+
+  <header style="margin-top:1.5rem">
+    <h1>Lambda functions in Python</h1>
+    <p class="lede">A lambda is a tiny one-line function you write right where you need it. Its most common job: telling <code>sorted()</code> what to sort by.</p>
+  </header>
+
+  <section class="sorter" aria-label="Interactive sorting demo">
+    <div class="sorter-head"><p>Pick a sort rule and watch the class reorder. The highlighted column is what the lambda hands to Python.</p></div>
+    <div class="chips" role="group" aria-label="Sort rules" id="chips"></div>
+    <pre class="call" id="call" aria-live="polite"></pre>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>First (t[0])</th><th>Last (t[1])</th><th class="num">Score (t[2])</th><th class="keycol">Sort key</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <h2><span class="n">1</span>The problem</h2>
+  <p>Each student is a tuple: <code>(first name, last name, score)</code>.</p>
+  <div class="code"><pre>students = [
+    ("John", "Smith", 96),
+    ("Susan", "King", 76),
+    ("Kim", "Yao", 99)
+]
+
+sorted(students)</pre><div class="out"><pre>[('John', 'Smith', 96), ('Kim', 'Yao', 99), ('Susan', 'King', 76)]</pre></div></div>
+  <p>Plain <code>sorted()</code> compares the first value, so it sorts by first name. What if we want score or last name instead?</p>
+
+  <h2><span class="n">2</span>Regular function vs. lambda</h2>
+  <div class="grid2">
+    <div><h3>Regular</h3><div class="code"><pre>def area(radius):
+    return radius * radius * math.pi</pre></div></div>
+    <div><h3>Lambda</h3><div class="code"><pre>lambda radius: radius * radius * math.pi</pre></div></div>
+  </div>
+  <p>Same job, shorter. No <code>def</code>, no <code>return</code>. The expression after the colon is returned automatically.</p>
+  <div class="big"><code>lambda parameters: expression</code></div>
+  <div class="code"><pre>import math
+
+area_lambda = lambda radius: radius * radius * math.pi
+area_lambda(5)</pre><div class="out"><pre>78.53981633974483</pre></div></div>
+
+  <h2><span class="n">3</span>The key argument</h2>
+  <div class="code"><pre>sorted(data, key=some_function)</pre></div>
+  <div class="big">key answers one question: for each item, what value should I sort by?</div>
+  <div class="tablewrap ref"><table>
+    <thead><tr><th>Index</th><th>Value</th></tr></thead>
+    <tbody>
+      <tr><td><code>t[0]</code></td><td>first name</td></tr>
+      <tr><td><code>t[1]</code></td><td>last name</td></tr>
+      <tr><td><code>t[2]</code></td><td>score</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2><span class="n">4</span>Sort by last name</h2>
+  <p><code>lambda t: t[1]</code> means "give me the last name."</p>
+  <div class="code"><pre>sorted(students, key=lambda t: t[1])</pre><div class="out"><pre>[('Susan', 'King', 76), ('John', 'Smith', 96), ('Kim', 'Yao', 99)]</pre></div></div>
+  <p>Here is what Python sees. The lambda runs on each student and returns a sort value:</p>
+  <div class="code"><pre>for t in students:
+    print(t, "→", t[1])</pre><div class="out"><pre>('John', 'Smith', 96) → Smith
+('Susan', 'King', 76) → King
+('Kim', 'Yao', 99) → Yao</pre></div></div>
+  <p>The data does not change. The lambda only decides where each student goes.</p>
+
+  <h2><span class="n">5</span>Sort by score</h2>
+  <div class="code"><pre># low to high
+sorted(students, key=lambda t: t[2])</pre><div class="out"><pre>[('Susan', 'King', 76), ('John', 'Smith', 96), ('Kim', 'Yao', 99)]</pre></div></div>
+  <div class="code"><pre># high to low
+sorted(students, key=lambda t: t[2], reverse=True)</pre><div class="out"><pre>[('Kim', 'Yao', 99), ('John', 'Smith', 96), ('Susan', 'King', 76)]</pre></div></div>
+  <p>The lambda picks <strong>what</strong> to sort by. <code>reverse=True</code> picks the <strong>direction</strong>.</p>
+
+  <h2><span class="n">6</span>Sort by two things</h2>
+  <p>Return a tuple: <code>(main rule, tie-breaker)</code>.</p>
+  <div class="code"><pre>students = [
+    ("John", "Smith", 96),
+    ("Susan", "King", 76),
+    ("Kim", "Yao", 99),
+    ("Qi", "Yao", 79)
+]
+
+sorted(students, key=lambda t: (t[2], t[1]))</pre><div class="out"><pre>[('Susan', 'King', 76), ('Qi', 'Yao', 79), ('John', 'Smith', 96), ('Kim', 'Yao', 99)]</pre></div></div>
+  <p>Python sorts by the first value. Only when those tie does it look at the second.</p>
+
+  <h2><span class="n">7</span>Mixed directions</h2>
+  <p>Score high to low, but last name A to Z? Put a minus sign on the number.</p>
+  <div class="code"><pre>sorted(students, key=lambda t: (-t[2], t[1]))</pre></div>
+  <div class="code"><pre>95 → -95
+88 → -88
+72 → -72</pre></div>
+  <p>Python sorts smallest first: <code>-95, -88, -72</code>. That puts scores 95, 88, 72 in order, highest first. Try it in the demo at the top: Carlos and Fatima tie at 95, so last name breaks the tie.</p>
+  <p class="warn">The minus trick only works on numbers. You can't put <code>-</code> in front of a string.</p>
+
+  <h2><span class="n">8</span>Common mistake</h2>
+  <p><code>t[2]</code> does not mean "the third student." It means: for the current student <code>t</code>, take the value at index 2.</p>
+  <div class="code"><pre>("John", "Smith", 96)
+                  ↑
+                 t[2]  →  96</pre></div>
+
+  <h2><span class="n">9</span>More than one input</h2>
+  <div class="code"><pre>add = lambda x, y: x + y
+multiply = lambda x, y: x * y
+
+print(add(3, 5))
+print(multiply(4, 5))</pre><div class="out"><pre>8
+20</pre></div></div>
+  <p>Many inputs are fine, but a lambda holds only one expression.</p>
+
+  <h2><span class="n">10</span>Lambda or def?</h2>
+  <div class="tablewrap ref"><table>
+    <thead><tr><th>Use lambda when</th><th>Use def when</th></tr></thead>
+    <tbody>
+      <tr><td>It fits on one line</td><td>It needs several steps</td></tr>
+      <tr><td>You need it once</td><td>You reuse it</td></tr>
+      <tr><td>You pass it into another function</td><td>It needs a name or explanation</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="practice"><span class="n">11</span>Practice</h2>
+  <p>Use this class for practice 1 to 4:</p>
+  <div class="code"><pre>students = [
+    ("Aisha", "Patel", 88),
+    ("Carlos", "Garcia", 95),
+    ("Emily", "Smith", 88),
+    ("David", "Chen", 72),
+    ("Fatima", "Khan", 95),
+    ("Brian", "Lee", 81)
+]</pre></div>
+
+  <div class="task"><p><strong>1.</strong> Sort by first name.</p>
+    <details><summary>Show answer</summary><div class="code"><pre>sorted(students, key=lambda t: t[0])</pre></div></details></div>
+  <div class="task"><p><strong>2.</strong> Sort by score, lowest to highest.</p>
+    <details><summary>Show answer</summary><div class="code"><pre>sorted(students, key=lambda t: t[2])</pre></div></details></div>
+  <div class="task"><p><strong>3.</strong> Sort by score, highest to lowest.</p>
+    <details><summary>Show answer</summary><div class="code"><pre>sorted(students, key=lambda t: t[2], reverse=True)</pre></div></details></div>
+  <div class="task"><p><strong>4.</strong> Sort by last name, then first name. Hint: <code>lambda t: (..., ...)</code></p>
+    <details><summary>Show answer</summary><div class="code"><pre>sorted(students, key=lambda t: (t[1], t[0]))</pre></div></details></div>
+
+  <div class="task"><p><strong>Challenge.</strong> Using the four-student list from section 6, write one <code>sorted()</code> line that gives:</p>
+    <div class="code"><pre>Kim Yao       99
+John Smith    96
+Qi Yao        79
+Susan King    76</pre></div>
+    <details><summary>Show answer</summary><div class="code"><pre>sorted(students, key=lambda t: t[2], reverse=True)</pre></div></details></div>
+
+  <div class="task"><p><strong>Think deeper.</strong> Without running it: for <code>sorted(students, key=lambda t: (-t[2], t[1]))</code>, what does the lambda return for <code>("John", "Smith", 96)</code>, and where does John land?</p>
+    <details><summary>Show answer</summary><p>It returns <code>(-96, "Smith")</code>. John comes second, after Kim, whose key is <code>(-99, "Yao")</code>.</p></details></div>
+
+  <h2><span class="n">12</span>Quick reference</h2>
+  <div class="tablewrap ref"><table>
+    <thead><tr><th>Goal</th><th>Code</th></tr></thead>
+    <tbody>
+      <tr><td>Syntax</td><td><code>lambda params: expression</code></td></tr>
+      <tr><td>First name</td><td><code>key=lambda t: t[0]</code></td></tr>
+      <tr><td>Last name</td><td><code>key=lambda t: t[1]</code></td></tr>
+      <tr><td>Score, low to high</td><td><code>key=lambda t: t[2]</code></td></tr>
+      <tr><td>Score, high to low</td><td><code>key=lambda t: t[2], reverse=True</code></td></tr>
+      <tr><td>Score, then last name</td><td><code>key=lambda t: (t[2], t[1])</code></td></tr>
+      <tr><td>Score down, name up</td><td><code>key=lambda t: (-t[2], t[1])</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h2><span class="n">13</span>Exit ticket</h2>
+  <ol class="exit">
+    <li>What is a lambda function?</li>
+    <li>What does <code>key=</code> do in <code>sorted()</code>?</li>
+    <li>In <code>sorted(students, key=lambda t: t[2])</code>, what is <code>t[2]</code>?</li>
+    <li>How do you sort scores from highest to lowest?</li>
+    <li>When would you use <code>def</code> instead of a lambda?</li>
+  </ol>
+  <div class="big">A lambda is a quick rule you hand to another function.</div>
+
+  <footer>Sajid Codes · Python lessons</footer>
+</main>
+
+<script>
+(function(){
+  // ---------- interactive sorter ----------
+  const data = [
+    ["Aisha","Patel",88],["Carlos","Garcia",95],["Emily","Smith",88],
+    ["David","Chen",72],["Fatima","Khan",95],["Brian","Lee",81]
+  ];
+  const cmp = (a,b) => {
+    if (Array.isArray(a)) { for (let i=0;i<a.length;i++){ const c=cmp(a[i],b[i]); if(c) return c; } return 0; }
+    return a < b ? -1 : a > b ? 1 : 0;
+  };
+  const fmt = v => Array.isArray(v) ? "(" + v.map(fmt).join(", ") + ")" : typeof v === "string" ? `'${v}'` : String(v);
+  const rules = [
+    {label:"no key", call:"sorted(students)", key:t=>t, rev:false, show:t=>"whole tuple"},
+    {label:"t[0]", call:"sorted(students, key=lambda t: t[0])", key:t=>t[0]},
+    {label:"t[1]", call:"sorted(students, key=lambda t: t[1])", key:t=>t[1]},
+    {label:"t[2]", call:"sorted(students, key=lambda t: t[2])", key:t=>t[2]},
+    {label:"t[2], reverse", call:"sorted(students, key=lambda t: t[2], reverse=True)", key:t=>t[2], rev:true},
+    {label:"(-t[2], t[1])", call:"sorted(students, key=lambda t: (-t[2], t[1]))", key:t=>[-t[2], t[1]]}
+  ];
+  const chips = document.getElementById("chips"), rowsEl = document.getElementById("rows"), callEl = document.getElementById("call");
+  let prevOrder = data.map(r=>r[0]);
+
+  function render(i){
+    const r = rules[i];
+    const sorted = data.slice().sort((a,b)=>cmp(r.key(a), r.key(b)) * (r.rev?-1:1));
+    // Python's sort is stable; reverse=True keeps ties in original order
+    if (r.rev) {
+      const keyed = data.map((row,idx)=>({row,idx,k:r.key(row)}));
+      keyed.sort((a,b)=> cmp(b.k,a.k) || a.idx-b.idx);
+      sorted.splice(0, sorted.length, ...keyed.map(o=>o.row));
+    }
+    callEl.textContent = r.call;
+    rowsEl.innerHTML = sorted.map((t,pos)=>{
+      const moved = prevOrder[pos] !== t[0] ? ' class="moved"' : "";
+      const k = r.show ? r.show(t) : fmt(r.key(t));
+      return `<tr${moved}><td>${t[0]}</td><td>${t[1]}</td><td class="num">${t[2]}</td><td class="keycell">${k}</td></tr>`;
+    }).join("");
+    prevOrder = sorted.map(t=>t[0]);
+    [...chips.children].forEach((c,j)=>c.setAttribute("aria-pressed", j===i));
+  }
+  rules.forEach((r,i)=>{
+    const b = document.createElement("button");
+    b.className = "chip"; b.type = "button"; b.textContent = r.label;
+    b.addEventListener("click", ()=>render(i));
+    chips.appendChild(b);
+  });
+  render(0);
+
+  // ---------- syntax highlight + copy ----------
+  const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  const tok = /(#.*$)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|\b(lambda|def|return|import|for|in|print|sorted|True|False|None)\b|(\b-?\d+(?:\.\d+)?\b)/gm;
+  document.querySelectorAll(".code > pre").forEach(pre=>{
+    const src = pre.textContent;
+    let out = "", last = 0, m;
+    while ((m = tok.exec(src))) {
+      out += esc(src.slice(last, m.index));
+      const cls = m[1] ? "cm" : m[2] ? "st" : m[3] ? "kw" : "nu";
+      out += `<span class="${cls}">${esc(m[0])}</span>`;
+      last = tok.lastIndex;
+    }
+    pre.innerHTML = out + esc(src.slice(last));
+
+    const btn = document.createElement("button");
+    btn.className = "copy"; btn.type = "button"; btn.textContent = "Copy";
+    btn.addEventListener("click", async ()=>{
+      try { await navigator.clipboard.writeText(src); btn.textContent = "Copied"; }
+      catch(e){ btn.textContent = "Select and copy"; }
+      setTimeout(()=>btn.textContent="Copy", 1500);
+    });
+    pre.parentElement.appendChild(btn);
+  });
+})();
+</script>
+</body>
+</html>
