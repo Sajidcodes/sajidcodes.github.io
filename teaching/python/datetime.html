@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Working with Dates and Times in Python</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #ffffff; --ink: #1d2433; --muted: #5b6475; --rule: #e2e6ee;
+  --accent: #2456a6; --sample-bg: #f3f5f9; --cell-bg: #0f1d33; --cell-ink: #e8eef8;
+  --quote: #eaf1fc; --good: #2e7d4f; --good-bg: #e8f5ee; --bad: #b3261e; --bad-bg: #fcecea;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12161f; --ink: #e4e8f0; --muted: #9aa3b5; --rule: #2a3140;
+    --accent: #7fa8ec; --sample-bg: #1b212d; --cell-bg: #0a111e; --quote: #1a2538; --good: #6fcf97; --good-bg: #16291f; --bad: #f28b82; --bad-bg: #2e1a1a;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12161f; --ink: #e4e8f0; --muted: #9aa3b5; --rule: #2a3140;
+  --accent: #7fa8ec; --sample-bg: #1b212d; --cell-bg: #0a111e; --quote: #1a2538; --good: #6fcf97; --good-bg: #16291f; --bad: #f28b82; --bad-bg: #2e1a1a;
+}
+*, *::before, *::after { box-sizing: inherit; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 18px/1.6 "Atkinson Hyperlegible", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+main { max-width: 46rem; margin: 0 auto; padding: 3rem 1.25rem 5rem; }
+h1 { font-size: clamp(2rem, 6vw, 2.8rem); line-height: 1.1; margin: 0 0 1.5rem; letter-spacing: -0.01em; }
+h2 { font-size: 1.45rem; margin: 2.2rem 0 0.8rem; color: var(--accent); }
+p, li { max-width: 68ch; }
+hr { border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0 0; }
+code { font-family: "JetBrains Mono", ui-monospace, Consolas, monospace; font-size: 0.88em; }
+p code, li code, blockquote code { background: var(--sample-bg); padding: 0.1em 0.35em; border-radius: 4px; }
+blockquote { margin: 1rem 0; padding: 0.6rem 1rem; background: var(--quote); border-left: 4px solid var(--accent); border-radius: 0 6px 6px 0; }
+blockquote p { margin: 0; }
+/* example outputs / reference snippets */
+.md .hl { background: var(--sample-bg); border-radius: 6px; margin: 1rem 0; overflow-x: auto; }
+.md .hl pre { margin: 0; padding: 0.9rem 1.1rem; line-height: 1.5; }
+/* runnable cells */
+.cell { margin: 1.25rem 0; background: var(--cell-bg); color: var(--cell-ink); border-radius: 8px; overflow: hidden; }
+.cell figcaption { display: flex; justify-content: space-between; align-items: center;
+  padding: 0.45rem 0.6rem 0.45rem 1.1rem; font-size: 0.8rem; color: #9fb3d4; border-bottom: 1px solid #22324d; }
+.cell pre { margin: 0; padding: 1rem 1.1rem; overflow-x: auto; line-height: 1.55; }
+.copy { font: inherit; font-size: 0.8rem; color: #dce6f7; background: #1f3355; border: 1px solid #34507e;
+  border-radius: 5px; padding: 0.25rem 0.7rem; cursor: pointer; }
+.copy:hover { background: #2a4470; }
+.copy:focus-visible, a:focus-visible { outline: 3px solid #7fa8ec; outline-offset: 2px; }
+/* Dark-cell syntax colors */
+.cell .k, .cell .kn, .cell .kc { color: #ff9fbe; font-weight: 600; }
+.cell .n, .cell .nn, .cell .nf { color: #e8eef8; }
+.cell .nb { color: #8fd3ff; }
+.cell .s, .cell .s2, .cell .s1 { color: #b5e08a; }
+.cell .mi, .cell .mf { color: #ffc77a; }
+.cell .c1, .cell .c { color: #8a9bb8; font-style: italic; }
+.cell .o, .cell .p { color: #c9d4e6; }
+.md .hl .k, .md .hl .kn { color: #b0306a; font-weight: 600; }
+.md .hl .nb { color: #1f6fb2; }
+.md .hl .mi { color: #a65a00; }
+.md .hl .s2 { color: #2f7d32; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .md .hl .k { color: #ff9fbe; }
+  :root:not([data-theme="light"]) .md .hl .nb { color: #8fd3ff; }
+  :root:not([data-theme="light"]) .md .hl .mi { color: #ffc77a; }
+}
+
+#quiz-body { counter-reset: q; }
+.q { border: 1px solid var(--rule); border-radius: 8px; padding: 1rem 1.2rem 1.1rem; margin: 1.25rem 0; }
+.q legend { font-weight: 700; padding: 0 0.3rem; }
+.q .prompt { margin: 0 0 0.8rem; }
+.q .prompt pre { background: var(--sample-bg); border-radius: 6px; padding: 0.7rem 1rem; overflow-x: auto; margin: 0.6rem 0 0; }
+.q .prompt pre code { background: none; padding: 0; }
+.opt { display: flex; gap: 0.6rem; align-items: flex-start; padding: 0.55rem 0.7rem; margin: 0.35rem 0;
+  border: 1px solid var(--rule); border-radius: 6px; cursor: pointer; }
+.opt:hover { border-color: var(--accent); }
+.opt input { margin-top: 0.35rem; accent-color: var(--accent); }
+.opt.wrong { border-color: var(--bad); background: var(--bad-bg); }
+.opt.right { border-color: var(--good); background: var(--good-bg); }
+.opt.dim { opacity: 0.55; cursor: default; }
+.fb { margin: 0.7rem 0 0; padding: 0.6rem 0.8rem; border-radius: 6px; display: none; }
+.fb.show { display: block; }
+.fb.bad { background: var(--bad-bg); border-left: 4px solid var(--bad); }
+.fb.good { background: var(--good-bg); border-left: 4px solid var(--good); }
+.pts { font-size: 0.85rem; color: var(--muted); float: right; }
+.scorebox { margin-top: 2rem; padding: 1.2rem 1.4rem; border-radius: 8px; background: var(--quote); }
+#score { font-size: 1.4rem; font-weight: 700; margin: 0; }
+#score-msg { margin: 0.3rem 0 0.9rem; }
+.btn { font: inherit; font-size: 0.9rem; padding: 0.4rem 0.9rem; border-radius: 6px; border: 1px solid var(--accent);
+  background: transparent; color: var(--accent); cursor: pointer; }
+.btn:focus-visible, .opt:focus-within { outline: 3px solid #7fa8ec; outline-offset: 2px; }
+
+@media print { .copy, .btn { display: none; } .cell { border: 1px solid #999; } }
+</style>
+</head>
+<body>
+<main>
+<div class="md"><h1>Working with Dates and Times in Python</h1>
+<h2>Why do we need dates and times?</h2>
+<p>Many programs need to know <strong>when something happened</strong>.</p>
+<p>For example:</p>
+<ul>
+<li>When was an assignment submitted?</li>
+<li>What time did a program start?</li>
+<li>When was a file created?</li>
+<li>What is today's date?</li>
+<li>How many days have passed since an event?</li>
+</ul>
+<p>Python provides the <code>datetime</code> module for working with dates and times.</p></div>
+<div class="md"><hr>
+<h2>1. Import <code>datetime</code></h2>
+<p>We can import the <code>datetime</code> class like this:</p></div>
+<figure class="cell">
+<figcaption><span>Run this · cell 1</span><button class="copy" type="button" aria-label="Copy code from cell 1">Copy</button></figcaption>
+<pre><code><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+</code></pre></figure>
+<div class="md"><p>Now Python knows that we want to use the <code>datetime</code> class.</p></div>
+<div class="md"><hr>
+<h2>2. Get the current date and time</h2>
+<p>The <code>now()</code> method gives us the current date and time.</p></div>
+<figure class="cell">
+<figcaption><span>Run this · cell 2</span><button class="copy" type="button" aria-label="Copy code from cell 2">Copy</button></figcaption>
+<pre><code><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="n">current</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
+</code></pre></figure>
+<div class="md"><p>You might see something similar to:</p>
+<div class="hl"><pre><span></span><code>2026-10-05 09:42:18.532741
+</code></pre></div>
+
+<p>The exact result will be different every time because it represents the moment when your program runs.</p></div>
+<div class="md"><hr>
+<h2>3. Understanding the result</h2>
+<p>A <code>datetime</code> object contains several pieces of information.</p>
+<p>For example:</p>
+<div class="hl"><pre><span></span><code>2026-10-05 09:42:18
+</code></pre></div>
+
+<p>can be thought of as:</p>
+<div class="hl"><pre><span></span><code>2026   → year
+10     → month
+05     → day
+09     → hour
+42     → minute
+18     → second
+</code></pre></div>
+
+<p>We can access each piece separately.</p></div>
+<div class="md"><hr>
+<h2>4. Getting the year</h2></div>
+<figure class="cell">
+<figcaption><span>Run this · cell 3</span><button class="copy" type="button" aria-label="Copy code from cell 3">Copy</button></figcaption>
+<pre><code><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="n">current</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">current</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
+</code></pre></figure>
+<div class="md"><p>Example output:</p>
+<div class="hl"><pre><span></span><code>2026
+</code></pre></div>
+
+<p>The dot operator lets us access information stored inside the <code>datetime</code> object.</p></div>
+<div class="md"><hr>
+<h2>5. Getting the month and day</h2></div>
+<figure class="cell">
+<figcaption><span>Run this · cell 4</span><button class="copy" type="button" aria-label="Copy code from cell 4">Copy</button></figcaption>
+<pre><code><span class="nb">print</span><span class="p">(</span><span class="n">current</span><span class="o">.</span><span class="n">month</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">current</span><span class="o">.</span><span class="n">day</span><span class="p">)</span>
+</code></pre></figure>
+<div class="md"><p>Example:</p>
+<div class="hl"><pre><span></span><code>10
+5
+</code></pre></div>
+
+<p>So:</p>
+<div class="hl"><pre><span></span><code><span class="n">current</span><span class="o">.</span><span class="n">month</span>
+</code></pre></div>
+
+<p>means:</p>
+<blockquote>
+<p>Get the month stored in <code>current</code>.</p>
+</blockquote>
+<p>And:</p>
+<div class="hl"><pre><span></span><code><span class="n">current</span><span class="o">.</span><span class="n">day</span>
+</code></pre></div>
+
+<p>means:</p>
+<blockquote>
+<p>Get the day stored in <code>current</code>.</p>
+</blockquote></div>
+<div class="md"><hr>
+<h2>6. Getting the time</h2>
+<p>We can also retrieve the hour, minute, and second.</p></div>
+<figure class="cell">
+<figcaption><span>Run this · cell 5</span><button class="copy" type="button" aria-label="Copy code from cell 5">Copy</button></figcaption>
+<pre><code><span class="nb">print</span><span class="p">(</span><span class="n">current</span><span class="o">.</span><span class="n">hour</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">current</span><span class="o">.</span><span class="n">minute</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">current</span><span class="o">.</span><span class="n">second</span><span class="p">)</span>
+</code></pre></figure>
+<div class="md"><p>For example:</p>
+<div class="hl"><pre><span></span><code>9
+42
+18
+</code></pre></div></div>
+<div class="md"><hr>
+<h2>7. Put everything together</h2>
+<p>Let's create a small program that displays the current date and time in a readable way.</p></div>
+<figure class="cell">
+<figcaption><span>Run this · cell 6</span><button class="copy" type="button" aria-label="Copy code from cell 6">Copy</button></figcaption>
+<pre><code><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="n">current</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Year:&quot;</span><span class="p">,</span> <span class="n">current</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Month:&quot;</span><span class="p">,</span> <span class="n">current</span><span class="o">.</span><span class="n">month</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Day:&quot;</span><span class="p">,</span> <span class="n">current</span><span class="o">.</span><span class="n">day</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hour:&quot;</span><span class="p">,</span> <span class="n">current</span><span class="o">.</span><span class="n">hour</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Minute:&quot;</span><span class="p">,</span> <span class="n">current</span><span class="o">.</span><span class="n">minute</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Second:&quot;</span><span class="p">,</span> <span class="n">current</span><span class="o">.</span><span class="n">second</span><span class="p">)</span>
+</code></pre></figure>
+<div class="md"><p>Possible output:</p>
+<div class="hl"><pre><span></span><code>Year: 2026
+Month: 10
+Day: 5
+Hour: 9
+Minute: 42
+Second: 18
+</code></pre></div>
+
+<p>Your output will depend on when you run the program.</p></div>
+<div class="md"><hr>
+<h2>8. Creating a specific date and time</h2>
+<p><code>datetime</code> can also represent a date and time that we choose ourselves.</p>
+<p>The general pattern is:</p>
+<div class="hl"><pre><span></span><code><span class="n">datetime</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">minute</span><span class="p">,</span> <span class="n">second</span><span class="p">)</span>
+</code></pre></div>
+
+<p>For example:</p></div>
+<figure class="cell">
+<figcaption><span>Run this · cell 7</span><button class="copy" type="button" aria-label="Copy code from cell 7">Copy</button></figcaption>
+<pre><code><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="n">exam_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">exam_time</span><span class="p">)</span>
+</code></pre></figure>
+<div class="md"><p>Output:</p>
+<div class="hl"><pre><span></span><code>2026-12-15 10:30:00
+</code></pre></div>
+
+<p>This is useful when a program needs to work with a specific date rather than the current moment.</p></div>
+<div class="md"><hr>
+<h2>Think About It</h2>
+<p>What do you think this program will display?</p>
+<p><strong>Before running the cell below, predict the output.</strong></p>
+<p><em>Your prediction:</em></p></div>
+<figure class="cell">
+<figcaption><span>Run this · cell 8</span><button class="copy" type="button" aria-label="Copy code from cell 8">Copy</button></figcaption>
+<pre><code><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">month</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">day</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">hour</span><span class="p">)</span>
+</code></pre></figure>
+<div class="md"><hr>
+<h2>Common mistake</h2>
+<p>A common beginner mistake is confusing the <code>datetime</code> class with a <code>datetime</code> object.</p></div>
+<figure class="cell">
+<figcaption><span>Run this · cell 9</span><button class="copy" type="button" aria-label="Copy code from cell 9">Copy</button></figcaption>
+<pre><code><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="n">current</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+</code></pre></figure>
+<div class="md"><p>Here:</p>
+<ul>
+<li><code>datetime</code> is the class we imported.</li>
+<li><code>datetime.now()</code> creates a <code>datetime</code> object.</li>
+<li><code>current</code> refers to that object.</li>
+</ul>
+<p>We can then use the following to retrieve information from the object:</p></div>
+<figure class="cell">
+<figcaption><span>Run this · cell 10</span><button class="copy" type="button" aria-label="Copy code from cell 10">Copy</button></figcaption>
+<pre><code><span class="nb">print</span><span class="p">(</span><span class="n">current</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">current</span><span class="o">.</span><span class="n">month</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">current</span><span class="o">.</span><span class="n">day</span><span class="p">)</span>
+</code></pre></figure>
+<div class="md"><hr>
+<h2>Mini Challenge</h2>
+<p>Write a program that displays the current date in this format:</p>
+<div class="hl"><pre><span></span><code>Today is 2026-10-05
+</code></pre></div>
+
+<p>Use <code>current.year</code>, <code>current.month</code>, and <code>current.day</code> to construct the output.</p></div>
+<figure class="cell">
+<figcaption><span>Run this · cell 11</span><button class="copy" type="button" aria-label="Copy code from cell 11">Copy</button></figcaption>
+<pre><code><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="n">current</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+<span class="c1"># Your code here</span>
+</code></pre></figure>
+<div class="md"><hr>
+<h2>Exit Ticket</h2>
+<p>Without running Python, explain the difference between:</p>
+<div class="hl"><pre><span></span><code><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+</code></pre></div>
+
+<p>and:</p>
+<div class="hl"><pre><span></span><code><span class="n">current</span><span class="o">.</span><span class="n">year</span>
+</code></pre></div>
+
+<p><strong>Hint:</strong> One creates/retrieves a <code>datetime</code> object representing the current moment. The other retrieves one piece of information from that object.</p>
+<p><em>Your answer:</em></p></div>
+<hr>
+<section id="quiz" aria-labelledby="quiz-title">
+<h2 id="quiz-title">Check Your Understanding</h2>
+<p>Answer each question. Your <strong>first</strong> answer counts for 1 point. If it's wrong, read the feedback and try again until you find the right one.</p>
+<div id="quiz-body"></div>
+<div class="scorebox" aria-live="polite">
+  <p id="score">Points earned: 0 / 8</p>
+  <p id="score-msg"></p>
+  <button type="button" id="reset" class="btn">Start over</button>
+</div>
+</section>
+</main>
+<script>
+document.querySelectorAll('.copy').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const text = btn.closest('.cell').querySelector('code').innerText;
+    try { await navigator.clipboard.writeText(text); btn.textContent = 'Copied'; }
+    catch (e) { btn.textContent = 'Select & copy'; }
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+});
+
+const QUIZ = [{"q": "What does <code>from datetime import datetime</code> do?", "opts": [["It imports the <code>datetime</code> class from the <code>datetime</code> module so we can use it directly.", null], ["It creates a variable that stores today's date.", "Importing only makes the class available. No date is created until you call something like <code>datetime.now()</code>."], ["It prints the current date and time.", "An import statement never prints anything. You need <code>print()</code> to display output."], ["It installs the datetime package from the internet.", "<code>datetime</code> is part of Python's standard library, so it is already installed. <code>import</code> just loads it into your program."]]}, {"q": "What does <code>datetime.now()</code> return?", "opts": [["A string like <code>\"2026-10-05\"</code>", "It looks like text when printed, but it is actually a <code>datetime</code> object. That's why you can write <code>current.year</code>, which a plain string can't do."], ["A <code>datetime</code> object representing the current moment", null], ["Only today's date, without the time", "<code>now()</code> includes the time too: hour, minute, second, and even microseconds."], ["Only the current year", "The year is just one piece of the object. You get it separately with <code>.year</code>."]]}, {"q": "What does this display?<pre><code>d = datetime(2026, 12, 25, 14, 30, 0)\nprint(d.hour)</code></pre>", "opts": [["2", "Python uses a 24-hour clock. 14 means 2 PM, but <code>.hour</code> returns 14, not 2."], ["30", "30 is the fifth argument, which is the minute. <code>.hour</code> comes from the fourth argument."], ["14", null], ["25", "25 is the day (third argument). The hour is the fourth argument."]]}, {"q": "Which line creates December 15, 2026 at 10:30 AM?", "opts": [["<code>datetime(15, 12, 2026, 10, 30, 0)</code>", "The order is year, month, day. Starting with 15 makes Python treat it as the year and 2026 as the day, which causes an error."], ["<code>datetime.now(2026, 12, 15, 10, 30, 0)</code>", "<code>now()</code> always gives the current moment. To build a specific date, call <code>datetime(...)</code> directly."], ["<code>datetime(\"2026-12-15 10:30\")</code>", "<code>datetime()</code> expects separate whole numbers, not a single string."], ["<code>datetime(2026, 12, 15, 10, 30, 0)</code>", null]]}, {"q": "What does this display?<pre><code>d = datetime(2026, 3, 7)\nprint(d.month)</code></pre>", "opts": [["03", "<code>.month</code> returns an integer, and integers don't keep leading zeros. You see <code>03</code> only when the whole date is printed, like <code>2026-03-07</code>."], ["March", "<code>.month</code> gives a number, not the month's name."], ["3", null], ["7", "7 is the day (third argument). The month is the second argument."]]}, {"q": "In <code>current = datetime.now()</code>, what is <code>current</code>?", "opts": [["The <code>datetime</code> class", "<code>datetime</code> is the class. <code>current</code> holds an object created from that class."], ["A <code>datetime</code> object", null], ["The <code>now</code> method", "<code>now()</code> is the method we called. <code>current</code> stores what it returned."], ["The <code>datetime</code> module", "The module is what we imported from. <code>current</code> is a value inside our own program."]]}, {"q": "Two students run the same <code>print(datetime.now())</code> program and get different output. Why?", "opts": [["One of them has a bug in their code", "There's no bug. Different results are exactly what this code is supposed to produce."], ["<code>now()</code> returns the moment the program runs, so the result depends on when it runs", null], ["Python picks a random date each time", "Nothing is random. The value comes from your computer's clock."], ["They're using different versions of Python", "Every version of Python reads the current time the same way. The difference comes from when the code runs."]]}, {"q": "What happens when this runs?<pre><code>current = datetime.now()\nprint(current.year())</code></pre>", "opts": [["It prints the current year", "<code>year</code> is a value stored in the object (an attribute), not a method. Adding <code>()</code> tries to call it like a function."], ["It prints the full date and time", "<code>.year</code> refers only to the year, and the parentheses cause a problem before anything is printed."], ["It raises an error because <code>current.year</code> is an integer, not a method", null], ["It prints <code>2026()</code>", "Python doesn't print the parentheses. It tries to call the integer and stops with a <code>TypeError</code>."]]}];
+const body = document.getElementById('quiz-body');
+let score = 0, answered = 0;
+function render() {
+  body.innerHTML = '';
+  QUIZ.forEach((item, qi) => {
+    const fs = document.createElement('fieldset');
+    fs.className = 'q';
+    fs.innerHTML = `<legend>Question ${qi+1} of ${QUIZ.length}</legend><span class="pts" id="pts${qi}">1 point</span>
+      <div class="prompt">${item.q}</div>` +
+      item.opts.map((o, oi) => `<label class="opt"><input type="radio" name="q${qi}" value="${oi}"><span>${o[0]}</span></label>`).join('') +
+      `<div class="fb" id="fb${qi}" aria-live="polite"></div>`;
+    let first = true;
+    fs.querySelectorAll('input').forEach(inp => inp.addEventListener('change', () => {
+      const oi = +inp.value, fb = fs.querySelector('.fb'), label = inp.closest('.opt');
+      const fbText = item.opts[oi][1];
+      const correct = fbText === null;
+      if (first) { first = false; answered++; if (correct) score++; 
+        document.getElementById('pts'+qi).textContent = correct ? '1 / 1 point' : '0 / 1 point'; updateScore(); }
+      if (correct) {
+        label.classList.add('right');
+        fb.className = 'fb show good';
+        fb.innerHTML = '<strong>Correct!</strong>';
+        fs.querySelectorAll('input').forEach(i => { i.disabled = true; if (i !== inp) i.closest('.opt').classList.add('dim'); });
+      } else {
+        label.classList.add('wrong');
+        inp.disabled = true;
+        fb.className = 'fb show bad';
+        fb.innerHTML = '<strong>Not quite.</strong> ' + fbText + ' Try another answer.';
+      }
+    }));
+    body.appendChild(fs);
+  });
+}
+function updateScore() {
+  document.getElementById('score').textContent = `Points earned: ${score} / ${QUIZ.length}`;
+  const msg = document.getElementById('score-msg');
+  if (answered < QUIZ.length) { msg.textContent = `${QUIZ.length - answered} question(s) left.`; return; }
+  const pct = Math.round(score / QUIZ.length * 100);
+  msg.textContent = `Final score: ${pct}%. ` + (pct === 100 ? 'Perfect. You are ready for the Mini Challenge.'
+    : pct >= 75 ? 'Nice work. Reread the sections behind any question you missed.'
+    : 'Review sections 3 through 8 and the Common Mistake section, then try again.');
+}
+document.getElementById('reset').addEventListener('click', () => { score = 0; answered = 0; render(); updateScore();
+  document.getElementById('quiz').scrollIntoView(); });
+render(); updateScore();
+</script>
+</body>
+</html>
