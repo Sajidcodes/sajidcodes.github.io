@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>07 — Oracle Baseline | AI Terminal Agent</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="../styles.css" />
+
+  <style>
+    .notes-page { max-width: 850px; margin: 0 auto; padding: 80px 24px; }
+    .back-link { display: inline-block; margin-bottom: 60px; font-size: 14px; text-decoration: none; color: inherit; opacity: 0.6; }
+    .back-link:hover { opacity: 1; }
+    .section-number { font-family: "DM Mono", monospace; font-size: 13px; letter-spacing: 0.12em; opacity: 0.5; text-transform: uppercase; }
+    .notes-page h1 { font-size: clamp(40px, 7vw, 68px); line-height: 1.05; margin: 15px 0 20px; }
+    .article-subtitle { font-size: 20px; line-height: 1.6; opacity: 0.65; margin-bottom: 60px; }
+    .article-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 60px; }
+    .article-meta span { font-family: "DM Mono", monospace; font-size: 12px; padding: 7px 10px; border: 1px solid rgba(128,128,128,0.3); border-radius: 4px; }
+    .notes { font-size: 17px; line-height: 1.8; }
+    .notes h2 { font-size: 30px; line-height: 1.2; margin-top: 70px; margin-bottom: 25px; }
+    .notes p { margin-bottom: 25px; }
+    .notes ul, .notes ol { padding-left: 25px; margin-bottom: 30px; }
+    .notes li { margin-bottom: 12px; }
+    .notes strong { font-weight: 600; }
+    .notes code { font-family: "DM Mono", monospace; font-size: 0.9em; }
+    .notes pre { font-family: "DM Mono", monospace; font-size: 13px; line-height: 1.7; padding: 20px; overflow-x: auto; border-radius: 6px; background: rgba(128,128,128,0.08); border: 1px solid rgba(128,128,128,0.15); margin: 30px 0; }
+    .callout { margin: 40px 0; padding: 25px 28px; border-left: 3px solid currentColor; background: rgba(128,128,128,0.06); }
+    .callout p:last-child, .callout ul:last-child { margin-bottom: 0; }
+    .result { margin: 40px 0; padding: 25px; border: 1px solid rgba(128,128,128,0.25); border-radius: 6px; }
+    .result-title { font-family: "DM Mono", monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.55; margin-bottom: 15px; }
+    .article-navigation { display: flex; justify-content: space-between; gap: 20px; margin-top: 90px; padding-top: 30px; border-top: 1px solid rgba(128,128,128,0.25); }
+    .article-navigation a { text-decoration: none; color: inherit; opacity: 0.65; }
+    .article-navigation a:hover { opacity: 1; }
+    @media (max-width: 600px) {
+      .notes-page { padding: 50px 20px; }
+      .notes-page h1 { font-size: 42px; }
+      .notes { font-size: 16px; }
+      .article-navigation { flex-direction: column; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="notes-page">
+
+    <a href="index.html" class="back-link">
+      ← Back to AI Terminal Agent
+    </a>
+
+    <div class="section-number">
+      07 · AI TERMINAL AGENT
+    </div>
+
+    <h1>Oracle Baseline</h1>
+
+    <p class="article-subtitle">
+      Before I trust any agent score, I prove the tasks and the checks are correct.
+    </p>
+
+    <div class="article-meta">
+      <span>EVALUATION</span>
+      <span>ORACLE</span>
+      <span>TERMINAL-BENCH</span>
+      <span>BUILD LOG</span>
+      <span>2026-10-19</span>
+    </div>
+
+    <article class="notes">
+
+      <div class="callout">
+        <strong>In short</strong>
+        <ul>
+          <li>Local suite: the oracle passes 30/30, and every check fails on the untouched state (0/30).</li>
+          <li>Terminal-Bench subset: the oracle passes 28/31 on my hardware. I dropped the 3 that fail.</li>
+          <li>Result: when my agent fails a task, that's a real agent failure, not a broken test.</li>
+        </ul>
+      </div>
+
+      <h2>Why I Did This First</h2>
+
+      <p>
+        An agent score is only as good as the harness under it. If a check is broken, a
+        "fail" tells you nothing about the agent, and a "pass" is worse: it's a number you'll
+        quote by mistake.
+      </p>
+
+      <p>
+        The oracle runs the known solution with no model. It answers one question:
+        <em>can this task be solved, and does the check notice?</em>
+      </p>
+
+      <h2>Two Tests, Not One</h2>
+
+      <p>
+        A passing oracle proves a check can say "yes". It doesn't prove the check can say "no".
+        A check that passes on everything would also pass the oracle.
+      </p>
+
+      <p>
+        So I added a <strong>negative control</strong>: run each <code>check.sh</code> on the
+        initial state, before any change. Every check must fail.
+      </p>
+
+      <div class="result">
+        <div class="result-title">Local suite · 30 tasks · 3 tiers</div>
+        <pre><code>ta/bin/python evals/run_eval.py --oracle
+
+Oracle (solution.sh):  30/30 pass
+Negative control:       0/30 pass   ← correct: every check rejects the unsolved state</code></pre>
+      </div>
+
+      <h2>Terminal-Bench: Drop What the Oracle Can't Pass</h2>
+
+      <p>I ran the Harbor oracle on my 31-task Terminal-Bench subset.</p>
+
+      <div class="result">
+        <div class="result-title">Harbor oracle · 31 tasks</div>
+        <pre><code>harbor run -a oracle -n 2
+
+28/31 pass</code></pre>
+      </div>
+
+      <p>Three tasks fail on my hardware, with no model involved:</p>
+
+      <ul>
+        <li><code>crack-7z-hash</code>: the oracle timed out at 1800 s.</li>
+        <li><code>qemu-alpine-ssh</code>: reward 0. QEMU runs under emulation.</li>
+        <li><code>qemu-startup</code>: reward 0. QEMU runs under emulation.</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Decision</strong>
+        <p>
+          Exclude any task the oracle can't pass on my hardware. The runnable subset is 28 tasks
+          (<code>tb_subset_runnable.json</code>).
+        </p>
+        <strong>Why</strong>
+        <p>
+          If I kept them, every agent run would start with 3 guaranteed failures that come from
+          my machine, not the agent. That would quietly lower every score by about 10 points.
+        </p>
+      </div>
+
+    </article>
+
+    <nav class="article-navigation">
+      <a href="index.html">← All Terminal Agent Sections</a>
+      <a href="08-verifiers.html">Verifiers →</a>
+    </nav>
+
+  </main>
+
+</body>
+</html>
