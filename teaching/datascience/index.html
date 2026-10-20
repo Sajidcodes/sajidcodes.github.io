@@ -1,1 +1,1448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Drawing Conclusions from Data — Interactive Study Guide</title>
+<meta name="description" content="An interactive study guide to statistical inference: samples and populations, study design, hypothesis testing, common pitfalls, and A/B testing.">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0d0f14;
+    --panel: #13161e;
+    --border: #1e2330;
+    --accent: #e8c547;
+    --accent2: #5b8dee;
+    --accent3: #e85b5b;
+    --accent4: #5be8a8;
+    --text: #ffffff;
+    --muted: #e0e0e0;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+    --display: 'Playfair Display', serif;
+  }
 
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  section[id] { scroll-margin-top: 110px; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-weight: 400;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(13,15,20,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; align-items: center; gap: 0;
+    height: 52px;
+  }
+  .nav-logo {
+    font-family: var(--mono); font-size: .75rem; color: var(--accent);
+    letter-spacing: .12em; margin-right: auto; text-transform: uppercase;
+    white-space: nowrap; padding-right: 1rem;
+  }
+  .nav-links { display: flex; gap: 0; overflow-x: auto; scrollbar-width: none; }
+  .nav-links::-webkit-scrollbar { display: none; }
+  .nav-link {
+    font-family: var(--mono); font-size: .7rem; color: var(--muted);
+    text-decoration: none; padding: .4rem 1rem;
+    border-left: 1px solid var(--border);
+    transition: color .2s, background .2s;
+    letter-spacing: .08em; text-transform: uppercase; white-space: nowrap;
+  }
+  .nav-link:hover, .nav-link.active { color: var(--accent); background: rgba(232,197,71,.05); }
+  @media (max-width: 760px) {
+    nav { padding: 0 1rem; }
+    .nav-logo { display: none; }
+    .nav-link { padding: .4rem .7rem; }
+  }
+
+  /* HERO */
+  .hero {
+    padding: 5rem 2rem 4rem;
+    max-width: 900px; margin: 0 auto;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-tag {
+    font-family: var(--mono); font-size: .7rem; color: var(--accent);
+    letter-spacing: .18em; text-transform: uppercase;
+    display: inline-block; margin-bottom: 1.5rem;
+    border: 1px solid rgba(232,197,71,.3); padding: .25rem .75rem;
+  }
+  .hero h1 {
+    font-family: var(--display); font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 900; line-height: 1.05;
+    color: #fff; margin-bottom: 1.5rem;
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero-sub {
+    font-size: 1.05rem; color: var(--muted); max-width: 580px;
+    margin-bottom: 2.5rem;
+  }
+
+  /* ROADMAP */
+  .roadmap-title {
+    font-family: var(--mono); font-size: .7rem; color: var(--accent);
+    letter-spacing: .14em; text-transform: uppercase; margin-bottom: 1rem;
+  }
+  .roadmap {
+    list-style: none; margin: 0; padding: 0;
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: .75rem;
+  }
+  .roadmap li { margin: 0; font-size: .9rem; }
+  .roadmap a {
+    display: block; height: 100%; text-decoration: none;
+    background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+    padding: 1rem; transition: border-color .2s;
+  }
+  .roadmap a:hover { border-color: var(--accent); }
+  .roadmap .rm-num {
+    font-family: var(--mono); font-size: .65rem; color: var(--accent);
+    letter-spacing: .12em; display: block; margin-bottom: .35rem;
+  }
+  .roadmap .rm-name { color: #fff; font-weight: 500; display: block; line-height: 1.35; margin-bottom: .35rem; }
+  .roadmap .rm-desc { color: var(--muted); font-size: .8rem; line-height: 1.45; display: block; }
+  @media (max-width: 800px) { .roadmap { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 480px) { .roadmap { grid-template-columns: 1fr; } }
+
+  .progress-bar-wrap {
+    position: sticky;
+    top: 52px;
+    z-index: 99;
+    background: var(--bg);
+    padding: 8px 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .progress-bar-inner {
+    background: var(--border); height: 3px; border-radius: 2px;
+    position: relative; overflow: visible;
+  }
+  .progress-bar {
+    height: 100%; width: 0%; background: var(--accent);
+    transition: width .4s ease; border-radius: 2px;
+    box-shadow: 0 0 8px var(--accent);
+  }
+  .progress-label {
+    font-family: var(--mono); font-size: .65rem; color: var(--muted);
+    margin-top: .5rem; letter-spacing: .1em;
+    text-align: center;
+  }
+
+  /* SECTIONS */
+  section {
+    max-width: 900px; margin: 0 auto;
+    padding: 4rem 2rem;
+    border-bottom: 1px solid var(--border);
+    opacity: 0; transform: translateY(30px);
+    transition: opacity .6s ease, transform .6s ease;
+  }
+  section.visible { opacity: 1; transform: translateY(0); }
+
+  .part-label {
+    display: inline-block;
+    font-family: var(--mono); font-size: .65rem; color: var(--bg);
+    background: var(--accent); padding: .2rem .6rem; border-radius: 3px;
+    letter-spacing: .14em; text-transform: uppercase; margin-bottom: 1rem;
+  }
+  .section-num {
+    font-family: var(--mono); font-size: .65rem; color: var(--accent);
+    letter-spacing: .2em; text-transform: uppercase; margin-bottom: .75rem;
+  }
+  h2 {
+    font-family: var(--display); font-size: clamp(1.8rem, 3vw, 2.6rem);
+    font-weight: 700; color: #fff; margin-bottom: 1.25rem; line-height: 1.2;
+  }
+  h3 {
+    font-family: var(--sans); font-size: 1.1rem; font-weight: 500;
+    color: var(--accent); margin: 2rem 0 .75rem; letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  p { color: var(--muted); margin-bottom: 1rem; font-size: 1.1rem; font-weight: 400; }
+  strong { color: var(--text); font-weight: 600; }
+  em { color: var(--accent2); font-style: normal; }
+
+  .tag-hypo {
+    display: inline-block; vertical-align: middle;
+    font-family: var(--mono); font-size: .6rem; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--accent2);
+    border: 1px solid rgba(91,141,238,.5); border-radius: 3px;
+    padding: .1rem .45rem; margin-left: .5rem;
+  }
+
+  /* CALLOUT */
+  .callout {
+    border-left: 3px solid var(--accent);
+    background: rgba(232,197,71,.05);
+    padding: 1.25rem 1.5rem; margin: 2rem 0;
+    border-radius: 0 6px 6px 0;
+  }
+  .callout p { margin: 0; font-size: 1.05rem; }
+  .callout p + p { margin-top: .75rem; }
+  .callout-blue { border-left-color: var(--accent2); background: rgba(91,141,238,.05); }
+  .callout-red { border-left-color: var(--accent3); background: rgba(232,91,91,.05); }
+  .callout-green { border-left-color: var(--accent4); background: rgba(91,232,168,.05); }
+  .callout-title {
+    font-family: var(--mono); font-size: .7rem; color: var(--accent);
+    letter-spacing: .12em; text-transform: uppercase; margin-bottom: .75rem;
+    display: block;
+  }
+  .callout-blue .callout-title { color: var(--accent2); }
+  .callout-red .callout-title { color: var(--accent3); }
+  .callout-green .callout-title { color: var(--accent4); }
+
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1.5rem 0; }
+  @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 8px; padding: 1.5rem;
+    transition: border-color .3s;
+  }
+  .card:hover { border-color: var(--accent); }
+  .card-title {
+    font-family: var(--mono); font-size: .7rem; color: var(--accent);
+    letter-spacing: .12em; text-transform: uppercase; margin-bottom: .75rem;
+  }
+  .card p { font-size: 1.05rem; margin: 0; }
+  .card p + p { margin-top: .75rem; }
+  .card ul { margin: .25rem 0 0 1.1rem; }
+  .card li { font-size: 1rem; }
+
+  /* CODE */
+  pre {
+    background: #0a0c10; border: 1px solid var(--border); border-radius: 6px;
+    padding: 1rem 1.25rem; margin: 1rem 0 0; overflow-x: auto;
+    font-family: var(--mono); font-size: .85rem; line-height: 1.6; color: #d6deeb;
+  }
+  pre .c { color: #7f8aa8; }
+  code { font-family: var(--mono); font-size: .9em; color: var(--accent); }
+  pre code { color: inherit; font-size: inherit; }
+
+  /* CHART */
+  .chart-wrap {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0;
+    position: relative;
+  }
+  .chart-label {
+    font-family: var(--mono); font-size: .65rem; color: var(--muted);
+    letter-spacing: .1em; text-transform: uppercase; margin-bottom: 1rem;
+  }
+  .chart-foot {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 1rem;
+    margin-top: 1rem; font-family: var(--mono); font-size: .8rem; color: var(--muted);
+  }
+  .btn {
+    font-family: var(--mono); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--accent); background: transparent; border: 1px solid rgba(232,197,71,.5);
+    border-radius: 4px; padding: .45rem .9rem; cursor: pointer; transition: background .2s;
+  }
+  .btn:hover { background: rgba(232,197,71,.1); }
+  canvas { max-height: 320px; }
+
+  /* STEPS */
+  .steps { margin: 2rem 0; }
+  .step {
+    display: flex; gap: 1.5rem; margin-bottom: 2rem;
+    opacity: 0; transform: translateX(-20px);
+    transition: opacity .5s, transform .5s;
+  }
+  .step.visible { opacity: 1; transform: translateX(0); }
+  .step-num {
+    flex-shrink: 0; width: 40px; height: 40px;
+    background: var(--panel); border: 2px solid var(--accent);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: .85rem; color: var(--accent);
+    font-weight: 500;
+  }
+  .step-content h4 {
+    font-family: var(--sans); font-size: 1rem; color: #fff;
+    margin-bottom: .5rem; font-weight: 500;
+  }
+  .step-content p { font-size: .95rem; color: var(--muted); margin: 0; }
+
+  /* EXAMPLE CARDS */
+  .example-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  @media (max-width: 700px) {
+    .example-grid { grid-template-columns: 1fr; }
+  }
+  .example-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .example-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--accent2);
+  }
+  .example-num {
+    font-family: var(--mono);
+    font-size: .65rem;
+    color: var(--accent2);
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    margin-bottom: .75rem;
+  }
+  .example-card h4 {
+    font-family: var(--sans);
+    font-size: 1.05rem;
+    color: #fff;
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+  .example-card p {
+    font-size: .95rem;
+    color: var(--muted);
+    margin-bottom: .75rem;
+  }
+  .example-card p:last-child { margin-bottom: 0; }
+
+  /* QUIZ */
+  .quiz {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.75rem;
+    margin: 2rem 0;
+  }
+  .quiz-q {
+    font-family: var(--sans);
+    font-size: 1.15rem;
+    color: #fff;
+    margin-bottom: 1.5rem;
+    font-weight: 400;
+  }
+  .quiz-opts { display: flex; flex-direction: column; gap: .75rem; }
+  .quiz-opt {
+    background: rgba(91,141,238,.08);
+    border: 1px solid rgba(91,141,238,.2);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    transition: all .2s;
+    font-size: 1.05rem;
+    color: var(--text);
+  }
+  .quiz-opt:hover {
+    border-color: var(--accent2);
+    background: rgba(91,141,238,.15);
+  }
+  .quiz-opt.correct {
+    background: rgba(91,232,168,.1);
+    border-color: var(--accent4);
+    cursor: default;
+  }
+  .quiz-opt.wrong {
+    background: rgba(232,91,91,.1);
+    border-color: var(--accent3);
+    cursor: default;
+    opacity: .5;
+  }
+  .quiz-feedback {
+    margin-top: 1.25rem;
+    padding: 1rem 1.25rem;
+    border-radius: 6px;
+    font-size: .95rem;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: opacity .3s, max-height .3s;
+  }
+  .quiz-feedback.show {
+    opacity: 1;
+    max-height: 600px;
+  }
+  .quiz-feedback.ok {
+    background: rgba(91,232,168,.1);
+    border: 1px solid var(--accent4);
+    color: var(--accent4);
+  }
+  .quiz-feedback.no {
+    background: rgba(232,91,91,.1);
+    border: 1px solid var(--accent3);
+    color: var(--accent3);
+  }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; margin: 1.5rem 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1.05rem;
+  }
+  th, td {
+    padding: 1rem;
+    text-align: left;
+    border: 1px solid var(--border);
+  }
+  th {
+    background: var(--panel);
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: .75rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  td {
+    color: var(--muted);
+    font-weight: 400;
+  }
+  tr:hover td {
+    background: rgba(232,197,71,.02);
+  }
+
+  /* LISTS */
+  ul, ol {
+    margin: 1rem 0 1rem 1.5rem;
+  }
+  li {
+    color: var(--muted);
+    margin-bottom: .5rem;
+    font-size: 1.05rem;
+    font-weight: 400;
+  }
+  li strong {
+    color: var(--text);
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--panel);
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: .7rem;
+    color: var(--muted);
+  }
+
+  @media (max-width: 600px) {
+    footer {
+      flex-direction: column;
+      gap: .5rem;
+      text-align: center;
+    }
+    .hero, section { padding-left: 1rem; padding-right: 1rem; }
+    .progress-bar-wrap { padding-left: 1rem; padding-right: 1rem; }
+    .step { gap: 1rem; }
+  }
+
+  /* SUMMARY GRID */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .summary-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .summary-card h4 {
+    font-family: var(--mono);
+    font-size: .7rem;
+    color: var(--accent);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .summary-card .big {
+    font-family: var(--display);
+    font-size: 1.6rem;
+    color: #fff;
+    margin-bottom: .75rem;
+    line-height: 1.2;
+  }
+  .summary-card p { font-size: 1rem; margin: 0; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Statistical Inference</div>
+  <div class="nav-links">
+    <a href="#intro" class="nav-link">1 · Why</a>
+    <a href="#study-design" class="nav-link">2 · Evidence</a>
+    <a href="#significance" class="nav-link">3 · Testing</a>
+    <a href="#errors" class="nav-link">4 · Pitfalls</a>
+    <a href="#inference-types" class="nav-link">5 · Applied</a>
+  </div>
+</nav>
+
+<div class="progress-bar-wrap">
+  <div class="progress-bar-inner">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+  <div class="progress-label" id="progressLabel">0% complete — let's begin</div>
+</div>
+
+<div class="hero">
+  <div class="hero-tag">Data Science Fundamentals</div>
+  <h1>Drawing Conclusions from <span>Data</span></h1>
+  <p class="hero-sub">Learn to make data-driven decisions using statistical inference, hypothesis testing, and examples ranging from PCCC student surveys to website A/B tests.</p>
+
+  <div class="roadmap-title">How this lesson builds — five steps</div>
+  <ol class="roadmap">
+    <li><a href="#intro"><span class="rm-num">PART 1</span><span class="rm-name">Why inference is needed</span><span class="rm-desc">Sample vs. population</span></a></li>
+    <li><a href="#study-design"><span class="rm-num">PART 2</span><span class="rm-name">How evidence is collected</span><span class="rm-desc">Observational studies vs. experiments</span></a></li>
+    <li><a href="#significance"><span class="rm-num">PART 3</span><span class="rm-name">How hypotheses are tested</span><span class="rm-desc">H₀, Hₐ, p-values, significance</span></a></li>
+    <li><a href="#errors"><span class="rm-num">PART 4</span><span class="rm-name">What can go wrong</span><span class="rm-desc">Type I/II errors, confounding, p-hacking</span></a></li>
+    <li><a href="#inference-types"><span class="rm-num">PART 5</span><span class="rm-name">How inference is applied</span><span class="rm-desc">One- &amp; two-sample tests, correlation, A/B tests</span></a></li>
+  </ol>
+</div>
+
+<!-- ═══════════════ PART 1 · WHY INFERENCE IS NEEDED ═══════════════ -->
+
+<!-- INTRODUCTION -->
+<section id="intro">
+  <div class="part-label">Part 1 · Why inference is needed</div>
+  <div class="section-num">01 · Introduction</div>
+  <h2>What Is Statistical Inference?</h2>
+
+  <p>Imagine you're deciding whether to bring an umbrella to class. You look outside—dark clouds, windy—and you think, <em>"It's probably going to rain."</em> You just made an inference. You took limited information (what you can see right now) and drew a conclusion about what's likely to happen.</p>
+
+  <p>Statistical inference works the same way, but with data instead of weather. <strong>Statistical inference</strong> is the process of using data from a sample to draw conclusions about a larger population—while being honest about how uncertain those conclusions are.</p>
+
+  <div class="callout callout-blue">
+    <span class="callout-title">💡 Think in Stories, Not Formulas</span>
+    <p><strong>Population:</strong> Not "all values in set N" → Think: "Every student at PCCC"</p>
+    <p><strong>Sample:</strong> Not "subset of N" → Think: "50 students from your CIS class"</p>
+    <p><strong>Why?</strong> We study the sample to learn about the population—because we usually can't survey everyone. And because a sample is only part of the population, our conclusions always carry some uncertainty.</p>
+  </div>
+
+  <h3>Real-World Example 1: The Umbrella Decision</h3>
+  <div class="example-grid">
+    <div class="example-card">
+      <div class="example-num">Step 1: Observe</div>
+      <h4>Limited Information</h4>
+      <p>You look outside and see dark clouds. That's your "sample" of information.</p>
+    </div>
+    <div class="example-card">
+      <div class="example-num">Step 2: Infer</div>
+      <h4>Draw Conclusion</h4>
+      <p>Based on past experience (dark clouds → rain), you conclude it'll probably rain. That's inference—a conclusion that is likely, not guaranteed.</p>
+    </div>
+  </div>
+
+  <h3>Real-World Example 2: Restaurant Food Quality</h3>
+  <div class="example-grid">
+    <div class="example-card">
+      <div class="example-num">Population</div>
+      <h4>All Meals at Restaurant</h4>
+      <p>Every dish the restaurant has ever served and will serve.</p>
+    </div>
+    <div class="example-card">
+      <div class="example-num">Sample</div>
+      <h4>Your 3 Visits</h4>
+      <p>You ate there 3 times, food was great each time. You infer: "This restaurant is good!" With only 3 visits, though, you should be less confident than if you'd eaten there 30 times.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-green">
+    <span class="callout-title">✓ Key Takeaway</span>
+    <p>We use <strong>small pieces of information (samples)</strong> to make <strong>educated guesses about the bigger picture (population)</strong>. That's the heart of statistical inference. The rest of this lesson is about collecting that information well, testing claims with it, and avoiding common mistakes.</p>
+  </div>
+</section>
+
+<!-- SCIENTIFIC METHOD -->
+<section id="scientific-method">
+  <div class="part-label">Part 1 · Why inference is needed</div>
+  <div class="section-num">02 · Scientific Method</div>
+  <h2>The Roadmap for Research</h2>
+
+  <p>Inference is one step inside a bigger process. The scientific method shows where it fits:</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h4>Ask a Question</h4>
+        <p>What do you want to know? (e.g., "Do PCCC students get enough sleep?")</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h4>Background Research</h4>
+        <p>Has anyone studied this before? What did they find?</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h4>Form a Hypothesis</h4>
+        <p>Make a testable, educated guess about the answer.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h4>Collect Data</h4>
+        <p>Gather information through surveys, experiments, or observations. <strong>How</strong> you collect it decides what you can conclude (Part 2).</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <h4>Analyze the Data</h4>
+        <p>Summarize, visualize, and run the appropriate statistical test (Parts 3 and 5).</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-content">
+        <h4>Draw Conclusions</h4>
+        <p>Do the data support your hypothesis? How confident can you be, and what could have gone wrong (Part 4)?</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-blue">
+    <span class="callout-title">📚 Running Example: Hazel &amp; Everett</span>
+    <p>Throughout this guide, we'll follow two students investigating claims about sleep and academic performance at their school. They want to test whether:</p>
+    <ul style="margin-top: .75rem;">
+      <li>The proportion of students getting 8+ hours of sleep is <strong>below 0.5</strong> (a benchmark value)</li>
+      <li>The average GPA at their school is <strong>above 3.0</strong> (a benchmark value)</li>
+      <li>Higher GPAs are <strong>associated</strong> with more sleep</li>
+    </ul>
+    <p style="margin-top: .75rem;"><strong>Note:</strong> Hazel &amp; Everett's data, the benchmarks, and all numerical results in this guide are <strong>hypothetical</strong>, created for teaching. They are not results from a real survey.</p>
+  </div>
+</section>
+
+<!-- ═══════════════ PART 2 · HOW EVIDENCE IS COLLECTED ═══════════════ -->
+
+<section id="study-design">
+  <div class="part-label">Part 2 · How evidence is collected</div>
+  <div class="section-num">03 · Study Design</div>
+  <h2>Observational Studies vs. Experiments</h2>
+
+  <p>Before running any test, ask: <strong>how were these data collected?</strong> The answer limits which conclusions are justified.</p>
+
+  <div class="table-wrap">
+  <table>
+    <tr>
+      <th>Observational Study</th>
+      <th>Randomized Experiment</th>
+    </tr>
+    <tr>
+      <td>You observe and record what naturally happens without interference.</td>
+      <td>You actively assign treatments, using <strong>random assignment</strong> to decide who gets which.</td>
+    </tr>
+    <tr>
+      <td><strong>Example:</strong> Survey students about their sleep and GPA.</td>
+      <td><strong>Example:</strong> Randomly assign students to a 6-hour or 8-hour sleep schedule, then measure test scores.</td>
+    </tr>
+    <tr>
+      <td><strong>Generally supports:</strong> Associations (things move together)</td>
+      <td><strong>Can support:</strong> Causal conclusions—when the experiment is well designed and carried out</td>
+    </tr>
+  </table>
+  </div>
+
+  <div class="callout callout-red">
+    <span class="callout-title">⚠️ Correlation ≠ Causation</span>
+    <p><strong>Just because two things are related doesn't mean one causes the other.</strong> In observational data, a hidden factor called a <em>confounding variable</em> can create the relationship.</p>
+  </div>
+
+  <h3>What's a Confounding Variable?</h3>
+  <p>Think of it like this: It's a hidden "third thing" that affects both variables, making them <em>look</em> connected even when one isn't causing the other.</p>
+
+  <h3>Example 1: Umbrellas and Getting Wet</h3>
+  <div class="example-grid">
+    <div class="example-card">
+      <div class="example-num">Observation</div>
+      <h4>Umbrellas → Wet People</h4>
+      <p>You notice people carrying umbrellas are more likely to get wet. Does the umbrella <em>cause</em> wetness?</p>
+    </div>
+    <div class="example-card">
+      <div class="example-num">Confounding Variable</div>
+      <h4>Rain!</h4>
+      <p>People carry umbrellas when it's raining. Rain causes both umbrella-carrying AND getting wet. The umbrella doesn't cause wetness!</p>
+    </div>
+  </div>
+
+  <h3>Example 2: Ice Cream and Drowning</h3>
+  <div class="example-grid">
+    <div class="example-card">
+      <div class="example-num">Observation</div>
+      <h4>Ice Cream Sales ↔ Drowning Deaths</h4>
+      <p>Months with high ice cream sales also tend to have more drownings. Does ice cream cause drowning?</p>
+    </div>
+    <div class="example-card">
+      <div class="example-num">Confounding Variable</div>
+      <h4>Summer Heat!</h4>
+      <p>Hot weather increases ice cream sales AND swimming (more drowning risk). Temperature affects both variables.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-green">
+    <span class="callout-title">✓ Why Random Assignment Helps</span>
+    <p>When you <strong>randomly assign</strong> people to groups, confounding factors—known and unknown—tend to be balanced across the groups. So if the groups end up different, the treatment is a plausible explanation. That's why a well-run randomized experiment can support a causal claim.</p>
+    <p><strong>But design isn't everything.</strong> A causal conclusion also depends on how the experiment was carried out: Did people follow their assigned treatment? Did some drop out? Were outcomes measured the same way in both groups? Is the sample large enough?</p>
+  </div>
+
+  <h3 style="margin-top: 3rem;">✏️ Practice Problems</h3>
+
+  <div class="quiz" id="q3">
+    <div class="quiz-q"><strong>Problem 1:</strong> You randomly assign 50 students to group study and 50 to solo study. Group students average 82 points, solo students average 76. A two-sample t-test gives p = 0.04. What's the best conclusion?</div>
+    <div class="quiz-opts">
+      <div class="quiz-opt" onclick="answer(this,'q3',false)">We can't say anything about cause—this is an observational study</div>
+      <div class="quiz-opt" onclick="answer(this,'q3',false)">p = 0.04 proves that group study causes higher scores</div>
+      <div class="quiz-opt" onclick="answer(this,'q3',true)">Because students were randomly assigned, this supports a causal conclusion—provided the experiment was carried out well (no major dropout, scores measured fairly, etc.)</div>
+      <div class="quiz-opt" onclick="answer(this,'q3',false)">Correlation always implies causation</div>
+    </div>
+    <div class="quiz-feedback" id="q3-fb"></div>
+  </div>
+
+  <div class="quiz" id="q4" style="margin-top: 1.5rem;">
+    <div class="quiz-q"><strong>Problem 2:</strong> Across many cities and months, ice cream sales and crime rates have correlation r = 0.85. What's the most likely confounding variable?</div>
+    <div class="quiz-opts">
+      <div class="quiz-opt" onclick="answer(this,'q4',false)">Ice cream causes crime</div>
+      <div class="quiz-opt" onclick="answer(this,'q4',false)">Crime causes ice cream sales</div>
+      <div class="quiz-opt" onclick="answer(this,'q4',true)">Temperature/weather—hot weather increases both ice cream sales AND time spent outdoors</div>
+      <div class="quiz-opt" onclick="answer(this,'q4',false)">There is no confounding variable</div>
+    </div>
+    <div class="quiz-feedback" id="q4-fb"></div>
+  </div>
+</section>
+
+<!-- ═══════════════ PART 3 · HOW HYPOTHESES ARE TESTED ═══════════════ -->
+
+<section id="significance">
+  <div class="part-label">Part 3 · How hypotheses are tested</div>
+  <div class="section-num">04 · Statistical Significance</div>
+  <h2>What Does "Statistically Significant" Mean?</h2>
+
+  <div class="callout callout-blue">
+    <span class="callout-title">💡 Think in Stories: Basketball Free Throws</span>
+    <p>Your friend claims he makes 95% of his free throws. You watch him take 10 shots, and he makes only 3.</p>
+    <p><strong>What do you think?</strong> "I don't believe that claim."</p>
+    <p><strong>Why?</strong> Because making only 3 out of 10 would be <em>very unusual</em> for a 95% shooter. It's not impossible—he could be having a terrible day—but the evidence is against his claim.</p>
+    <p><strong>That reasoning is exactly how a hypothesis test works.</strong></p>
+  </div>
+
+  <h3>Plain English Definition</h3>
+  <p>A result is <strong>statistically significant</strong> when the data provide evidence against the null hypothesis, because the observed result would be unusual if that hypothesis were true.</p>
+
+  <p style="font-size: 1.1rem; color: var(--accent); margin: 1.5rem 0;"><strong>"If nothing special were going on, a result like this would be surprising—so the data cast doubt on 'nothing special.'"</strong></p>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">What it DOES mean</div>
+      <p>If H₀ (and the test's assumptions) were true, a result this extreme—or more extreme—would be unlikely. So the data provide evidence against H₀.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">What it does NOT mean</div>
+      <ul>
+        <li>It does not <strong>prove</strong> H₀ is false or that chance played no role.</li>
+        <li>It is not the probability that H₀ is true.</li>
+        <li>It doesn't mean the effect is large, important, or causal.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Example: Testing Michael's Coin</h3>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h4>Set Up Hypotheses</h4>
+        <p><strong>H₀ (Null):</strong> The coin is fair (50% heads)<br>
+        <strong>Hₐ (Alternative):</strong> The coin is NOT fair (too many <em>or</em> too few heads)</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h4>Collect Data</h4>
+        <p>Flip the coin 25 times → observe 21 heads</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h4>How Unusual Is This?</h4>
+        <p>If the coin were fair, we'd expect about 12–13 heads. 21 is far from that.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h4>Calculate the P-Value</h4>
+        <p>Simulate 1,000 sets of 25 fair-coin flips. Because Hₐ is "not fair," count results at least as far from 12.5 in <em>either</em> direction (21+ heads or 4 or fewer). Only about 1 in 1,000 is that extreme → p ≈ 0.001 (the exact binomial value is about 0.0009).</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <h4>Decision</h4>
+        <p>p ≈ 0.001 &lt; α = 0.05 → <strong>Reject H₀</strong>. The data provide strong evidence that the coin is not fair. (We haven't <em>proven</em> it—a fair coin can produce 21 heads, just very rarely.)</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-blue">
+    <span class="callout-title">💡 What Is a P-Value? (Plain English)</span>
+    <p><strong>Formula way:</strong> The probability of getting a result at least as extreme as the one observed, assuming H₀ (and the test's assumptions) are true.</p>
+    <p><strong>Story way:</strong> "<em>If nothing special were going on</em>, how often would we see something this surprising—or more surprising?"</p>
+    <p style="color: var(--accent);"><strong>Small p-value</strong> → the result would be rare under H₀ → evidence against H₀. <strong>Large p-value</strong> → the result is consistent with H₀ (which is not the same as proving H₀ true).</p>
+  </div>
+
+  <h3 style="margin-top: 3rem;">✏️ Practice Problem</h3>
+
+  <div class="quiz" id="q1">
+    <div class="quiz-q"><strong>Problem 3:</strong> You suspect a coin favors tails. H₀: the coin is fair. Hₐ: it lands tails more than half the time. You flip it 30 times and get 22 tails. In 1,000 simulations of a fair coin, only 8 produced 22 or more tails. What's the p-value, and what do you conclude at α = 0.05?</div>
+    <div class="quiz-opts">
+      <div class="quiz-opt" onclick="answer(this,'q1',false)">p-value = 0.22; fail to reject H₀</div>
+      <div class="quiz-opt" onclick="answer(this,'q1',true)">p-value ≈ 0.008; reject H₀—the data provide evidence the coin favors tails</div>
+      <div class="quiz-opt" onclick="answer(this,'q1',false)">p-value ≈ 0.008; this proves the coin is biased</div>
+      <div class="quiz-opt" onclick="answer(this,'q1',false)">p-value = 0.73; reject H₀</div>
+    </div>
+    <div class="quiz-feedback" id="q1-fb"></div>
+  </div>
+</section>
+
+<!-- KEY TERMS -->
+<section id="terms">
+  <div class="part-label">Part 3 · How hypotheses are tested</div>
+  <div class="section-num">05 · Key Terms</div>
+  <h2>Hypothesis Testing Vocabulary</h2>
+
+  <div class="table-wrap">
+  <table>
+    <tr>
+      <th>Term</th>
+      <th>Formal Definition</th>
+      <th>Story Definition</th>
+    </tr>
+    <tr>
+      <td><strong>Null Hypothesis (H₀)</strong></td>
+      <td>The default claim being tested—usually "no effect" or "no difference"</td>
+      <td>"The coin is fair" / "Sleep and GPA are unrelated"</td>
+    </tr>
+    <tr>
+      <td><strong>Alternative Hypothesis (Hₐ)</strong></td>
+      <td>The claim we look for evidence <em>for</em>; can be one-sided (&lt; or &gt;) or two-sided (≠)</td>
+      <td>"The coin is biased" / "More sleep goes with higher GPA"</td>
+    </tr>
+    <tr>
+      <td><strong>Test Statistic</strong></td>
+      <td>A number summarizing how far the sample is from what H₀ predicts</td>
+      <td>"21 heads in 25 flips" / "t = 2.95"</td>
+    </tr>
+    <tr>
+      <td><strong>P-value</strong></td>
+      <td>P(result at least this extreme | H₀ true)</td>
+      <td>"How surprising is my result if nothing special is going on?"</td>
+    </tr>
+    <tr>
+      <td><strong>Significance Level (α)</strong></td>
+      <td>Cutoff chosen <em>before</em> looking at the data; also the Type I error rate you accept</td>
+      <td>"How unusual is unusual enough?" (Commonly 0.05 = 5%)</td>
+    </tr>
+  </table>
+  </div>
+
+  <div class="callout callout-green">
+    <span class="callout-title">✓ Making the Decision</span>
+    <p><strong>If p ≤ α:</strong> Reject H₀. The result is statistically significant—the data provide evidence against H₀. (Not proof.)</p>
+    <p><strong>If p &gt; α:</strong> Fail to reject H₀. The data are consistent with H₀—but that does <em>not</em> prove H₀ is true. You may simply not have enough data to detect an effect.</p>
+  </div>
+</section>
+
+<!-- ═══════════════ PART 4 · WHAT CAN GO WRONG ═══════════════ -->
+
+<section id="errors">
+  <div class="part-label">Part 4 · What can go wrong</div>
+  <div class="section-num">06 · Errors, Confounding &amp; P-Hacking</div>
+  <h2>No Test Is Perfect</h2>
+
+  <p>Every hypothesis test makes a decision from incomplete information, so it can be wrong. There are two kinds of wrong decisions:</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title" style="color: var(--accent3);">Type I Error (False Positive)</div>
+      <p><strong>What it is:</strong> Rejecting H₀ when it's actually true</p>
+      <p><strong>Plain English:</strong> You think something is happening when it's not</p>
+      <p><strong>Example:</strong> You conclude sleep and GPA are related when they actually aren't</p>
+      <p><strong>Analogy:</strong> Fire alarm goes off when there's no fire</p>
+      <p><strong>How often?</strong> When H₀ is true, this happens with probability α (e.g., 5%).</p>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color: var(--accent4);">Type II Error (False Negative)</div>
+      <p><strong>What it is:</strong> Failing to reject H₀ when it's actually false</p>
+      <p><strong>Plain English:</strong> You miss something that's actually happening</p>
+      <p><strong>Example:</strong> You conclude sleep and GPA aren't related when they actually are</p>
+      <p><strong>Analogy:</strong> Fire alarm stays silent when there IS a fire</p>
+      <p><strong>How to reduce it:</strong> Larger samples give a test more <em>power</em> to detect real effects.</p>
+    </div>
+  </div>
+
+  <h3>Confounding (Revisited)</h3>
+  <p>A test can be calculated perfectly and still answer the wrong question. If the data are observational, a significant relationship may be driven by a confounding variable (Part 2). Statistical significance tells you a pattern is unlikely to be chance under H₀—it does not tell you <em>why</em> the pattern exists.</p>
+
+  <h3>Significance ≠ Importance</h3>
+  <p>With a very large sample, even a tiny, unimportant difference can produce a small p-value. Always look at the <strong>size</strong> of the effect (e.g., "GPA is 0.25 points higher"), not just whether p is below 0.05.</p>
+
+  <div class="callout callout-red">
+    <span class="callout-title">⚠️ Ethics: P-Hacking</span>
+    <p><strong>P-hacking:</strong> Trying analyses until something crosses p &lt; 0.05, then reporting only that. It inflates false positives and is unethical.</p>
+    <p><strong>Examples:</strong></p>
+    <ul style="margin-top: .5rem;">
+      <li>Running many tests and only reporting the ones that "work" (with 20 tests at α = 0.05, about one false positive is expected even when nothing is going on)</li>
+      <li>Stopping data collection as soon as you hit p &lt; 0.05</li>
+      <li>Excluding outliers or switching outcomes without a pre-stated reason</li>
+    </ul>
+    <p style="color: var(--accent3);"><strong>Defense:</strong> Decide your hypotheses, metric, sample size, and α <em>before</em> collecting data, and report everything you tested.</p>
+  </div>
+
+  <h3 style="margin-top: 3rem;">✏️ Practice Problem</h3>
+
+  <div class="quiz" id="q5">
+    <div class="quiz-q"><strong>Problem 4:</strong> You're testing a focus app. H₀: the app has no effect. You reject H₀, but in reality the app doesn't work. What type of error is this?</div>
+    <div class="quiz-opts">
+      <div class="quiz-opt" onclick="answer(this,'q5',true)">Type I Error (False Positive)—you think it works when it doesn't</div>
+      <div class="quiz-opt" onclick="answer(this,'q5',false)">Type II Error (False Negative)—you miss a real effect</div>
+      <div class="quiz-opt" onclick="answer(this,'q5',false)">No error—you made the right decision</div>
+      <div class="quiz-opt" onclick="answer(this,'q5',false)">Type III Error—testing the wrong hypothesis</div>
+    </div>
+    <div class="quiz-feedback" id="q5-fb"></div>
+  </div>
+</section>
+
+<!-- ═══════════════ PART 5 · HOW INFERENCE IS APPLIED ═══════════════ -->
+
+<section id="inference-types">
+  <div class="part-label">Part 5 · How inference is applied</div>
+  <div class="section-num">07 · Types of Inference</div>
+  <h2>Matching the Test to the Question</h2>
+
+  <p>The right test depends on <strong>what kind of variable</strong> you measured and <strong>what you're comparing</strong>:</p>
+
+  <div class="table-wrap">
+  <table>
+    <tr>
+      <th>Question</th>
+      <th>Data type</th>
+      <th>Typical test</th>
+    </tr>
+    <tr>
+      <td>Is a proportion different from a benchmark?</td>
+      <td>Categorical (yes/no)</td>
+      <td>One-proportion z-test, exact binomial test, or simulation</td>
+    </tr>
+    <tr>
+      <td>Is a mean different from a benchmark?</td>
+      <td>Numerical</td>
+      <td>One-sample t-test</td>
+    </tr>
+    <tr>
+      <td>Do two groups differ in their proportions?</td>
+      <td>Categorical (yes/no)</td>
+      <td>Two-proportion z-test or randomization test</td>
+    </tr>
+    <tr>
+      <td>Do two groups differ in their means?</td>
+      <td>Numerical</td>
+      <td>Two-sample t-test (or randomization test)</td>
+    </tr>
+    <tr>
+      <td>Are two numerical variables related?</td>
+      <td>Two numerical</td>
+      <td>Test for correlation</td>
+    </tr>
+  </table>
+  </div>
+
+  <h3>1. Inference for a Proportion <span class="tag-hypo">Hypothetical data</span></h3>
+  <p><strong>When to use:</strong> Studying what fraction of a population has a characteristic.</p>
+  <p><strong>Example question:</strong> "Is the proportion of students at Hazel &amp; Everett's school who get 8+ hours of sleep below 0.5?"</p>
+
+  <div class="grid-2" style="margin: 1.5rem 0;">
+    <div class="card">
+      <div class="card-title">Hypotheses</div>
+      <p><strong>H₀:</strong> p = 0.5<br>
+      <strong>Hₐ:</strong> p &lt; 0.5 (one-sided)</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Data</div>
+      <p>Random sample of <strong>n = 64</strong> students: 21 get 8+ hours → p̂ = 21/64 ≈ <strong>0.328</strong></p>
+    </div>
+  </div>
+
+  <div class="chart-wrap">
+    <div class="chart-label">Simulation: 1,000 samples of 64 students, assuming H₀ (p = 0.5) is true</div>
+    <canvas id="proportionChart" aria-label="Histogram of simulated sample proportions centered near 0.5, with the observed 0.328 marked far in the left tail"></canvas>
+    <div class="chart-foot">
+      <span id="simResult">Running simulation…</span>
+      <button class="btn" type="button" onclick="drawSim()">Run again</button>
+    </div>
+  </div>
+
+  <div class="callout callout-blue">
+    <span class="callout-title">📊 Reading the Chart</span>
+    <p>If H₀ were true, sample proportions would cluster around 0.5 (the peak). Our observed 0.328 sits far out in the left tail.</p>
+    <p><strong>p-value ≈ 0.004</strong> (exact binomial). Your simulation gives a similar estimate—it will vary slightly each run, because simulations are random.</p>
+    <p style="color: var(--accent);"><strong>Interpretation:</strong> If half of all students got 8+ hours of sleep, a sample proportion this low or lower would be very unusual. The data provide strong evidence that the proportion at this school is below 0.5.</p>
+  </div>
+
+  <h3 style="margin-top: 3rem;">✏️ Practice Problem</h3>
+
+  <div class="quiz" id="q2">
+    <div class="quiz-q"><strong>Problem 5:</strong> A random sample of 80 PCCC students finds that 31 (about 39%) get 8+ hours of sleep. H₀: p = 0.5; Hₐ: p &lt; 0.5. The p-value is about 0.03. What does this mean in plain English?</div>
+    <div class="quiz-opts">
+      <div class="quiz-opt" onclick="answer(this,'q2',false)">PCCC students sleep more than the benchmark</div>
+      <div class="quiz-opt" onclick="answer(this,'q2',true)">If the true proportion were 50%, a sample result this low or lower would happen only about 3% of the time. This is evidence (at α = 0.05) that the PCCC proportion is below 50%.</div>
+      <div class="quiz-opt" onclick="answer(this,'q2',false)">There is a 3% chance that H₀ is true</div>
+      <div class="quiz-opt" onclick="answer(this,'q2',false)">The result is not statistically significant</div>
+    </div>
+    <div class="quiz-feedback" id="q2-fb"></div>
+  </div>
+
+  <h3>2. Inference for a Mean (t-tests) <span class="tag-hypo">Hypothetical data</span></h3>
+  <p><strong>When to use:</strong> Studying the average of a numerical variable.</p>
+  <p><strong>Example question:</strong> "Is the average GPA at Hazel &amp; Everett's school higher than 3.0?"</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">One-Sample t-test</div>
+      <p>Compares one sample mean to a benchmark value (e.g., "Is our mean GPA above 3.0?")</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Two-Sample t-test</div>
+      <p>Compares the means of two groups (e.g., "Do group-study students score higher than solo-study students?")</p>
+    </div>
+  </div>
+
+  <div class="callout callout-blue">
+    <span class="callout-title">📚 Hazel &amp; Everett's GPA Data (Hypothetical)</span>
+    <p><strong>H₀:</strong> μ = 3.0 &nbsp;&nbsp; <strong>Hₐ:</strong> μ &gt; 3.0 (μ = mean GPA of <em>all</em> students at the school)</p>
+    <p><strong>Sample:</strong> Random sample of <strong>n = 50</strong> students. Sample mean <strong>x̄ = 3.25</strong>, sample standard deviation <strong>s = 0.60</strong>.</p>
+    <p><strong>Calculation:</strong> Standard error = s / √n = 0.60 / √50 ≈ 0.085<br>
+    t = (x̄ − 3.0) / SE = 0.25 / 0.085 ≈ <strong>2.95</strong>, with 49 degrees of freedom → one-sided <strong>p ≈ 0.002</strong></p>
+    <p><strong>Assumptions to check:</strong> the students are a random sample, responses are independent, and GPAs aren't so skewed that a sample of 50 is unreliable (GPA is capped at 4.0, so look at a histogram).</p>
+    <p style="color: var(--accent);"><strong>Plain English:</strong> If the school's true mean GPA were 3.0, a sample mean of 3.25 or higher would be unusual (about 2 in 1,000 samples). The data provide evidence that the school's mean GPA is above 3.0—by roughly a quarter of a grade point in this sample.</p>
+<pre><code><span class="c"># In Python (with the 50 GPAs stored in a list called gpas)</span>
+from scipy import stats
+result = stats.ttest_1samp(gpas, popmean=3.0, alternative='greater')
+print(result.statistic, result.pvalue)</code></pre>
+  </div>
+
+  <h3>3. Inference for a Correlation <span class="tag-hypo">Hypothetical data</span></h3>
+  <p><strong>When to use:</strong> Studying whether two numerical variables have a linear relationship.</p>
+  <p><strong>Example question:</strong> "Is there a positive relationship between hours of sleep and GPA?"</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Correlation (r)</div>
+      <p><strong>r = +1:</strong> Perfect positive linear relationship<br>
+      <strong>r = 0:</strong> No linear relationship<br>
+      <strong>r = −1:</strong> Perfect negative linear relationship</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Hazel &amp; Everett</div>
+      <p><strong>H₀:</strong> ρ = 0 (no linear relationship in the population)<br>
+      <strong>Hₐ:</strong> ρ &gt; 0<br>
+      <strong>Data:</strong> n = 50 students, sample r = 0.47 → t ≈ 3.69, one-sided p ≈ 0.0003</p>
+    </div>
+  </div>
+
+  <div class="callout callout-red">
+    <span class="callout-title">⚠️ Remember: Correlation ≠ Causation</span>
+    <p>A significant r = 0.47 is evidence of an <strong>association</strong> between sleep and GPA. It does NOT show that sleep <em>causes</em> higher GPAs. This is observational data—confounders such as work hours, course load, or health could affect both.</p>
+    <p>To support a causal claim, you'd need a well-designed and well-run <strong>randomized experiment</strong>.</p>
+  </div>
+</section>
+
+<!-- A/B TESTING -->
+<section id="ab-testing">
+  <div class="part-label">Part 5 · How inference is applied</div>
+  <div class="section-num">08 · A/B Testing</div>
+  <h2>Randomized Experiments in Industry</h2>
+
+  <p>Companies apply everything above through <strong>A/B testing</strong>: a randomized experiment that compares two versions of a product, page, or message.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h4>Plan Before You Launch</h4>
+        <p>Choose the main metric, the hypotheses, α, and the sample size in advance (this is your defense against p-hacking).</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h4>Create Two Versions</h4>
+        <p>Version A (control) and Version B (treatment with one change)</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h4>Randomly Assign Users</h4>
+        <p>Each user is randomly shown A or B, so the groups are comparable.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h4>Measure Outcomes</h4>
+        <p>Track the planned metric—clicks, purchases, sign-ups, revenue.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <h4>Analyze with the Right Test</h4>
+        <p><strong>Rates</strong> (proportions like "% who clicked") → two-proportion z-test or randomization test. <strong>Averages</strong> of numerical outcomes (like dollars spent) → two-sample t-test, if its assumptions are reasonable.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-content">
+        <h4>Decide and Monitor</h4>
+        <p>Weigh statistical evidence <em>and</em> practical size of the effect, then roll out—and keep watching the metric afterward.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Example: Streaming Service Ratings <span class="tag-hypo">Hypothetical</span></h3>
+  <p>A fictional streaming service wants more viewers to rate what they watch. It randomly assigns 10,000 viewers to one of two rating designs. The metric is the <strong>proportion of viewers who leave a rating</strong>.</p>
+  <div class="example-grid">
+    <div class="example-card">
+      <div class="example-num">Version A · Control</div>
+      <h4>Star Ratings (1–5 stars)</h4>
+      <p>5,000 viewers → 300 left a rating (<strong>6.0%</strong>)</p>
+    </div>
+    <div class="example-card">
+      <div class="example-num">Version B · Treatment</div>
+      <h4>Thumbs Up / Down</h4>
+      <p>5,000 viewers → 380 left a rating (<strong>7.6%</strong>)</p>
+    </div>
+  </div>
+  <p>Because the outcome is yes/no, the right tool is a <strong>two-proportion z-test</strong>: z ≈ 3.18, two-sided p ≈ 0.0015. Viewers shown thumbs were more likely to rate. Because assignment was random, it's reasonable to attribute the difference to the design—though the company should also ask whether a thumbs rating is as <em>useful</em> as a star rating for its recommendations.</p>
+
+  <h3>Example: Nonprofit Donation Button <span class="tag-hypo">Hypothetical</span></h3>
+  <p>A nonprofit randomly shows each website visitor one of two donation buttons. It tracks <strong>two different metrics</strong>, and each needs its own test:</p>
+
+  <div class="table-wrap">
+  <table>
+    <tr>
+      <th>Version</th>
+      <th>Visitors</th>
+      <th>Donations</th>
+      <th>Conversion Rate</th>
+      <th>Avg Gift (donors only)</th>
+    </tr>
+    <tr>
+      <td><strong>A:</strong> "Find a Borrower"</td>
+      <td>3,000</td>
+      <td>120</td>
+      <td>4.0%</td>
+      <td>$25.00 (SD $12)</td>
+    </tr>
+    <tr>
+      <td><strong>B:</strong> "Invest in Hope"</td>
+      <td>3,000</td>
+      <td>165</td>
+      <td><strong style="color: var(--accent4);">5.5%</strong></td>
+      <td>$25.42 (SD $12)</td>
+    </tr>
+  </table>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Metric 1 · Conversion Rate (proportion)</div>
+      <p><strong>Test:</strong> Two-proportion z-test (or randomization test)</p>
+      <p><strong>Result:</strong> 5.5% vs. 4.0% → z ≈ 2.73, two-sided p ≈ 0.006</p>
+      <p><strong>Plain English:</strong> If both buttons had the same true donation rate, a gap this large would be unusual. Evidence that B gets a higher share of visitors to donate.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Metric 2 · Average Gift (numerical)</div>
+      <p><strong>Test:</strong> Two-sample (Welch) t-test—reasonable here because each group has 100+ donors</p>
+      <p><strong>Result:</strong> $25.42 vs. $25.00 → t ≈ 0.29, p ≈ 0.77</p>
+      <p><strong>Plain English:</strong> No evidence that the button changes how much people give once they decide to donate.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-green">
+    <span class="callout-title">✓ Decision</span>
+    <p>Version B appears to increase <strong>how many</strong> visitors donate, with no evidence that it changes <strong>how much</strong> each donor gives. Rolling out B is reasonable—and the nonprofit should keep monitoring donations afterward.</p>
+    <p><strong>Lesson:</strong> Match the test to the metric. Counts and rates are proportions; dollar amounts are numerical measurements.</p>
+  </div>
+
+  <h3 style="margin-top: 3rem;">✏️ Practice Problem</h3>
+
+  <div class="quiz" id="q6">
+    <div class="quiz-q"><strong>Problem 6:</strong> An online store randomly shows visitors one of two checkout pages and wants to know whether the <strong>percentage of visitors who complete a purchase</strong> differs. Which test fits best?</div>
+    <div class="quiz-opts">
+      <div class="quiz-opt" onclick="answer(this,'q6',false)">One-sample t-test</div>
+      <div class="quiz-opt" onclick="answer(this,'q6',true)">Two-proportion z-test (or a randomization test)</div>
+      <div class="quiz-opt" onclick="answer(this,'q6',false)">Test for correlation</div>
+      <div class="quiz-opt" onclick="answer(this,'q6',false)">Two-sample t-test on the number of purchases</div>
+    </div>
+    <div class="quiz-feedback" id="q6-fb"></div>
+  </div>
+</section>
+
+<!-- SUMMARY -->
+<section id="summary">
+  <div class="section-num">09 · Summary</div>
+  <h2>Key Takeaways</h2>
+
+  <div class="summary-grid">
+    <div class="summary-card">
+      <h4>1 · Why Inference</h4>
+      <div class="big">Sample → Population</div>
+      <p>Use sample data to draw conclusions about a larger population, with honest uncertainty.</p>
+    </div>
+    <div class="summary-card">
+      <h4>2 · Evidence</h4>
+      <div class="big">Design Matters</div>
+      <p>Observational studies show associations; well-run randomized experiments can support causal claims.</p>
+    </div>
+    <div class="summary-card">
+      <h4>3 · Testing</h4>
+      <div class="big">p ≤ α</div>
+      <p>The result would be unusual if H₀ were true → evidence against H₀ (not proof).</p>
+    </div>
+    <div class="summary-card">
+      <h4>4 · Pitfalls</h4>
+      <div class="big">Errors &amp; Bias</div>
+      <p>Type I/II errors, confounding, and p-hacking can all lead to wrong conclusions.</p>
+    </div>
+    <div class="summary-card">
+      <h4>5 · Applied</h4>
+      <div class="big">Match the Test</div>
+      <p>Proportions, means, and correlations each need their own test—including in A/B tests.</p>
+    </div>
+  </div>
+
+  <div class="callout" style="margin-top: 2rem;">
+    <p><strong>Remember:</strong> Think in stories, not formulas. A significant result means "this would be surprising if nothing special were going on"—it is evidence, not proof. Correlation ≠ causation (watch for confounders). A p-value alone never establishes causation; the study design and how it was carried out matter too.</p>
+  </div>
+
+  <div class="callout callout-green" style="margin-top: 1.5rem;">
+    <span class="callout-title">🎓 You've Got This!</span>
+    <p>Statistical inference is a powerful tool for understanding the world. With these concepts, you can evaluate research claims, make data-driven decisions, and contribute to solving real problems. Keep practicing, stay curious, and remember—every expert was once a beginner!</p>
+  </div>
+</section>
+
+<footer>
+  <span>Data Science Fundamentals</span>
+  <span>Drawing Conclusions from Data</span>
+</footer>
+
+<script>
+// ── PROPORTION SIMULATION CHART ─────────────────────────────
+// Real simulation: 1,000 samples of n = 64 students, each with p = 0.5.
+const N_STUDENTS = 64, N_SIMS = 1000, P_NULL = 0.5, OBSERVED = 21 / 64;
+let propChart = null;
+
+function simulate() {
+  const counts = new Array(N_STUDENTS + 1).fill(0);
+  let extreme = 0;
+  for (let i = 0; i < N_SIMS; i++) {
+    let yes = 0;
+    for (let j = 0; j < N_STUDENTS; j++) if (Math.random() < P_NULL) yes++;
+    counts[yes]++;
+    if (yes / N_STUDENTS <= OBSERVED) extreme++;
+  }
+  const data = [];
+  for (let k = 0; k <= N_STUDENTS; k++) {
+    if (counts[k] > 0) data.push({ x: k / N_STUDENTS, y: counts[k] });
+  }
+  return { data, extreme };
+}
+
+function drawSim() {
+  const { data, extreme } = simulate();
+  const maxY = Math.max(...data.map(d => d.y));
+  const minX = Math.min(0.3, ...data.map(d => d.x)) - 0.02;
+  const maxX = Math.max(0.7, ...data.map(d => d.x)) + 0.02;
+  document.getElementById('simResult').textContent =
+    `This run: ${extreme} of ${N_SIMS} simulated samples had p̂ ≤ 0.328 → simulated p-value ≈ ${(extreme / N_SIMS).toFixed(3)}`;
+
+  const ctx = document.getElementById('proportionChart').getContext('2d');
+  if (propChart) propChart.destroy();
+  propChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      datasets: [{
+        label: 'Simulated samples (H₀ true)',
+        data,
+        backgroundColor: data.map(d => d.x <= OBSERVED ? 'rgba(232,91,91,0.8)' : 'rgba(91,141,238,0.6)'),
+        borderColor: 'rgba(91,141,238,1)',
+        borderWidth: 1,
+        barPercentage: 1.0,
+        categoryPercentage: 1.0
+      }, {
+        label: 'Observed p̂ = 0.328',
+        data: [{ x: OBSERVED, y: 0 }, { x: OBSERVED, y: maxY * 1.05 }],
+        type: 'line',
+        borderColor: '#e8c547',
+        borderWidth: 3,
+        pointRadius: 0,
+        borderDash: [5, 5]
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      animation: { duration: 500 },
+      plugins: {
+        legend: { labels: { color: '#e0e0e0', font: { family: 'IBM Plex Mono', size: 11 } } },
+        tooltip: {
+          callbacks: {
+            title: (items) => `Sample proportion: ${items[0].parsed.x.toFixed(3)}`,
+            label: (item) => item.datasetIndex === 0 ? `Count: ${item.parsed.y}` : 'Observed result'
+          }
+        }
+      },
+      scales: {
+        x: {
+          type: 'linear', min: minX, max: maxX,
+          title: { display: true, text: 'Sample proportion (p̂)', color: '#e0e0e0', font: { family: 'IBM Plex Mono' } },
+          grid: { color: '#1e2330' },
+          ticks: { color: '#e0e0e0', font: { family: 'IBM Plex Mono', size: 10 } }
+        },
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: 'Number of simulations', color: '#e0e0e0', font: { family: 'IBM Plex Mono' } },
+          grid: { color: '#1e2330' },
+          ticks: { color: '#e0e0e0', font: { family: 'IBM Plex Mono', size: 10 } }
+        }
+      }
+    }
+  });
+}
+
+if (window.Chart) drawSim();
+else document.getElementById('simResult').textContent = 'Chart library failed to load. The exact p-value is about 0.004.';
+
+// ── QUIZ LOGIC ──────────────────────────────────────────────
+const feedbacks = {
+  q1: {
+    t: '✓ Correct! p-value ≈ 8/1000 = 0.008 (the exact binomial value is also about 0.008). Since 0.008 < 0.05, we reject H₀. In plain English: "If the coin were fair, 22 or more tails in 30 flips would happen less than 1% of the time—so the data provide evidence the coin favors tails." Evidence, not proof.',
+    f: '✗ Not quite. p-value = (simulations at least as extreme) / (total simulations) = 8/1000 = 0.008. Since 0.008 < 0.05, we reject H₀—the data provide evidence the coin favors tails. Note that a small p-value never "proves" H₀ false.'
+  },
+  q2: {
+    t: '✓ Exactly! The p-value answers: "If H₀ were true, how often would we see a result this low or lower?" About 3% of the time—unusual enough (at α = 0.05) to count as evidence that the PCCC proportion is below 50%.',
+    f: '✗ Not quite. The p-value is NOT the probability that H₀ is true. It\'s the probability of a result this extreme or more, assuming H₀ is true. Here p ≈ 0.03 < 0.05, so the result is significant: evidence that fewer than half of PCCC students get 8+ hours.'
+  },
+  q3: {
+    t: '✓ Right! Random assignment tends to balance confounders across the groups, so this design can support a causal conclusion. The p-value (0.04) says a 6-point gap would be unusual if study method had no effect—but the causal claim also rests on the experiment being carried out well (students followed their assigned method, few dropped out, tests were scored the same way).',
+    f: '✗ Not quite. Because students were randomly assigned, this is a randomized experiment—not an observational study—so it CAN support a causal claim. But a p-value alone never proves causation; the design and how well it was carried out matter too.'
+  },
+  q4: {
+    t: '✓ Exactly! Temperature is the hidden "third thing." Hot weather → more ice cream sales. Hot weather → more people outside → more opportunities for crime. Temperature affects both, so they move together without one causing the other.',
+    f: '✗ Not quite. Ice cream doesn\'t cause crime! Think about what could affect BOTH variables. What makes people buy more ice cream AND spend more time outdoors?'
+  },
+  q5: {
+    t: '✓ Correct! Type I Error = False Positive. You rejected H₀ (concluded the app works) when H₀ was actually true (the app doesn\'t work). Like a fire alarm going off when there\'s no fire. When H₀ is true, this happens with probability α.',
+    f: '✗ Not quite. You rejected H₀ when it was actually true. That\'s a Type I Error (false positive)—thinking something is happening when it\'s not.'
+  },
+  q6: {
+    t: '✓ Correct! "Completed a purchase" is a yes/no outcome, so you\'re comparing two proportions. A two-proportion z-test (or a randomization test) fits. A t-test would be the choice for a numerical outcome like average order value.',
+    f: '✗ Not quite. The outcome—did the visitor complete a purchase?—is yes/no, so you\'re comparing two proportions (two independent groups). Use a two-proportion z-test or a randomization test.'
+  }
+};
+
+function answer(el, qId, isCorrect) {
+  const wrap = document.getElementById(qId);
+  if (wrap.dataset.answered) return;
+  wrap.dataset.answered = '1';
+
+  el.classList.add(isCorrect ? 'correct' : 'wrong');
+
+  const fb = document.getElementById(qId + '-fb');
+  fb.textContent = isCorrect ? feedbacks[qId].t : feedbacks[qId].f;
+  fb.className = 'quiz-feedback show ' + (isCorrect ? 'ok' : 'no');
+}
+
+// ── SCROLL ANIMATIONS ───────────────────────────────────────
+const sections = document.querySelectorAll('section');
+const steps = document.querySelectorAll('.step');
+
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.05 });
+sections.forEach(s => obs.observe(s));
+
+const stepObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.2 });
+steps.forEach((s) => {
+  const idx = Array.from(s.parentElement.children).indexOf(s);
+  s.style.transitionDelay = (idx * 0.12) + 's';
+  stepObs.observe(s);
+});
+
+// ── PROGRESS BAR ────────────────────────────────────────────
+window.addEventListener('scroll', () => {
+  const docH = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = Math.min(100, Math.round(window.scrollY / docH * 100));
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = pct < 100
+    ? pct + '% complete — keep scrolling'
+    : '100% complete — great work!';
+});
+
+// ── NAV ACTIVE STATE (highlights the current Part) ──────────
+const partOf = {
+  'intro': 'intro', 'scientific-method': 'intro',
+  'study-design': 'study-design',
+  'significance': 'significance', 'terms': 'significance',
+  'errors': 'errors',
+  'inference-types': 'inference-types', 'ab-testing': 'inference-types', 'summary': 'inference-types'
+};
+const navLinks = document.querySelectorAll('.nav-link');
+const allSections = document.querySelectorAll('section[id]');
+window.addEventListener('scroll', () => {
+  let current = '';
+  allSections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 120) current = partOf[s.id] || '';
+  });
+  navLinks.forEach(l => {
+    l.classList.toggle('active', l.getAttribute('href') === '#' + current);
+  });
+});
+</script>
+</body>
+</html>
