@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>12 — Model Routing | AI Terminal Agent</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="../styles.css" />
+
+  <style>
+    .notes-page { max-width: 850px; margin: 0 auto; padding: 80px 24px; }
+    .back-link { display: inline-block; margin-bottom: 60px; font-size: 14px; text-decoration: none; color: inherit; opacity: 0.6; }
+    .back-link:hover { opacity: 1; }
+    .section-number { font-family: "DM Mono", monospace; font-size: 13px; letter-spacing: 0.12em; opacity: 0.5; text-transform: uppercase; }
+    .notes-page h1 { font-size: clamp(40px, 7vw, 68px); line-height: 1.05; margin: 15px 0 20px; }
+    .article-subtitle { font-size: 20px; line-height: 1.6; opacity: 0.65; margin-bottom: 60px; }
+    .article-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 60px; }
+    .article-meta span { font-family: "DM Mono", monospace; font-size: 12px; padding: 7px 10px; border: 1px solid rgba(128,128,128,0.3); border-radius: 4px; }
+    .notes { font-size: 17px; line-height: 1.8; }
+    .notes h2 { font-size: 30px; line-height: 1.2; margin-top: 70px; margin-bottom: 25px; }
+    .notes p { margin-bottom: 25px; }
+    .notes ul, .notes ol { padding-left: 25px; margin-bottom: 30px; }
+    .notes li { margin-bottom: 12px; }
+    .notes strong { font-weight: 600; }
+    .notes code { font-family: "DM Mono", monospace; font-size: 0.9em; }
+    .notes pre { font-family: "DM Mono", monospace; font-size: 13px; line-height: 1.7; padding: 20px; overflow-x: auto; border-radius: 6px; background: rgba(128,128,128,0.08); border: 1px solid rgba(128,128,128,0.15); margin: 30px 0; }
+    .callout { margin: 40px 0; padding: 25px 28px; border-left: 3px solid currentColor; background: rgba(128,128,128,0.06); }
+    .callout p:last-child, .callout ul:last-child { margin-bottom: 0; }
+    .table-wrapper { overflow-x: auto; margin: 30px 0; }
+    .notes table { width: 100%; border-collapse: collapse; font-size: 15px; }
+    .notes th, .notes td { text-align: left; vertical-align: top; padding: 12px; border-bottom: 1px solid rgba(128,128,128,0.25); }
+    .notes th { font-family: "DM Mono", monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .article-navigation { display: flex; justify-content: space-between; gap: 20px; margin-top: 90px; padding-top: 30px; border-top: 1px solid rgba(128,128,128,0.25); }
+    .article-navigation a { text-decoration: none; color: inherit; opacity: 0.65; }
+    .article-navigation a:hover { opacity: 1; }
+    @media (max-width: 600px) {
+      .notes-page { padding: 50px 20px; }
+      .notes-page h1 { font-size: 42px; }
+      .notes { font-size: 16px; }
+      .article-navigation { flex-direction: column; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="notes-page">
+
+    <a href="index.html" class="back-link">
+      ← Back to AI Terminal Agent
+    </a>
+
+    <div class="section-number">
+      12 · AI TERMINAL AGENT
+    </div>
+
+    <h1>Model Routing</h1>
+
+    <p class="article-subtitle">
+      Sending easy steps to a cheap model saved 64%, and cost 21 points of pass rate,
+      mostly on the hardest tasks.
+    </p>
+
+    <div class="article-meta">
+      <span>COST</span>
+      <span>ROUTING</span>
+      <span>EXPERIMENT</span>
+      <span>BUILD LOG</span>
+      <span>2026-10-19</span>
+    </div>
+
+    <article class="notes">
+
+      <div class="callout">
+        <strong>In short</strong>
+        <ul>
+          <li>Cost per task fell from $0.0156 to $0.0056 (−64%), with 70% of calls on gpt-4o-mini.</li>
+          <li>Pass rate fell from 84.4% to 63.3%. Debugging tasks fell the most: 70% → 40%.</li>
+          <li>My hypothesis: the rule switches to the big model only after an error, and hard reasoning rarely produces one.</li>
+        </ul>
+      </div>
+
+      <h2>The Rule</h2>
+
+      <p>Use the frontier model (<code>gpt-4o</code>) when the agent is most likely to need it:</p>
+
+      <ul>
+        <li>step 0, to read the task and plan;</li>
+        <li>right after a failed command;</li>
+        <li>right after the retry budget runs out, or a command is blocked.</li>
+      </ul>
+
+      <p>Use the small model (<code>gpt-4o-mini</code>) for every other step.</p>
+
+      <pre><code>ta/bin/python evals/run_eval.py --repeats 3 --routing on --label routing-on</code></pre>
+
+      <h2>Result</h2>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th></th><th>Baseline</th><th>Routing on</th><th>Change</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Pass rate</td><td>84.4% ± 1.9%</td><td>63.3% ± 5.8%</td><td>−21 pts</td></tr>
+            <tr><td>Tier 1 · file ops</td><td>96.7%</td><td>80.0%</td><td>−17 pts</td></tr>
+            <tr><td>Tier 2 · git / packages</td><td>86.7%</td><td>70.0%</td><td>−17 pts</td></tr>
+            <tr><td>Tier 3 · debugging</td><td>70.0%</td><td>40.0%</td><td>−30 pts</td></tr>
+            <tr><td>Calls on small model</td><td>0%</td><td>70%</td><td></td></tr>
+            <tr><td>Cost per task</td><td>$0.0156</td><td>$0.0056</td><td>−64%</td></tr>
+            <tr><td>Cost per <em>solved</em> task</td><td>$0.0185</td><td>$0.0088</td><td>−52%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout">
+        <strong>Hypothesis</strong>
+        <p>
+          The rule escalates to the big model only after a command fails. In debugging, the hard part
+          is reasoning about the bug, and that often happens with no failed command to trigger the
+          switch. So the small model ends up doing the hardest thinking. A better rule would route on
+          the kind of step (planning or diagnosing vs. running a known command), not only on errors.
+        </p>
+      </div>
+
+      <h2>What I Take From This</h2>
+
+      <ul>
+        <li>"−64% cost" alone would have been misleading. Per solved task, the saving is 52%, and the tasks it gives up are the hard ones.</li>
+        <li>The per-tier split showed <em>where</em> routing hurt. The overall average hid it.</li>
+        <li>Routing stays off by default until a rule keeps quality within a few points.</li>
+      </ul>
+
+    </article>
+
+    <nav class="article-navigation">
+      <a href="index.html">← All Terminal Agent Sections</a>
+      <a href="13-failure-modes.html">Failure Modes →</a>
+    </nav>
+
+  </main>
+
+</body>
+</html>
